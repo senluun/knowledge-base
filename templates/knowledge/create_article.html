@@ -479,25 +479,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Обновление состояния кнопки отправки
     function updateSubmitButton() {
-        if (validateForm()) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('btn-secondary');
-            submitBtn.classList.add('btn-primary');
-        } else {
-            submitBtn.disabled = true;
-            submitBtn.classList.remove('btn-primary');
-            submitBtn.classList.add('btn-secondary');
-        }
+        // Временно всегда разрешаем отправку для тестирования
+        // В дальнейшем можно вернуть валидацию, когда редактор будет стабильно работать
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn-secondary');
+        submitBtn.classList.add('btn-primary');
     }
 
-    // Обработчики событий
-    [titleField, contentField, categoryField].forEach(field => {
-        field.addEventListener('input', updateSubmitButton);
-        field.addEventListener('change', updateSubmitButton);
+    // Обработчики событий для обновления скрытого поля content
+    const editorElement = document.getElementById('editor-id_content');
+    if (editorElement) {
+        editorElement.addEventListener('input', function() {
+            contentField.value = this.innerHTML;
+            updateSubmitButton();
+        });
+        editorElement.addEventListener('blur', function() {
+            contentField.value = this.innerHTML;
+            updateSubmitButton();
+        });
+    }
+
+    // Обработчики событий для других полей
+    [titleField, categoryField].forEach(field => {
+        if (field) {
+            field.addEventListener('input', updateSubmitButton);
+            field.addEventListener('change', updateSubmitButton);
+        }
     });
 
     // Предотвращение отправки невалидной формы
     form.addEventListener('submit', function(e) {
+        // Синхронизируем контент перед отправкой
+        if (editorElement) {
+            contentField.value = editorElement.innerHTML;
+        }
+        
         if (!validateForm()) {
             e.preventDefault();
             alert('Пожалуйста, заполните все обязательные поля');

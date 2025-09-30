@@ -86,8 +86,8 @@ function initProseMirror(widgetId) {
             
             // Проверка на дебаунс (предотвращение двойных кликов)
             const now = Date.now();
-            if (now - lastClickTime < 500) {
-                return; // Игнорируем клики с интервалом менее 500мс
+            if (now - lastClickTime < 800) {
+                return; // Игнорируем клики с интервалом менее 800мс
             }
             lastClickTime = now;
             
@@ -116,8 +116,8 @@ function initProseMirror(widgetId) {
                 // Разблокируем обработку команд через дополнительную задержку
                 setTimeout(() => {
                     isProcessingCommand = false;
-                }, 200);
-            }, 300);
+                }, 400);
+            }, 500);
         });
         
         // Обработчик для позиционирования кнопки рядом с текущей строкой
