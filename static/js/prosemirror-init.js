@@ -186,21 +186,20 @@ function initProseMirror(widgetId) {
             return;
         }
         
-        // Устанавливаем кнопку слева от курсора, но внутри формы
+        // Позиционируем кнопку СПРАВА от редактора, как на Habr
+        const editorWidth = editorContainer.offsetWidth;
         plusButton.style.top = `${cursorTop}px`;
-        plusButton.style.left = '10px'; // Размещаем внутри формы слева
+        plusButton.style.left = `${editorWidth + 10}px`; // 10px отступ справа от редактора
         
-        // Добавляем визуальное разделение между курсором и кнопкой
+        // Стилизуем как кнопку с тремя точками (как на Habr)
         plusButton.style.position = 'absolute';
         plusButton.style.background = '#ffffff';
         plusButton.style.boxShadow = '0 1px 3px rgba(0,0,0,0.15)';
-        
-        // Создаем визуальное разделение с помощью границы справа
-        plusButton.style.borderRight = '2px solid #e1e5e9';
-        plusButton.style.paddingRight = '5px';
+        plusButton.style.border = '1px solid #e1e5e9';
+        plusButton.style.borderRadius = '4px';
         
         // Добавляем плавный переход
-        plusButton.style.transition = 'top 0.15s ease, left 0.15s ease';
+        plusButton.style.transition = 'top 0.15s ease, left 0.15s ease, opacity 0.2s ease';
         
         // Показываем кнопку
         plusButton.style.visibility = 'visible';
