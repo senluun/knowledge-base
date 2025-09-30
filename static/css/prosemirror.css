@@ -1,3 +1,9 @@
+/* Контейнер редактора с отступом для кнопки + */
+.prosemirror-editor-container {
+    position: relative;
+    padding-left: 45px; /* Отступ для кнопки + */
+}
+
 /* Стили для редактора */
 .prosemirror-editor {
     position: relative;
@@ -528,4 +534,56 @@
 [data-bs-theme="dark"] .prosemirror-editor.focused {
     border-color: #0d6efd;
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Стили для красивых подсказок команд */
+.command-tooltip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    margin: 8px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    animation: slideInDown 0.3s ease-out;
+    user-select: none;
+    pointer-events: none;
+}
+
+.command-tooltip::before {
+    content: '✨';
+    font-size: 14px;
+}
+
+.command-tooltip::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #764ba2;
+    position: absolute;
+    bottom: -5px;
+    left: 20px;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Темная тема для подсказок */
+[data-bs-theme="dark"] .command-tooltip {
+    background: linear-gradient(135deg, #4c6ef5 0%, #5f3dc4 100%);
+    box-shadow: 0 2px 8px rgba(76, 110, 245, 0.4);
 }

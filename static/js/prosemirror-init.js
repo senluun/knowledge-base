@@ -953,25 +953,21 @@ function initProseMirror(widgetId) {
         }
     }
     
-    // Функция для показа подсказки о вызванной функции как текста в редакторе
+    // Функция для показа красивой подсказки о вызванной команде
     function showFunctionTooltip(functionName) {
         // Удаляем предыдущую подсказку, если она есть
-        const existingTooltip = editorContainer.querySelector('.function-tooltip');
+        const existingTooltip = editorContainer.querySelector('.command-tooltip');
         if (existingTooltip) {
             existingTooltip.remove();
         }
         
-        // Создаем подсказку как текст в редакторе
+        // Создаем красивую подсказку
         const tooltip = document.createElement('span');
-        tooltip.className = 'function-tooltip';
-        tooltip.textContent = `// Вызвана функция: ${functionName}`;
-        tooltip.style.color = '#6c757d';
-        tooltip.style.fontStyle = 'italic';
-        tooltip.style.fontSize = '0.9em';
-        tooltip.style.opacity = '0.7';
+        tooltip.className = 'command-tooltip';
+        tooltip.textContent = functionName;
         tooltip.contentEditable = 'false';
         
-        // Вставляем подсказку в начало текущего элемента
+        // Вставляем подсказку над текущим элементом
         const selection = window.getSelection();
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
@@ -990,20 +986,23 @@ function initProseMirror(widgetId) {
                 currentElement = currentElement.parentNode;
             }
             
-            if (currentElement) {
-                // Вставляем подсказку в начало элемента
-                currentElement.insertBefore(tooltip, currentElement.firstChild);
+            if (currentElement && currentElement !== editorContainer) {
+                // Вставляем подсказку перед элементом
+                currentElement.parentNode.insertBefore(tooltip, currentElement);
                 
-                // Добавляем пробел после подсказки
-                const space = document.createTextNode(' ');
-                currentElement.insertBefore(space, tooltip.nextSibling);
-                
-                // Устанавливаем курсор после подсказки
+                // Устанавливаем курсор в начало элемента
                 const newRange = document.createRange();
-                newRange.setStartAfter(space);
+                newRange.setStart(currentElement, 0);
                 newRange.collapse(true);
                 selection.removeAllRanges();
                 selection.addRange(newRange);
+                
+                // Автоматически удаляем подсказку через 2 секунды
+                setTimeout(() => {
+                    if (tooltip.parentNode) {
+                        tooltip.remove();
+                    }
+                }, 2000);
             }
         }
         
