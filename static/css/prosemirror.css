@@ -107,7 +107,7 @@
     align-items: center;
     justify-content: center;
     background: white;
-    border: none;
+    border: 1px solid #e1e5e9;
     color: #495057;
     cursor: pointer;
     z-index: 1000;
@@ -125,6 +125,17 @@
 
 .block-menu__plus:active {
     transform: scale(0.95);
+}
+
+/* Темная тема для кнопки + */
+[data-bs-theme="dark"] .block-menu__plus {
+    background: #343a40;
+    border-color: #495057;
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .block-menu__plus:hover {
+    background: #495057;
 }
 
 /* Стили для командного меню */
@@ -645,12 +656,17 @@
 }
 
 /* Placeholder для команд (как в поле "Заголовок статьи") */
+.prosemirror-editor .has-placeholder {
+    position: relative;
+}
+
 .prosemirror-editor .has-placeholder::before {
     content: attr(data-placeholder-text);
     color: #6c757d;
     pointer-events: none;
     position: absolute;
-    left: 0;
+    left: 16px; /* Выравнивание с отступом редактора */
+    top: 0;
     user-select: none;
     opacity: 0.7;
 }
