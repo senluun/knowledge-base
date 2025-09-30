@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)http://127.0.0.1:8000/knowledge/create-article/ -->
+<html lang="ru" data-bs-theme="dark" suppresshydrationwarning="true" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSP настроен в middleware для лучшей совместимости с CKEditor -->
+    <meta http-equiv="Permissions-Policy" content="unload=*">
+    <title>Создать статью - База знаний</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="./Создать статью - База знаний_files/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="./Создать статью - База знаний_files/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="./Создать статью - База знаний_files/css2" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bs-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        /* Темная тема */
+        [data-bs-theme="dark"] {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-color: #30363d;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.24);
+        }
+        
+        /* Светлая тема */
+        [data-bs-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--bs-body-font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            z-index: 1030;
+            position: relative;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-primary) !important;
+            text-decoration: none;
+        }
+        
+        .navbar-brand i {
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar-nav .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 0 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+            background-color: var(--bg-tertiary);
+            transform: translateY(-1px);
+        }
+        
+        .navbar-nav .nav-link i {
+            color: var(--primary-color) !important;
+            margin-bottom: 0.25rem;
+            font-size: 1.2rem;
+        }
+        
+        .navbar-nav .nav-link:hover i {
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar-nav .nav-link span {
+            font-size: 0.85rem;
+            line-height: 1.2;
+        }
+        
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+        
+        .card-header {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(13, 110, 253, 0.3);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            color: inherit;
+        }
+        
+        .btn:hover i {
+            color: inherit;
+        }
+        
+        .form-control {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 1rem 1.25rem;
+        }
+        
+        .alert-info {
+            background-color: rgba(13, 202, 240, 0.1);
+            color: var(--info-color);
+            border-left: 4px solid var(--info-color);
+        }
+        
+        .alert-success {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            padding: 2rem 0;
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color) !important;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        
+        .category-icon:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            color: var(--primary-color) !important;
+        }
+        
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            max-width: none;
+        }
+        
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .article-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            background-color: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .article-content ul,
+        .article-content ol {
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4,
+        .article-content h5,
+        .article-content h6 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-primary) !important;
+        }
+        
+        h1 i, h2 i, h3 i, h4 i, h5 i, h6 i {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Исправление цветов для темной темы */
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        
+        .text-dark {
+            color: var(--text-primary) !important;
+        }
+        
+        .card-title a {
+            color: var(--text-primary) !important;
+        }
+        
+        .card-title a:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .breadcrumb-item a {
+            color: var(--primary-color) !important;
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-secondary) !important;
+        }
+        
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-content code {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        
+        .code-block {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background-color: var(--bg-primary);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-language {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            padding: 1rem;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        
+        .search-form .form-control {
+            min-width: 300px;
+        }
+        
+        .article-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .article-meta i {
+            color: var(--primary-color) !important;
+            margin-right: 0.25rem;
+        }
+        
+        .main-content {
+            min-height: calc(100vh - 200px);
+            padding: 2rem 0;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title i {
+            color: var(--primary-color) !important;
+        }
+        
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color) !important;
+            opacity: 0.9;
+        }
+        
+        .stats-card h5 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .stats-card p {
+            color: var(--text-secondary);
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        
+        .comment {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .comment-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .comment-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .reply-form {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .attachment-item {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .attachment-item:hover {
+            background-color: var(--bg-tertiary);
+            transform: translateX(4px);
+        }
+        
+        .attachment-icon {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: var(--primary-color) !important;
+        }
+        
+        .attachment-info h6 {
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+        
+        .attachment-meta {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .modal-header {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            color: var(--text-primary);
+        }
+        
+        .modal-footer {
+            background-color: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .btn-close {
+            filter: invert(1);
+        }
+        
+        .dropdown-menu {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1050 !important;
+            position: absolute !important;
+        }
+        
+        .dropdown-item {
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .dropdown-toggle::after {
+            margin-left: 0.5em;
+        }
+        
+        .dropdown.show .dropdown-menu {
+            display: block;
+        }
+        
+        .pagination .page-link {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .pagination .page-link:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+        
+        .bg-light {
+            background-color: var(--bg-secondary) !important;
+        }
+        
+        .bg-dark {
+            background-color: var(--bg-primary) !important;
+        }
+        
+        .border {
+            border-color: var(--border-color) !important;
+        }
+        
+        .border-top {
+            border-top-color: var(--border-color) !important;
+        }
+        
+        .border-bottom {
+            border-bottom-color: var(--border-color) !important;
+        }
+        
+        .border-start {
+            border-left-color: var(--border-color) !important;
+        }
+        
+        .border-end {
+            border-right-color: var(--border-color) !important;
+        }
+        
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .search-form .form-control {
+                min-width: 200px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .stats-card {
+                padding: 1.5rem 1rem;
+            }
+        }
+        .article-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .search-form {
+            max-width: 400px;
+        }
+        
+        /* Стили для CKEditor */
+        .cke_chrome {
+            width: 100% !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 0.375rem !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+        }
+        
+        .admin-interface .cke_chrome {
+            width: 100% !important;
+            max-width: none !important;
+        }
+        
+        .admin-interface .cke_contents {
+            min-height: 400px !important;
+        }
+        
+        /* Адаптивность для админ панели */
+        @media (min-width: 768px) {
+            .admin-interface .field-content .cke_chrome {
+                width: 100% !important;
+            }
+        }
+    </style>
+    
+    
+<style>.cke{visibility:hidden;}</style><script type="text/javascript" src="./Создать статью - База знаний_files/config.js.Без названия"></script><link rel="stylesheet" type="text/css" href="./Создать статью - База знаний_files/editor.css"><script type="text/javascript" src="./Создать статью - База знаний_files/ru.js.Без названия"></script><script type="text/javascript" src="./Создать статью - База знаний_files/styles.js.Без названия"></script><script type="text/javascript" src="./Создать статью - База знаний_files/plugin.js.Без названия"></script><link rel="stylesheet" type="text/css" href="./Создать статью - База знаний_files/scayt.css"><link rel="stylesheet" type="text/css" href="./Создать статью - База знаний_files/dialog.css"><link rel="stylesheet" type="text/css" href="./Создать статью - База знаний_files/tableselection.css"><script type="text/javascript" src="./Создать статью - База знаний_files/ru(1).js.Без названия"></script><link rel="stylesheet" type="text/css" href="./Создать статью - База знаний_files/dialog(1).css"><link rel="stylesheet" type="text/css" href="./Создать статью - База знаний_files/copyformatting.css"><style id="cke_ui_color" type="text/css"></style><style>body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto !important}body.swal2-no-backdrop .swal2-container{background-color:rgba(0,0,0,0) !important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:rgba(0,0,0,0);pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{inset:0 auto auto 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{inset:0 0 auto auto}body.swal2-toast-shown .swal2-container.swal2-top-start,body.swal2-toast-shown .swal2-container.swal2-top-left{inset:0 auto auto 0}body.swal2-toast-shown .swal2-container.swal2-center-start,body.swal2-toast-shown .swal2-container.swal2-center-left{inset:50% auto auto 0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{inset:50% auto auto 50%;transform:translate(-50%, -50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{inset:50% 0 auto auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-start,body.swal2-toast-shown .swal2-container.swal2-bottom-left{inset:auto auto 0 0}body.swal2-toast-shown .swal2-container.swal2-bottom{inset:auto auto 0 50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{inset:auto 0 0 auto}@media print{body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown){overflow-y:scroll !important}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop,.swal2-toast-shown) .swal2-container{position:static !important}}div:where(.swal2-container){display:grid;position:fixed;z-index:1060;inset:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(min-content, auto) minmax(min-content, auto) minmax(min-content, auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}div:where(.swal2-container).swal2-backdrop-show,div:where(.swal2-container).swal2-noanimation{background:rgba(0,0,0,.4)}div:where(.swal2-container).swal2-backdrop-hide{background:rgba(0,0,0,0) !important}div:where(.swal2-container).swal2-top-start,div:where(.swal2-container).swal2-center-start,div:where(.swal2-container).swal2-bottom-start{grid-template-columns:minmax(0, 1fr) auto auto}div:where(.swal2-container).swal2-top,div:where(.swal2-container).swal2-center,div:where(.swal2-container).swal2-bottom{grid-template-columns:auto minmax(0, 1fr) auto}div:where(.swal2-container).swal2-top-end,div:where(.swal2-container).swal2-center-end,div:where(.swal2-container).swal2-bottom-end{grid-template-columns:auto auto minmax(0, 1fr)}div:where(.swal2-container).swal2-top-start>.swal2-popup{align-self:start}div:where(.swal2-container).swal2-top>.swal2-popup{grid-column:2;place-self:start center}div:where(.swal2-container).swal2-top-end>.swal2-popup,div:where(.swal2-container).swal2-top-right>.swal2-popup{grid-column:3;place-self:start end}div:where(.swal2-container).swal2-center-start>.swal2-popup,div:where(.swal2-container).swal2-center-left>.swal2-popup{grid-row:2;align-self:center}div:where(.swal2-container).swal2-center>.swal2-popup{grid-column:2;grid-row:2;place-self:center center}div:where(.swal2-container).swal2-center-end>.swal2-popup,div:where(.swal2-container).swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;place-self:center end}div:where(.swal2-container).swal2-bottom-start>.swal2-popup,div:where(.swal2-container).swal2-bottom-left>.swal2-popup{grid-column:1;grid-row:3;align-self:end}div:where(.swal2-container).swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;place-self:end center}div:where(.swal2-container).swal2-bottom-end>.swal2-popup,div:where(.swal2-container).swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;place-self:end end}div:where(.swal2-container).swal2-grow-row>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-column:1/4;width:100%}div:where(.swal2-container).swal2-grow-column>.swal2-popup,div:where(.swal2-container).swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}div:where(.swal2-container).swal2-no-transition{transition:none !important}div:where(.swal2-container) div:where(.swal2-popup){display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0, 100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:hsl(0,0%,33%);font-family:inherit;font-size:1rem}div:where(.swal2-container) div:where(.swal2-popup):focus{outline:none}div:where(.swal2-container) div:where(.swal2-popup).swal2-loading{overflow-y:hidden}div:where(.swal2-container) div:where(.swal2-popup).swal2-draggable{cursor:grab}div:where(.swal2-container) div:where(.swal2-popup).swal2-draggable div:where(.swal2-icon){cursor:grab}div:where(.swal2-container) div:where(.swal2-popup).swal2-dragging{cursor:grabbing}div:where(.swal2-container) div:where(.swal2-popup).swal2-dragging div:where(.swal2-icon){cursor:grabbing}div:where(.swal2-container) h2:where(.swal2-title){position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:inherit;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word;cursor:initial}div:where(.swal2-container) div:where(.swal2-actions){display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1))}div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))}div:where(.swal2-container) div:where(.swal2-loader){display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 rgba(0,0,0,0) #2778c4 rgba(0,0,0,0)}div:where(.swal2-container) button:where(.swal2-styled){margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px rgba(0,0,0,0);font-weight:500}div:where(.swal2-container) button:where(.swal2-styled):not([disabled]){cursor:pointer}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm){border:0;border-radius:.25em;background:initial;background-color:#7066e0;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):focus-visible{box-shadow:0 0 0 3px rgba(112,102,224,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny){border:0;border-radius:.25em;background:initial;background-color:#dc3741;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-deny):focus-visible{box-shadow:0 0 0 3px rgba(220,55,65,.5)}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel){border:0;border-radius:.25em;background:initial;background-color:#6e7881;color:#fff;font-size:1em}div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel):focus-visible{box-shadow:0 0 0 3px rgba(110,120,129,.5)}div:where(.swal2-container) button:where(.swal2-styled).swal2-default-outline:focus-visible{box-shadow:0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-styled):focus-visible{outline:none}div:where(.swal2-container) button:where(.swal2-styled)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-footer){margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:inherit;font-size:1em;text-align:center;cursor:initial}div:where(.swal2-container) .swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto !important;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}div:where(.swal2-container) div:where(.swal2-timer-progress-bar){width:100%;height:.25em;background:rgba(0,0,0,.2)}div:where(.swal2-container) img:where(.swal2-image){max-width:100%;margin:2em auto 1em;cursor:initial}div:where(.swal2-container) button:where(.swal2-close){z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:rgba(0,0,0,0);color:#ccc;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}div:where(.swal2-container) button:where(.swal2-close):hover{transform:none;background:rgba(0,0,0,0);color:#f27474}div:where(.swal2-container) button:where(.swal2-close):focus-visible{outline:none;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) button:where(.swal2-close)::-moz-focus-inner{border:0}div:where(.swal2-container) div:where(.swal2-html-container){z-index:1;justify-content:center;margin:0;padding:1em 1.6em .3em;overflow:auto;color:inherit;font-size:1.125em;font-weight:normal;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word;cursor:initial}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea),div:where(.swal2-container) select:where(.swal2-select),div:where(.swal2-container) div:where(.swal2-radio),div:where(.swal2-container) label:where(.swal2-checkbox){margin:1em 2em 3px}div:where(.swal2-container) input:where(.swal2-input),div:where(.swal2-container) input:where(.swal2-file),div:where(.swal2-container) textarea:where(.swal2-textarea){box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid hsl(0,0%,85%);border-radius:.1875em;background:rgba(0,0,0,0);box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) input:where(.swal2-input).swal2-inputerror,div:where(.swal2-container) input:where(.swal2-file).swal2-inputerror,div:where(.swal2-container) textarea:where(.swal2-textarea).swal2-inputerror{border-color:#f27474 !important;box-shadow:0 0 2px #f27474 !important}div:where(.swal2-container) input:where(.swal2-input):focus,div:where(.swal2-container) input:where(.swal2-file):focus,div:where(.swal2-container) textarea:where(.swal2-textarea):focus{border:1px solid #b4dbed;outline:none;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}div:where(.swal2-container) input:where(.swal2-input)::placeholder,div:where(.swal2-container) input:where(.swal2-file)::placeholder,div:where(.swal2-container) textarea:where(.swal2-textarea)::placeholder{color:#ccc}div:where(.swal2-container) .swal2-range{margin:1em 2em 3px;background:#fff}div:where(.swal2-container) .swal2-range input{width:80%}div:where(.swal2-container) .swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}div:where(.swal2-container) .swal2-range input,div:where(.swal2-container) .swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}div:where(.swal2-container) .swal2-input{height:2.625em;padding:0 .75em}div:where(.swal2-container) .swal2-file{width:75%;margin-right:auto;margin-left:auto;background:rgba(0,0,0,0);font-size:1.125em}div:where(.swal2-container) .swal2-textarea{height:6.75em;padding:.75em}div:where(.swal2-container) .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:rgba(0,0,0,0);color:inherit;font-size:1.125em}div:where(.swal2-container) .swal2-radio,div:where(.swal2-container) .swal2-checkbox{align-items:center;justify-content:center;background:#fff;color:inherit}div:where(.swal2-container) .swal2-radio label,div:where(.swal2-container) .swal2-checkbox label{margin:0 .6em;font-size:1.125em}div:where(.swal2-container) .swal2-radio input,div:where(.swal2-container) .swal2-checkbox input{flex-shrink:0;margin:0 .4em}div:where(.swal2-container) label:where(.swal2-input-label){display:flex;justify-content:center;margin:1em auto 0}div:where(.swal2-container) div:where(.swal2-validation-message){align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:hsl(0,0%,94%);color:#666;font-size:1em;font-weight:300}div:where(.swal2-container) div:where(.swal2-validation-message)::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}div:where(.swal2-container) .swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:rgba(0,0,0,0);font-weight:600}div:where(.swal2-container) .swal2-progress-steps li{display:inline-block;position:relative}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}div:where(.swal2-container) .swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}div:where(.swal2-icon){position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:.25em solid rgba(0,0,0,0);border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;user-select:none}div:where(.swal2-icon) .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}div:where(.swal2-icon).swal2-error{border-color:#f27474;color:#f27474}div:where(.swal2-icon).swal2-error .swal2-x-mark{position:relative;flex-grow:1}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-error.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark{animation:swal2-animate-error-x-mark .5s}div:where(.swal2-icon).swal2-warning{border-color:rgb(249.95234375,205.965625,167.74765625);color:#f8bb86}div:where(.swal2-icon).swal2-warning.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .5s}div:where(.swal2-icon).swal2-info{border-color:rgb(156.7033492823,224.2822966507,246.2966507177);color:#3fc3ee}div:where(.swal2-icon).swal2-info.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content{animation:swal2-animate-i-mark .8s}div:where(.swal2-icon).swal2-question{border-color:rgb(200.8064516129,217.9677419355,225.1935483871);color:#87adbd}div:where(.swal2-icon).swal2-question.swal2-icon-show{animation:swal2-animate-error-icon .5s}div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content{animation:swal2-animate-question-mark .8s}div:where(.swal2-icon).swal2-success{border-color:#a5dc86;color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;border-radius:50%}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}div:where(.swal2-icon).swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-0.25em;left:-0.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}div:where(.swal2-icon).swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-animate-success-line-tip .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-animate-success-line-long .75s}div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right{animation:swal2-rotate-success-circular-line 4.25s ease-in}[class^=swal2]{-webkit-tap-highlight-color:rgba(0,0,0,0)}.swal2-show{animation:swal2-show .3s}.swal2-hide{animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}.swal2-toast{box-sizing:border-box;grid-column:1/4 !important;grid-row:1/4 !important;grid-template-columns:min-content auto min-content;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-toast>*{grid-column:2}.swal2-toast h2:where(.swal2-title){margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-toast .swal2-loading{justify-content:center}.swal2-toast input:where(.swal2-input){height:2em;margin:.5em;font-size:1em}.swal2-toast .swal2-validation-message{font-size:1em}.swal2-toast div:where(.swal2-footer){margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-toast button:where(.swal2-close){grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-toast div:where(.swal2-html-container){margin:.5em 1em;padding:0;overflow:initial;font-size:1em;text-align:initial}.swal2-toast div:where(.swal2-html-container):empty{padding:0}.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:bold}.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-toast div:where(.swal2-actions){justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-toast button:where(.swal2-styled){margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;border-radius:50%}.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-0.8em;left:-0.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-0.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{animation:swal2-toast-animate-success-line-tip .75s}.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{animation:swal2-toast-animate-success-line-long .75s}.swal2-toast.swal2-show{animation:swal2-toast-show .5s}.swal2-toast.swal2-hide{animation:swal2-toast-hide .1s forwards}@keyframes swal2-show{0%{transform:scale(0.7)}45%{transform:scale(1.05)}80%{transform:scale(0.95)}100%{transform:scale(1)}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(0.5);opacity:0}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-0.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(0.4);opacity:0}50%{margin-top:1.625em;transform:scale(0.4);opacity:0}80%{margin-top:-0.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0deg);opacity:1}}@keyframes swal2-rotate-loading{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes swal2-animate-question-mark{0%{transform:rotateY(-360deg)}100%{transform:rotateY(0)}}@keyframes swal2-animate-i-mark{0%{transform:rotateZ(45deg);opacity:0}25%{transform:rotateZ(-25deg);opacity:.4}50%{transform:rotateZ(15deg);opacity:.8}75%{transform:rotateZ(-5deg);opacity:1}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-toast-show{0%{transform:translateY(-0.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(0.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0deg)}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-0.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}</style></head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="http://127.0.0.1:8000/knowledge/">
+                <i class="fas fa-database me-2"></i>База знаний
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/knowledge/">
+                            <i class="fas fa-home"></i>
+                            <span>Главная</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/knowledge/categories/">
+                            <i class="fas fa-th-large"></i>
+                            <span>Категории</span>
+                        </a>
+                    </li>
+                    
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://127.0.0.1:8000/knowledge/favorites/">
+                                <i class="fas fa-heart"></i>
+                                <span>Избранное</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://127.0.0.1:8000/knowledge/create-article/">
+                                <i class="fas fa-plus"></i>
+                                <span>Создать статью</span>
+                            </a>
+                        </li>
+                        
+                            <li class="nav-item">
+                                <a class="nav-link" href="http://127.0.0.1:8000/moderation/">
+                                    <i class="fas fa-gavel"></i>
+                                    <span>Модерация</span>
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+                
+                <!-- Поиск -->
+                <form class="d-flex search-form me-3" method="get" action="http://127.0.0.1:8000/knowledge/search/">
+                    <input class="form-control me-2" type="search" name="query" placeholder="Поиск..." value="">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                
+                <!-- Переключение темы -->
+                <button class="btn btn-outline-primary me-3" id="themeToggle" title="Переключить тему">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                
+                <!-- Пользовательское меню -->
+                <ul class="navbar-nav">
+                    
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="http://127.0.0.1:8000/knowledge/create-article/#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                                <i class="fas fa-user me-1"></i>Администратор Системы
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://127.0.0.1:8000/accounts/profile/">
+                                    <i class="fas fa-user-edit me-2"></i>Профиль
+                                </a></li>
+                                <li><a class="dropdown-item" href="http://127.0.0.1:8000/accounts/dashboard/">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Панель управления
+                                </a></li>
+                                <li><a class="dropdown-item" href="http://127.0.0.1:8000/accounts/search/">
+                                    <i class="fas fa-search me-2"></i>Поиск пользователей
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://127.0.0.1:8000/accounts/logout/">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                                </a></li>
+                            </ul>
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="container my-4">
+        <!-- Сообщения -->
+        
+        
+        
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>
+                    Создать статью
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="http://127.0.0.1:8000/knowledge/">Главная</a></li>
+                        <li class="breadcrumb-item active">Создать статью</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-edit me-2 text-primary"></i>
+                        Новая статья
+                    </h5>
+                </div>
+                <div class="card-body">
+                    
+                    
+                    <form method="post" enctype="multipart/form-data" name="create-article-form" class="create-article-form">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="qCiebV0P81Eo6fcAv0ztkpSSlWnl5DmICzyr7f5RTAnQ6ZsxDirMQDMv6kC47Y5L">
+                        <input type="hidden" name="status" id="articleStatus" value="pending">
+                        
+                        
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="id_title" class="form-label">
+                                    <i class="fas fa-heading me-1 text-primary"></i>
+                                    Заголовок
+                                </label>
+                                <input type="text" name="title" class="form-control" placeholder="Заголовок статьи" maxlength="200" required="" id="id_title">
+                                
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="id_category" class="form-label">
+                                    <i class="fas fa-folder me-1 text-primary"></i>
+                                    Категория
+                                </label>
+                                <select name="category" class="form-control" required="" id="id_category">
+  <option value="" selected="">---------</option>
+
+  <option value="4">Тестовая категория</option>
+
+  <option value="3">егиссо</option>
+
+</select>
+                                
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_slug" class="form-label">
+                                <i class="fas fa-link me-1 text-primary"></i>
+                                URL
+                            </label>
+                            <input type="text" name="slug" class="form-control" placeholder="URL статьи (будет сгенерирован автоматически)" maxlength="50" id="id_slug">
+                            <div class="form-text">URL статьи (оставьте пустым для автоматической генерации)</div>
+                            
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_excerpt" class="form-label">
+                                <i class="fas fa-align-left me-1 text-primary"></i>
+                                Краткое описание
+                            </label>
+                            <textarea name="excerpt" cols="40" rows="3" class="form-control" placeholder="Краткое описание статьи" maxlength="500" id="id_excerpt"></textarea>
+                            <div class="form-text">Краткое описание статьи (будет отображаться в списках)</div>
+                            
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_content" class="form-label">
+                                <i class="fas fa-file-alt me-1 text-primary"></i>
+                                Содержание
+                            </label>
+                            
+                            <div class="django-ckeditor-widget" data-field-id="id_content" style="display: inline-block;">
+    <textarea name="content" cols="40" rows="10" id="id_content" data-processed="1" data-config="{&quot;skin&quot;: &quot;moono-lisa&quot;, &quot;toolbar_Basic&quot;: [[&quot;Source&quot;, &quot;-&quot;, &quot;Bold&quot;, &quot;Italic&quot;]], &quot;toolbar_Full&quot;: [[&quot;Styles&quot;, &quot;Format&quot;, &quot;Bold&quot;, &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;, &quot;SpellChecker&quot;, &quot;Undo&quot;, &quot;Redo&quot;], [&quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;], [&quot;Image&quot;, &quot;Flash&quot;, &quot;Table&quot;, &quot;HorizontalRule&quot;], [&quot;TextColor&quot;, &quot;BGColor&quot;], [&quot;Smiley&quot;, &quot;SpecialChar&quot;], [&quot;Source&quot;]], &quot;toolbar&quot;: &quot;full&quot;, &quot;height&quot;: 600, &quot;width&quot;: &quot;100%&quot;, &quot;filebrowserWindowWidth&quot;: 940, &quot;filebrowserWindowHeight&quot;: 725, &quot;extraPlugins&quot;: &quot;pastefromword,image2,uploadimage,clipboard&quot;, &quot;pasteFromWordPromptCleanup&quot;: true, &quot;pasteFromWordRemoveFontStyles&quot;: false, &quot;pasteFromWordRemoveStyles&quot;: false, &quot;filebrowserUploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;uploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;imageUploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;allowedContent&quot;: true, &quot;extraAllowedContent&quot;: &quot;img[src,alt,width,height,style,class];p[style,class];div[style,class];span[style,class];table[class,style];tr[class,style];td[class,style];th[class,style];ul[class,style];ol[class,style];li[class,style];strong[class,style];em[class,style];u[class,style];h1[class,style];h2[class,style];h3[class,style];h4[class,style];h5[class,style];h6[class,style];a[href,title,style,class];br;hr&quot;, &quot;uiColor&quot;: &quot;#f8f9fa&quot;, &quot;removeDialogTabs&quot;: &quot;image:advanced;link:advanced&quot;, &quot;resize_enabled&quot;: true, &quot;resize_dir&quot;: &quot;vertical&quot;, &quot;resize_minHeight&quot;: 400, &quot;resize_maxHeight&quot;: 1000, &quot;bodyClass&quot;: &quot;ckeditor-body&quot;, &quot;contentsCss&quot;: &quot;/static/css/ckeditor.css&quot;, &quot;forcePasteAsPlainText&quot;: false, &quot;pasteFromWordNumberedHeadingToList&quot;: true, &quot;pasteFromWordRemoveEmptyParagraphs&quot;: true, &quot;clipboard_handleImages&quot;: true, &quot;image2_altRequired&quot;: true, &quot;image2_disableResizer&quot;: false, &quot;image2_prefillDimensions&quot;: false, &quot;image2_responsive&quot;: true, &quot;image2_alignClasses&quot;: [&quot;image-left&quot;, &quot;image-center&quot;, &quot;image-right&quot;, &quot;image-full&quot;], &quot;image2_toolbar&quot;: [&quot;image2:resize&quot;, &quot;image2:resizeOnly&quot;, &quot;image2:align&quot;, &quot;image2:alignLeft&quot;, &quot;image2:alignCenter&quot;, &quot;image2:alignRight&quot;, &quot;image2:alignFull&quot;, &quot;image2:alt&quot;, &quot;image2:remove&quot;], &quot;language&quot;: &quot;ru-ru&quot;, &quot;versionCheck&quot;: false}" data-external-plugin-resources="[]" data-id="id_content" data-type="ckeditortype" style="visibility: hidden; display: none;"></textarea><div id="cke_id_content" class="cke_1 cke cke_reset cke_chrome cke_editor_id_content cke_ltr cke_browser_webkit" dir="ltr" lang="ru" role="application" aria-labelledby="cke_id_content_arialbl" style="width: 100%;"><span id="cke_id_content_arialbl" class="cke_voice_label">Rich Text Editor, id_content</span><div class="cke_inner cke_reset" role="presentation"><span id="cke_1_top" class="cke_top cke_reset_all" role="presentation" style="height: auto; user-select: none;"><span id="cke_13" class="cke_voice_label">Панели инструментов редактора</span><span id="cke_1_toolbox" class="cke_toolbox" role="group" aria-labelledby="cke_13" onmousedown="return false;"><span id="cke_18" class="cke_toolbar" aria-labelledby="cke_18_label" role="toolbar"><span id="cke_18_label" class="cke_voice_label">Документ</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_19" class="cke_button cke_button__source cke_button_off" href="javascript:void(&#39;Источник&#39;)" title="Источник" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_19_label" aria-describedby="cke_19_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(4,event);" onfocus="return CKEDITOR.tools.callFunction(5,event);" onclick="CKEDITOR.tools.callFunction(6,this);return false;"><span class="cke_button_icon cke_button__source_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1848px;background-size:auto;">&nbsp;</span><span id="cke_19_label" class="cke_button_label cke_button__source_label" aria-hidden="false">Источник</span><span id="cke_19_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_20" class="cke_button cke_button__save cke_button_off" href="javascript:void(&#39;Сохранить&#39;)" title="Сохранить" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_20_label" aria-describedby="cke_20_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(7,event);" onfocus="return CKEDITOR.tools.callFunction(8,event);" onclick="CKEDITOR.tools.callFunction(9,this);return false;"><span class="cke_button_icon cke_button__save_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1728px;background-size:auto;">&nbsp;</span><span id="cke_20_label" class="cke_button_label cke_button__save_label" aria-hidden="false">Сохранить</span><span id="cke_20_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_21" class="cke_button cke_button__newpage cke_button_off" href="javascript:void(&#39;Новая страница&#39;)" title="Новая страница" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_21_label" aria-describedby="cke_21_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(10,event);" onfocus="return CKEDITOR.tools.callFunction(11,event);" onclick="CKEDITOR.tools.callFunction(12,this);return false;"><span class="cke_button_icon cke_button__newpage_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1464px;background-size:auto;">&nbsp;</span><span id="cke_21_label" class="cke_button_label cke_button__newpage_label" aria-hidden="false">Новая страница</span><span id="cke_21_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_22" class="cke_button cke_button__exportpdf cke_button_off" href="javascript:void(&#39;Export to PDF&#39;)" title="Export to PDF" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_22_label" aria-describedby="cke_22_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(13,event);" onfocus="return CKEDITOR.tools.callFunction(14,event);" onclick="CKEDITOR.tools.callFunction(15,this);return false;"><span class="cke_button_icon cke_button__exportpdf_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -528px;background-size:auto;">&nbsp;</span><span id="cke_22_label" class="cke_button_label cke_button__exportpdf_label" aria-hidden="false">Export to PDF</span><span id="cke_22_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_23" class="cke_button cke_button__preview cke_button_off" href="javascript:void(&#39;Предварительный просмотр&#39;)" title="Предварительный просмотр" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_23_label" aria-describedby="cke_23_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(16,event);" onfocus="return CKEDITOR.tools.callFunction(17,event);" onclick="CKEDITOR.tools.callFunction(18,this);return false;"><span class="cke_button_icon cke_button__preview_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1656px;background-size:auto;">&nbsp;</span><span id="cke_23_label" class="cke_button_label cke_button__preview_label" aria-hidden="false">Предварительный просмотр</span><span id="cke_23_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_24" class="cke_button cke_button__print cke_button_off" href="javascript:void(&#39;Печать&#39;)" title="Печать" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_24_label" aria-describedby="cke_24_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(19,event);" onfocus="return CKEDITOR.tools.callFunction(20,event);" onclick="CKEDITOR.tools.callFunction(21,this);return false;"><span class="cke_button_icon cke_button__print_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1680px;background-size:auto;">&nbsp;</span><span id="cke_24_label" class="cke_button_label cke_button__print_label" aria-hidden="false">Печать</span><span id="cke_24_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_25" class="cke_button cke_button__templates cke_button_off" href="javascript:void(&#39;Шаблоны&#39;)" title="Шаблоны" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_25_label" aria-describedby="cke_25_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(22,event);" onfocus="return CKEDITOR.tools.callFunction(23,event);" onclick="CKEDITOR.tools.callFunction(24,this);return false;"><span class="cke_button_icon cke_button__templates_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -456px;background-size:auto;">&nbsp;</span><span id="cke_25_label" class="cke_button_label cke_button__templates_label" aria-hidden="false">Шаблоны</span><span id="cke_25_description" class="cke_button_label" aria-hidden="false"></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_26" class="cke_toolbar" aria-labelledby="cke_26_label" role="toolbar"><span id="cke_26_label" class="cke_voice_label">Буфер обмена / Отмена действий</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_27" class="cke_button cke_button__cut cke_button_disabled " href="javascript:void(&#39;Вырезать&#39;)" title="Вырезать (Ctrl+X)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_27_label" aria-describedby="cke_27_description" aria-haspopup="false" aria-disabled="true" onkeydown="return CKEDITOR.tools.callFunction(25,event);" onfocus="return CKEDITOR.tools.callFunction(26,event);" onclick="CKEDITOR.tools.callFunction(27,this);return false;"><span class="cke_button_icon cke_button__cut_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -312px;background-size:auto;">&nbsp;</span><span id="cke_27_label" class="cke_button_label cke_button__cut_label" aria-hidden="false">Вырезать</span><span id="cke_27_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+X</span></a><a id="cke_28" class="cke_button cke_button__copy cke_button_disabled " href="javascript:void(&#39;Копировать&#39;)" title="Копировать (Ctrl+C)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_28_label" aria-describedby="cke_28_description" aria-haspopup="false" aria-disabled="true" onkeydown="return CKEDITOR.tools.callFunction(28,event);" onfocus="return CKEDITOR.tools.callFunction(29,event);" onclick="CKEDITOR.tools.callFunction(30,this);return false;"><span class="cke_button_icon cke_button__copy_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -264px;background-size:auto;">&nbsp;</span><span id="cke_28_label" class="cke_button_label cke_button__copy_label" aria-hidden="false">Копировать</span><span id="cke_28_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+C</span></a><a id="cke_29" class="cke_button cke_button__paste cke_button_off" href="javascript:void(&#39;Вставить&#39;)" title="Вставить (Ctrl+V)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_29_label" aria-describedby="cke_29_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(31,event);" onfocus="return CKEDITOR.tools.callFunction(32,event);" onclick="CKEDITOR.tools.callFunction(33,this);return false;"><span class="cke_button_icon cke_button__paste_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -360px;background-size:auto;">&nbsp;</span><span id="cke_29_label" class="cke_button_label cke_button__paste_label" aria-hidden="false">Вставить</span><span id="cke_29_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+V</span></a><a id="cke_30" class="cke_button cke_button__pastetext cke_button_off" href="javascript:void(&#39;Вставить только текст&#39;)" title="Вставить только текст (Ctrl+Shift+V)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_30_label" aria-describedby="cke_30_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(34,event);" onfocus="return CKEDITOR.tools.callFunction(35,event);" onclick="CKEDITOR.tools.callFunction(36,this);return false;"><span class="cke_button_icon cke_button__pastetext_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1560px;background-size:auto;">&nbsp;</span><span id="cke_30_label" class="cke_button_label cke_button__pastetext_label" aria-hidden="false">Вставить только текст</span><span id="cke_30_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+Shift+V</span></a><a id="cke_31" class="cke_button cke_button__pastefromword cke_button_off" href="javascript:void(&#39;Вставить из Word&#39;)" title="Вставить из Word" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_31_label" aria-describedby="cke_31_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(37,event);" onfocus="return CKEDITOR.tools.callFunction(38,event);" onclick="CKEDITOR.tools.callFunction(39,this);return false;"><span class="cke_button_icon cke_button__pastefromword_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1608px;background-size:auto;">&nbsp;</span><span id="cke_31_label" class="cke_button_label cke_button__pastefromword_label" aria-hidden="false">Вставить из Word</span><span id="cke_31_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_32" class="cke_button cke_button__undo cke_button_disabled " href="javascript:void(&#39;Отменить&#39;)" title="Отменить (Ctrl+Z)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_32_label" aria-describedby="cke_32_description" aria-haspopup="false" aria-disabled="true" onkeydown="return CKEDITOR.tools.callFunction(40,event);" onfocus="return CKEDITOR.tools.callFunction(41,event);" onclick="CKEDITOR.tools.callFunction(42,this);return false;"><span class="cke_button_icon cke_button__undo_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -2016px;background-size:auto;">&nbsp;</span><span id="cke_32_label" class="cke_button_label cke_button__undo_label" aria-hidden="false">Отменить</span><span id="cke_32_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+Z</span></a><a id="cke_33" class="cke_button cke_button__redo cke_button_disabled " href="javascript:void(&#39;Повторить&#39;)" title="Повторить (Ctrl+Y)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_33_label" aria-describedby="cke_33_description" aria-haspopup="false" aria-disabled="true" onkeydown="return CKEDITOR.tools.callFunction(43,event);" onfocus="return CKEDITOR.tools.callFunction(44,event);" onclick="CKEDITOR.tools.callFunction(45,this);return false;"><span class="cke_button_icon cke_button__redo_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1968px;background-size:auto;">&nbsp;</span><span id="cke_33_label" class="cke_button_label cke_button__redo_label" aria-hidden="false">Повторить</span><span id="cke_33_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+Y</span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_34" class="cke_toolbar" aria-labelledby="cke_34_label" role="toolbar"><span id="cke_34_label" class="cke_voice_label">Корректировка</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_35" class="cke_button cke_button__find cke_button_off" href="javascript:void(&#39;Найти&#39;)" title="Найти" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_35_label" aria-describedby="cke_35_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(46,event);" onfocus="return CKEDITOR.tools.callFunction(47,event);" onclick="CKEDITOR.tools.callFunction(48,this);return false;"><span class="cke_button_icon cke_button__find_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -576px;background-size:auto;">&nbsp;</span><span id="cke_35_label" class="cke_button_label cke_button__find_label" aria-hidden="false">Найти</span><span id="cke_35_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_36" class="cke_button cke_button__replace cke_button_off" href="javascript:void(&#39;Заменить&#39;)" title="Заменить" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_36_label" aria-describedby="cke_36_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(49,event);" onfocus="return CKEDITOR.tools.callFunction(50,event);" onclick="CKEDITOR.tools.callFunction(51,this);return false;"><span class="cke_button_icon cke_button__replace_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -600px;background-size:auto;">&nbsp;</span><span id="cke_36_label" class="cke_button_label cke_button__replace_label" aria-hidden="false">Заменить</span><span id="cke_36_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_37" class="cke_button cke_button__selectall cke_button_off" href="javascript:void(&#39;Выделить все&#39;)" title="Выделить все" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_37_label" aria-describedby="cke_37_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(52,event);" onfocus="return CKEDITOR.tools.callFunction(53,event);" onclick="CKEDITOR.tools.callFunction(54,this);return false;"><span class="cke_button_icon cke_button__selectall_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1752px;background-size:auto;">&nbsp;</span><span id="cke_37_label" class="cke_button_label cke_button__selectall_label" aria-hidden="false">Выделить все</span><span id="cke_37_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_38" class="cke_button cke_button__scayt cke_button_off cke_button_expandable" href="javascript:void(&#39;Проверка орфографии по мере ввода (SCAYT)&#39;)" title="Проверка орфографии по мере ввода (SCAYT)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_38_label" aria-describedby="cke_38_description" aria-haspopup="menu" aria-disabled="false" aria-expanded="false" onkeydown="return CKEDITOR.tools.callFunction(55,event);" onfocus="return CKEDITOR.tools.callFunction(56,event);" onclick="CKEDITOR.tools.callFunction(57,this);return false;"><span class="cke_button_icon cke_button__scayt_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1896px;background-size:auto;">&nbsp;</span><span id="cke_38_label" class="cke_button_label cke_button__scayt_label" aria-hidden="false">Проверка орфографии по мере ввода (SCAYT)</span><span id="cke_38_description" class="cke_button_label" aria-hidden="false"></span><span class="cke_button_arrow"></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_39" class="cke_toolbar cke_toolbar_last" aria-labelledby="cke_39_label" role="toolbar"><span id="cke_39_label" class="cke_voice_label">Формы</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_40" class="cke_button cke_button__form cke_button_off" href="javascript:void(&#39;Форма&#39;)" title="Форма" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_40_label" aria-describedby="cke_40_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(58,event);" onfocus="return CKEDITOR.tools.callFunction(59,event);" onclick="CKEDITOR.tools.callFunction(60,this);return false;"><span class="cke_button_icon cke_button__form_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -672px;background-size:auto;">&nbsp;</span><span id="cke_40_label" class="cke_button_label cke_button__form_label" aria-hidden="false">Форма</span><span id="cke_40_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_41" class="cke_button cke_button__checkbox cke_button_off" href="javascript:void(&#39;Чекбокс&#39;)" title="Чекбокс" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_41_label" aria-describedby="cke_41_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(61,event);" onfocus="return CKEDITOR.tools.callFunction(62,event);" onclick="CKEDITOR.tools.callFunction(63,this);return false;"><span class="cke_button_icon cke_button__checkbox_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -648px;background-size:auto;">&nbsp;</span><span id="cke_41_label" class="cke_button_label cke_button__checkbox_label" aria-hidden="false">Чекбокс</span><span id="cke_41_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_42" class="cke_button cke_button__radio cke_button_off" href="javascript:void(&#39;Радиокнопка&#39;)" title="Радиокнопка" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_42_label" aria-describedby="cke_42_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(64,event);" onfocus="return CKEDITOR.tools.callFunction(65,event);" onclick="CKEDITOR.tools.callFunction(66,this);return false;"><span class="cke_button_icon cke_button__radio_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -744px;background-size:auto;">&nbsp;</span><span id="cke_42_label" class="cke_button_label cke_button__radio_label" aria-hidden="false">Радиокнопка</span><span id="cke_42_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_43" class="cke_button cke_button__textfield cke_button_off" href="javascript:void(&#39;Текстовое поле&#39;)" title="Текстовое поле" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_43_label" aria-describedby="cke_43_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(67,event);" onfocus="return CKEDITOR.tools.callFunction(68,event);" onclick="CKEDITOR.tools.callFunction(69,this);return false;"><span class="cke_button_icon cke_button__textfield_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -888px;background-size:auto;">&nbsp;</span><span id="cke_43_label" class="cke_button_label cke_button__textfield_label" aria-hidden="false">Текстовое поле</span><span id="cke_43_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_44" class="cke_button cke_button__textarea cke_button_off" href="javascript:void(&#39;Многострочное текстовое поле&#39;)" title="Многострочное текстовое поле" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_44_label" aria-describedby="cke_44_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(70,event);" onfocus="return CKEDITOR.tools.callFunction(71,event);" onclick="CKEDITOR.tools.callFunction(72,this);return false;"><span class="cke_button_icon cke_button__textarea_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -840px;background-size:auto;">&nbsp;</span><span id="cke_44_label" class="cke_button_label cke_button__textarea_label" aria-hidden="false">Многострочное текстовое поле</span><span id="cke_44_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_45" class="cke_button cke_button__select cke_button_off" href="javascript:void(&#39;Выпадающий список&#39;)" title="Выпадающий список" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_45_label" aria-describedby="cke_45_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(73,event);" onfocus="return CKEDITOR.tools.callFunction(74,event);" onclick="CKEDITOR.tools.callFunction(75,this);return false;"><span class="cke_button_icon cke_button__select_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -792px;background-size:auto;">&nbsp;</span><span id="cke_45_label" class="cke_button_label cke_button__select_label" aria-hidden="false">Выпадающий список</span><span id="cke_45_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_46" class="cke_button cke_button__button cke_button_off" href="javascript:void(&#39;Кнопка&#39;)" title="Кнопка" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_46_label" aria-describedby="cke_46_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(76,event);" onfocus="return CKEDITOR.tools.callFunction(77,event);" onclick="CKEDITOR.tools.callFunction(78,this);return false;"><span class="cke_button_icon cke_button__button_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -624px;background-size:auto;">&nbsp;</span><span id="cke_46_label" class="cke_button_label cke_button__button_label" aria-hidden="false">Кнопка</span><span id="cke_46_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_47" class="cke_button cke_button__hiddenfield cke_button_off" href="javascript:void(&#39;Скрытое поле&#39;)" title="Скрытое поле" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_47_label" aria-describedby="cke_47_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(79,event);" onfocus="return CKEDITOR.tools.callFunction(80,event);" onclick="CKEDITOR.tools.callFunction(81,this);return false;"><span class="cke_button_icon cke_button__hiddenfield_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -696px;background-size:auto;">&nbsp;</span><span id="cke_47_label" class="cke_button_label cke_button__hiddenfield_label" aria-hidden="false">Скрытое поле</span><span id="cke_47_description" class="cke_button_label" aria-hidden="false"></span></a></span><span class="cke_toolbar_end"></span></span><span class="cke_toolbar_break"></span><span id="cke_48" class="cke_toolbar" aria-labelledby="cke_48_label" role="toolbar"><span id="cke_48_label" class="cke_voice_label">Простые стили</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_49" class="cke_button cke_button__bold cke_button_off" href="javascript:void(&#39;Полужирный&#39;)" title="Полужирный (Ctrl+B)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_49_label" aria-describedby="cke_49_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(82,event);" onfocus="return CKEDITOR.tools.callFunction(83,event);" onclick="CKEDITOR.tools.callFunction(84,this);return false;"><span class="cke_button_icon cke_button__bold_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -24px;background-size:auto;">&nbsp;</span><span id="cke_49_label" class="cke_button_label cke_button__bold_label" aria-hidden="false">Полужирный</span><span id="cke_49_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+B</span></a><a id="cke_50" class="cke_button cke_button__italic cke_button_off" href="javascript:void(&#39;Курсив&#39;)" title="Курсив (Ctrl+I)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_50_label" aria-describedby="cke_50_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(85,event);" onfocus="return CKEDITOR.tools.callFunction(86,event);" onclick="CKEDITOR.tools.callFunction(87,this);return false;"><span class="cke_button_icon cke_button__italic_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -48px;background-size:auto;">&nbsp;</span><span id="cke_50_label" class="cke_button_label cke_button__italic_label" aria-hidden="false">Курсив</span><span id="cke_50_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+I</span></a><a id="cke_51" class="cke_button cke_button__underline cke_button_off" href="javascript:void(&#39;Подчеркнутый&#39;)" title="Подчеркнутый (Ctrl+U)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_51_label" aria-describedby="cke_51_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(88,event);" onfocus="return CKEDITOR.tools.callFunction(89,event);" onclick="CKEDITOR.tools.callFunction(90,this);return false;"><span class="cke_button_icon cke_button__underline_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -144px;background-size:auto;">&nbsp;</span><span id="cke_51_label" class="cke_button_label cke_button__underline_label" aria-hidden="false">Подчеркнутый</span><span id="cke_51_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+U</span></a><a id="cke_52" class="cke_button cke_button__strike cke_button_off" href="javascript:void(&#39;Зачеркнутый&#39;)" title="Зачеркнутый" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_52_label" aria-describedby="cke_52_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(91,event);" onfocus="return CKEDITOR.tools.callFunction(92,event);" onclick="CKEDITOR.tools.callFunction(93,this);return false;"><span class="cke_button_icon cke_button__strike_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -72px;background-size:auto;">&nbsp;</span><span id="cke_52_label" class="cke_button_label cke_button__strike_label" aria-hidden="false">Зачеркнутый</span><span id="cke_52_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_53" class="cke_button cke_button__subscript cke_button_off" href="javascript:void(&#39;Подстрочный индекс&#39;)" title="Подстрочный индекс" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_53_label" aria-describedby="cke_53_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(94,event);" onfocus="return CKEDITOR.tools.callFunction(95,event);" onclick="CKEDITOR.tools.callFunction(96,this);return false;"><span class="cke_button_icon cke_button__subscript_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -96px;background-size:auto;">&nbsp;</span><span id="cke_53_label" class="cke_button_label cke_button__subscript_label" aria-hidden="false">Подстрочный индекс</span><span id="cke_53_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_54" class="cke_button cke_button__superscript cke_button_off" href="javascript:void(&#39;Надстрочный индекс&#39;)" title="Надстрочный индекс" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_54_label" aria-describedby="cke_54_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(97,event);" onfocus="return CKEDITOR.tools.callFunction(98,event);" onclick="CKEDITOR.tools.callFunction(99,this);return false;"><span class="cke_button_icon cke_button__superscript_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -120px;background-size:auto;">&nbsp;</span><span id="cke_54_label" class="cke_button_label cke_button__superscript_label" aria-hidden="false">Надстрочный индекс</span><span id="cke_54_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_55" class="cke_button cke_button__copyformatting cke_button_off" href="javascript:void(&#39;Копировать форматирование&#39;)" title="Копировать форматирование (Ctrl+Shift+C)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_55_label" aria-describedby="cke_55_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(100,event);" onfocus="return CKEDITOR.tools.callFunction(101,event);" onclick="CKEDITOR.tools.callFunction(102,this);return false;"><span class="cke_button_icon cke_button__copyformatting_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -480px;background-size:auto;">&nbsp;</span><span id="cke_55_label" class="cke_button_label cke_button__copyformatting_label" aria-hidden="false">Копировать форматирование</span><span id="cke_55_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+Shift+C</span></a><a id="cke_56" class="cke_button cke_button__removeformat cke_button_off" href="javascript:void(&#39;Убрать форматирование&#39;)" title="Убрать форматирование" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_56_label" aria-describedby="cke_56_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(103,event);" onfocus="return CKEDITOR.tools.callFunction(104,event);" onclick="CKEDITOR.tools.callFunction(105,this);return false;"><span class="cke_button_icon cke_button__removeformat_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1704px;background-size:auto;">&nbsp;</span><span id="cke_56_label" class="cke_button_label cke_button__removeformat_label" aria-hidden="false">Убрать форматирование</span><span id="cke_56_description" class="cke_button_label" aria-hidden="false"></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_57" class="cke_toolbar" aria-labelledby="cke_57_label" role="toolbar"><span id="cke_57_label" class="cke_voice_label">Абзац</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_58" class="cke_button cke_button__numberedlist cke_button_off" href="javascript:void(&#39;Вставить / удалить нумерованный список&#39;)" title="Вставить / удалить нумерованный список" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_58_label" aria-describedby="cke_58_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(106,event);" onfocus="return CKEDITOR.tools.callFunction(107,event);" onclick="CKEDITOR.tools.callFunction(108,this);return false;"><span class="cke_button_icon cke_button__numberedlist_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1392px;background-size:auto;">&nbsp;</span><span id="cke_58_label" class="cke_button_label cke_button__numberedlist_label" aria-hidden="false">Вставить / удалить нумерованный список</span><span id="cke_58_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_59" class="cke_button cke_button__bulletedlist cke_button_off" href="javascript:void(&#39;Вставить / удалить маркированный список&#39;)" title="Вставить / удалить маркированный список" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_59_label" aria-describedby="cke_59_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(109,event);" onfocus="return CKEDITOR.tools.callFunction(110,event);" onclick="CKEDITOR.tools.callFunction(111,this);return false;"><span class="cke_button_icon cke_button__bulletedlist_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1344px;background-size:auto;">&nbsp;</span><span id="cke_59_label" class="cke_button_label cke_button__bulletedlist_label" aria-hidden="false">Вставить / удалить маркированный список</span><span id="cke_59_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_60" class="cke_button cke_button__outdent cke_button_disabled " href="javascript:void(&#39;Уменьшить отступ&#39;)" title="Уменьшить отступ" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_60_label" aria-describedby="cke_60_description" aria-haspopup="false" aria-disabled="true" onkeydown="return CKEDITOR.tools.callFunction(112,event);" onfocus="return CKEDITOR.tools.callFunction(113,event);" onclick="CKEDITOR.tools.callFunction(114,this);return false;"><span class="cke_button_icon cke_button__outdent_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1056px;background-size:auto;">&nbsp;</span><span id="cke_60_label" class="cke_button_label cke_button__outdent_label" aria-hidden="false">Уменьшить отступ</span><span id="cke_60_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_61" class="cke_button cke_button__indent cke_button_off" href="javascript:void(&#39;Увеличить отступ&#39;)" title="Увеличить отступ" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_61_label" aria-describedby="cke_61_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(115,event);" onfocus="return CKEDITOR.tools.callFunction(116,event);" onclick="CKEDITOR.tools.callFunction(117,this);return false;"><span class="cke_button_icon cke_button__indent_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1008px;background-size:auto;">&nbsp;</span><span id="cke_61_label" class="cke_button_label cke_button__indent_label" aria-hidden="false">Увеличить отступ</span><span id="cke_61_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_62" class="cke_button cke_button__blockquote cke_button_off" href="javascript:void(&#39;Цитата&#39;)" title="Цитата" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_62_label" aria-describedby="cke_62_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(118,event);" onfocus="return CKEDITOR.tools.callFunction(119,event);" onclick="CKEDITOR.tools.callFunction(120,this);return false;"><span class="cke_button_icon cke_button__blockquote_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -216px;background-size:auto;">&nbsp;</span><span id="cke_62_label" class="cke_button_label cke_button__blockquote_label" aria-hidden="false">Цитата</span><span id="cke_62_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_63" class="cke_button cke_button__creatediv cke_button_off" href="javascript:void(&#39;Создать Div-контейнер&#39;)" title="Создать Div-контейнер" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_63_label" aria-describedby="cke_63_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(121,event);" onfocus="return CKEDITOR.tools.callFunction(122,event);" onclick="CKEDITOR.tools.callFunction(123,this);return false;"><span class="cke_button_icon cke_button__creatediv_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -504px;background-size:auto;">&nbsp;</span><span id="cke_63_label" class="cke_button_label cke_button__creatediv_label" aria-hidden="false">Создать Div-контейнер</span><span id="cke_63_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_64" class="cke_button cke_button__justifyleft cke_button_off" href="javascript:void(&#39;По левому краю&#39;)" title="По левому краю" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_64_label" aria-describedby="cke_64_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(124,event);" onfocus="return CKEDITOR.tools.callFunction(125,event);" onclick="CKEDITOR.tools.callFunction(126,this);return false;"><span class="cke_button_icon cke_button__justifyleft_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1152px;background-size:auto;">&nbsp;</span><span id="cke_64_label" class="cke_button_label cke_button__justifyleft_label" aria-hidden="false">По левому краю</span><span id="cke_64_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_65" class="cke_button cke_button__justifycenter cke_button_off" href="javascript:void(&#39;По центру&#39;)" title="По центру" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_65_label" aria-describedby="cke_65_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(127,event);" onfocus="return CKEDITOR.tools.callFunction(128,event);" onclick="CKEDITOR.tools.callFunction(129,this);return false;"><span class="cke_button_icon cke_button__justifycenter_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1128px;background-size:auto;">&nbsp;</span><span id="cke_65_label" class="cke_button_label cke_button__justifycenter_label" aria-hidden="false">По центру</span><span id="cke_65_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_66" class="cke_button cke_button__justifyright cke_button_off" href="javascript:void(&#39;По правому краю&#39;)" title="По правому краю" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_66_label" aria-describedby="cke_66_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(130,event);" onfocus="return CKEDITOR.tools.callFunction(131,event);" onclick="CKEDITOR.tools.callFunction(132,this);return false;"><span class="cke_button_icon cke_button__justifyright_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1176px;background-size:auto;">&nbsp;</span><span id="cke_66_label" class="cke_button_label cke_button__justifyright_label" aria-hidden="false">По правому краю</span><span id="cke_66_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_67" class="cke_button cke_button__justifyblock cke_button_off" href="javascript:void(&#39;По ширине&#39;)" title="По ширине" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_67_label" aria-describedby="cke_67_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(133,event);" onfocus="return CKEDITOR.tools.callFunction(134,event);" onclick="CKEDITOR.tools.callFunction(135,this);return false;"><span class="cke_button_icon cke_button__justifyblock_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1104px;background-size:auto;">&nbsp;</span><span id="cke_67_label" class="cke_button_label cke_button__justifyblock_label" aria-hidden="false">По ширине</span><span id="cke_67_description" class="cke_button_label" aria-hidden="false"></span></a><span class="cke_toolbar_separator" role="separator"></span><a id="cke_68" class="cke_button cke_button__bidiltr cke_button_off" href="javascript:void(&#39;Направление текста слева направо&#39;)" title="Направление текста слева направо" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_68_label" aria-describedby="cke_68_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(136,event);" onfocus="return CKEDITOR.tools.callFunction(137,event);" onclick="CKEDITOR.tools.callFunction(138,this);return false;"><span class="cke_button_icon cke_button__bidiltr_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -168px;background-size:auto;">&nbsp;</span><span id="cke_68_label" class="cke_button_label cke_button__bidiltr_label" aria-hidden="false">Направление текста слева направо</span><span id="cke_68_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_69" class="cke_button cke_button__bidirtl cke_button_off" href="javascript:void(&#39;Направление текста справа налево&#39;)" title="Направление текста справа налево" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_69_label" aria-describedby="cke_69_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(139,event);" onfocus="return CKEDITOR.tools.callFunction(140,event);" onclick="CKEDITOR.tools.callFunction(141,this);return false;"><span class="cke_button_icon cke_button__bidirtl_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -192px;background-size:auto;">&nbsp;</span><span id="cke_69_label" class="cke_button_label cke_button__bidirtl_label" aria-hidden="false">Направление текста справа налево</span><span id="cke_69_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_70" class="cke_button cke_button__language cke_button_expandable cke_button_off" href="javascript:void(&#39;Установка языка&#39;)" title="Установка языка" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_70_label" aria-describedby="cke_70_description" aria-haspopup="menu" aria-disabled="false" aria-expanded="false" onkeydown="return CKEDITOR.tools.callFunction(142,event);" onfocus="return CKEDITOR.tools.callFunction(143,event);" onclick="CKEDITOR.tools.callFunction(144,this);return false;"><span class="cke_button_icon cke_button__language_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1200px;background-size:auto;">&nbsp;</span><span id="cke_70_label" class="cke_button_label cke_button__language_label" aria-hidden="false">Установка языка</span><span id="cke_70_description" class="cke_button_label" aria-hidden="false"></span><span class="cke_button_arrow"></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_71" class="cke_toolbar" aria-labelledby="cke_71_label" role="toolbar"><span id="cke_71_label" class="cke_voice_label">Ссылки</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_72" class="cke_button cke_button__link cke_button_off" href="javascript:void(&#39;Вставить/Редактировать ссылку&#39;)" title="Вставить/Редактировать ссылку (Ctrl+K)" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_72_label" aria-describedby="cke_72_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(145,event);" onfocus="return CKEDITOR.tools.callFunction(146,event);" onclick="CKEDITOR.tools.callFunction(147,this);return false;"><span class="cke_button_icon cke_button__link_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1272px;background-size:auto;">&nbsp;</span><span id="cke_72_label" class="cke_button_label cke_button__link_label" aria-hidden="false">Вставить/Редактировать ссылку</span><span id="cke_72_description" class="cke_button_label" aria-hidden="false">&nbsp;Комбинация клавиш Ctrl+K</span></a><a id="cke_73" class="cke_button cke_button__unlink cke_button_disabled " href="javascript:void(&#39;Убрать ссылку&#39;)" title="Убрать ссылку" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_73_label" aria-describedby="cke_73_description" aria-haspopup="false" aria-disabled="true" onkeydown="return CKEDITOR.tools.callFunction(148,event);" onfocus="return CKEDITOR.tools.callFunction(149,event);" onclick="CKEDITOR.tools.callFunction(150,this);return false;"><span class="cke_button_icon cke_button__unlink_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1296px;background-size:auto;">&nbsp;</span><span id="cke_73_label" class="cke_button_label cke_button__unlink_label" aria-hidden="false">Убрать ссылку</span><span id="cke_73_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_74" class="cke_button cke_button__anchor cke_button_off" href="javascript:void(&#39;Вставить / редактировать якорь&#39;)" title="Вставить / редактировать якорь" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_74_label" aria-describedby="cke_74_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(151,event);" onfocus="return CKEDITOR.tools.callFunction(152,event);" onclick="CKEDITOR.tools.callFunction(153,this);return false;"><span class="cke_button_icon cke_button__anchor_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1248px;background-size:auto;">&nbsp;</span><span id="cke_74_label" class="cke_button_label cke_button__anchor_label" aria-hidden="false">Вставить / редактировать якорь</span><span id="cke_74_description" class="cke_button_label" aria-hidden="false"></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_75" class="cke_toolbar cke_toolbar_last" aria-labelledby="cke_75_label" role="toolbar"><span id="cke_75_label" class="cke_voice_label">Вставка</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_76" class="cke_button cke_button__image cke_button_off" href="javascript:void(&#39;Изображение&#39;)" title="Изображение" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_76_label" aria-describedby="cke_76_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(154,event);" onfocus="return CKEDITOR.tools.callFunction(155,event);" onclick="CKEDITOR.tools.callFunction(156,this);return false;"><span class="cke_button_icon cke_button__image_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -960px;background-size:auto;">&nbsp;</span><span id="cke_76_label" class="cke_button_label cke_button__image_label" aria-hidden="false">Изображение</span><span id="cke_76_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_77" class="cke_button cke_button__table cke_button_off" href="javascript:void(&#39;Таблица&#39;)" title="Таблица" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_77_label" aria-describedby="cke_77_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(157,event);" onfocus="return CKEDITOR.tools.callFunction(158,event);" onclick="CKEDITOR.tools.callFunction(159,this);return false;"><span class="cke_button_icon cke_button__table_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1920px;background-size:auto;">&nbsp;</span><span id="cke_77_label" class="cke_button_label cke_button__table_label" aria-hidden="false">Таблица</span><span id="cke_77_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_78" class="cke_button cke_button__horizontalrule cke_button_off" href="javascript:void(&#39;Вставить горизонтальную линию&#39;)" title="Вставить горизонтальную линию" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_78_label" aria-describedby="cke_78_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(160,event);" onfocus="return CKEDITOR.tools.callFunction(161,event);" onclick="CKEDITOR.tools.callFunction(162,this);return false;"><span class="cke_button_icon cke_button__horizontalrule_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -912px;background-size:auto;">&nbsp;</span><span id="cke_78_label" class="cke_button_label cke_button__horizontalrule_label" aria-hidden="false">Вставить горизонтальную линию</span><span id="cke_78_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_79" class="cke_button cke_button__smiley cke_button_off" href="javascript:void(&#39;Смайлы&#39;)" title="Смайлы" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_79_label" aria-describedby="cke_79_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(163,event);" onfocus="return CKEDITOR.tools.callFunction(164,event);" onclick="CKEDITOR.tools.callFunction(165,this);return false;"><span class="cke_button_icon cke_button__smiley_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1080px;background-size:auto;">&nbsp;</span><span id="cke_79_label" class="cke_button_label cke_button__smiley_label" aria-hidden="false">Смайлы</span><span id="cke_79_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_80" class="cke_button cke_button__specialchar cke_button_off" href="javascript:void(&#39;Вставить специальный символ&#39;)" title="Вставить специальный символ" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_80_label" aria-describedby="cke_80_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(166,event);" onfocus="return CKEDITOR.tools.callFunction(167,event);" onclick="CKEDITOR.tools.callFunction(168,this);return false;"><span class="cke_button_icon cke_button__specialchar_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1872px;background-size:auto;">&nbsp;</span><span id="cke_80_label" class="cke_button_label cke_button__specialchar_label" aria-hidden="false">Вставить специальный символ</span><span id="cke_80_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_81" class="cke_button cke_button__pagebreak cke_button_off" href="javascript:void(&#39;Вставить разрыв страницы для печати&#39;)" title="Вставить разрыв страницы для печати" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_81_label" aria-describedby="cke_81_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(169,event);" onfocus="return CKEDITOR.tools.callFunction(170,event);" onclick="CKEDITOR.tools.callFunction(171,this);return false;"><span class="cke_button_icon cke_button__pagebreak_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1512px;background-size:auto;">&nbsp;</span><span id="cke_81_label" class="cke_button_label cke_button__pagebreak_label" aria-hidden="false">Вставить разрыв страницы для печати</span><span id="cke_81_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_82" class="cke_button cke_button__iframe cke_button_off" href="javascript:void(&#39;iFrame&#39;)" title="iFrame" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_82_label" aria-describedby="cke_82_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(172,event);" onfocus="return CKEDITOR.tools.callFunction(173,event);" onclick="CKEDITOR.tools.callFunction(174,this);return false;"><span class="cke_button_icon cke_button__iframe_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -936px;background-size:auto;">&nbsp;</span><span id="cke_82_label" class="cke_button_label cke_button__iframe_label" aria-hidden="false">iFrame</span><span id="cke_82_description" class="cke_button_label" aria-hidden="false"></span></a></span><span class="cke_toolbar_end"></span></span><span class="cke_toolbar_break"></span><span id="cke_83" class="cke_toolbar" aria-labelledby="cke_83_label" role="toolbar"><span id="cke_83_label" class="cke_voice_label">Стили</span><span class="cke_toolbar_start"></span><span id="cke_14" class="cke_combo cke_combo__styles cke_combo_off" role="presentation"><span id="cke_14_label" class="cke_combo_label">Стили</span><a class="cke_combo_button" title="Стили форматирования" tabindex="-1" href="javascript:void(&#39;Стили форматирования&#39;)" hidefocus="true" role="button" aria-labelledby="cke_14_label" aria-haspopup="listbox" onkeydown="return CKEDITOR.tools.callFunction(176,event,this);" onfocus="return CKEDITOR.tools.callFunction(177,event);" onclick="CKEDITOR.tools.callFunction(175,this);return false;" aria-expanded="false"><span id="cke_14_text" class="cke_combo_text cke_combo_inlinelabel">Стили</span><span class="cke_combo_open"><span class="cke_combo_arrow"></span></span></a></span><span id="cke_15" class="cke_combo cke_combo__format cke_combo_off" role="presentation"><span id="cke_15_label" class="cke_combo_label">Форматирование</span><a class="cke_combo_button" title="Форматирование" tabindex="-1" href="javascript:void(&#39;Форматирование&#39;)" hidefocus="true" role="button" aria-labelledby="cke_15_label" aria-haspopup="listbox" onkeydown="return CKEDITOR.tools.callFunction(179,event,this);" onfocus="return CKEDITOR.tools.callFunction(180,event);" onclick="CKEDITOR.tools.callFunction(178,this);return false;" aria-expanded="false"><span id="cke_15_text" class="cke_combo_text cke_combo_inlinelabel">Форматирование</span><span class="cke_combo_open"><span class="cke_combo_arrow"></span></span></a></span><span id="cke_16" class="cke_combo cke_combo__font cke_combo_off" role="presentation"><span id="cke_16_label" class="cke_combo_label">Шрифт</span><a class="cke_combo_button" title="Шрифт" tabindex="-1" href="javascript:void(&#39;Шрифт&#39;)" hidefocus="true" role="button" aria-labelledby="cke_16_label" aria-haspopup="listbox" onkeydown="return CKEDITOR.tools.callFunction(182,event,this);" onfocus="return CKEDITOR.tools.callFunction(183,event);" onclick="CKEDITOR.tools.callFunction(181,this);return false;" aria-expanded="false"><span id="cke_16_text" class="cke_combo_text cke_combo_inlinelabel">Шрифт</span><span class="cke_combo_open"><span class="cke_combo_arrow"></span></span></a></span><span id="cke_17" class="cke_combo cke_combo__fontsize cke_combo_off" role="presentation"><span id="cke_17_label" class="cke_combo_label">Размер</span><a class="cke_combo_button" title="Размер шрифта" tabindex="-1" href="javascript:void(&#39;Размер шрифта&#39;)" hidefocus="true" role="button" aria-labelledby="cke_17_label" aria-haspopup="listbox" onkeydown="return CKEDITOR.tools.callFunction(185,event,this);" onfocus="return CKEDITOR.tools.callFunction(186,event);" onclick="CKEDITOR.tools.callFunction(184,this);return false;" aria-expanded="false"><span id="cke_17_text" class="cke_combo_text cke_combo_inlinelabel">Размер</span><span class="cke_combo_open"><span class="cke_combo_arrow"></span></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_84" class="cke_toolbar" aria-labelledby="cke_84_label" role="toolbar"><span id="cke_84_label" class="cke_voice_label">Цвета</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_85" class="cke_button cke_button__textcolor cke_button_expandable cke_button_off" href="javascript:void(&#39;Цвет текста&#39;)" title="Цвет текста" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_85_label" aria-describedby="cke_85_description" aria-haspopup="listbox" aria-disabled="false" aria-expanded="false" onkeydown="return CKEDITOR.tools.callFunction(187,event);" onfocus="return CKEDITOR.tools.callFunction(188,event);" onclick="CKEDITOR.tools.callFunction(189,this);return false;"><span class="cke_button_icon cke_button__textcolor_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -408px;background-size:auto;">&nbsp;</span><span id="cke_85_label" class="cke_button_label cke_button__textcolor_label" aria-hidden="false">Цвет текста</span><span id="cke_85_description" class="cke_button_label" aria-hidden="false"></span><span class="cke_button_arrow"></span></a><a id="cke_86" class="cke_button cke_button__bgcolor cke_button_expandable cke_button_off" href="javascript:void(&#39;Цвет фона&#39;)" title="Цвет фона" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_86_label" aria-describedby="cke_86_description" aria-haspopup="listbox" aria-disabled="false" aria-expanded="false" onkeydown="return CKEDITOR.tools.callFunction(190,event);" onfocus="return CKEDITOR.tools.callFunction(191,event);" onclick="CKEDITOR.tools.callFunction(192,this);return false;"><span class="cke_button_icon cke_button__bgcolor_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -384px;background-size:auto;">&nbsp;</span><span id="cke_86_label" class="cke_button_label cke_button__bgcolor_label" aria-hidden="false">Цвет фона</span><span id="cke_86_description" class="cke_button_label" aria-hidden="false"></span><span class="cke_button_arrow"></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_87" class="cke_toolbar" aria-labelledby="cke_87_label" role="toolbar"><span id="cke_87_label" class="cke_voice_label">Инструменты</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_88" class="cke_button cke_button__maximize cke_button_off" href="javascript:void(&#39;Развернуть&#39;)" title="Развернуть" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_88_label" aria-describedby="cke_88_description" aria-haspopup="false" aria-disabled="false" aria-pressed="false" onkeydown="return CKEDITOR.tools.callFunction(193,event);" onfocus="return CKEDITOR.tools.callFunction(194,event);" onclick="CKEDITOR.tools.callFunction(195,this);return false;"><span class="cke_button_icon cke_button__maximize_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1416px;background-size:auto;">&nbsp;</span><span id="cke_88_label" class="cke_button_label cke_button__maximize_label" aria-hidden="false">Развернуть</span><span id="cke_88_description" class="cke_button_label" aria-hidden="false"></span></a><a id="cke_89" class="cke_button cke_button__showblocks cke_button_off" href="javascript:void(&#39;Отображать блоки&#39;)" title="Отображать блоки" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_89_label" aria-describedby="cke_89_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(196,event);" onfocus="return CKEDITOR.tools.callFunction(197,event);" onclick="CKEDITOR.tools.callFunction(198,this);return false;"><span class="cke_button_icon cke_button__showblocks_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 -1800px;background-size:auto;">&nbsp;</span><span id="cke_89_label" class="cke_button_label cke_button__showblocks_label" aria-hidden="false">Отображать блоки</span><span id="cke_89_description" class="cke_button_label" aria-hidden="false"></span></a></span><span class="cke_toolbar_end"></span></span><span id="cke_90" class="cke_toolbar cke_toolbar_last" aria-labelledby="cke_90_label" role="toolbar"><span id="cke_90_label" class="cke_voice_label">about</span><span class="cke_toolbar_start"></span><span class="cke_toolgroup" role="presentation"><a id="cke_91" class="cke_button cke_button__about cke_button_off" href="javascript:void(&#39;О CKEditor 4&#39;)" title="О CKEditor 4" tabindex="-1" hidefocus="true" role="button" aria-labelledby="cke_91_label" aria-describedby="cke_91_description" aria-haspopup="false" aria-disabled="false" onkeydown="return CKEDITOR.tools.callFunction(199,event);" onfocus="return CKEDITOR.tools.callFunction(200,event);" onclick="CKEDITOR.tools.callFunction(201,this);return false;"><span class="cke_button_icon cke_button__about_icon" style="background-image:url(&#39;http://127.0.0.1:8000/static/ckeditor/ckeditor/plugins/icons.png?t=N5UC&#39;);background-position:0 0px;background-size:auto;">&nbsp;</span><span id="cke_91_label" class="cke_button_label cke_button__about_label" aria-hidden="false">О CKEditor 4</span><span id="cke_91_description" class="cke_button_label" aria-hidden="false"></span></a></span><span class="cke_toolbar_end"></span></span></span></span><div id="cke_1_contents" class="cke_contents cke_reset" role="presentation" style="height: 600px;"><span id="cke_96" class="cke_voice_label">Нажмите ALT-0 для открытия справки</span><iframe src="./Создать статью - База знаний_files/saved_resource.html" frameborder="0" class="cke_wysiwyg_frame cke_reset" title="Визуальный текстовый редактор, id_content" aria-describedby="cke_96" tabindex="0" allowtransparency="true" style="width: 100%; height: 100%;"></iframe></div><span id="cke_1_bottom" class="cke_bottom cke_reset_all" role="presentation" style="user-select: none;"><span id="cke_1_resizer" class="cke_resizer cke_resizer_vertical cke_resizer_ltr" title="Перетащите для изменения размера" onmousedown="CKEDITOR.tools.callFunction(2, event)">◢</span><span id="cke_1_path_label" class="cke_voice_label">Путь элементов</span><span id="cke_1_path" class="cke_path" role="group" aria-labelledby="cke_1_path_label"><span class="cke_path_empty">&nbsp;</span></span></span></div></div>
+</div>
+                            
+                        </div>
+
+                        <!-- Инструкции по коду -->
+                        <div class="mb-4">
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-code me-2 text-primary"></i>
+                                    Как добавить код в статью
+                                </h6>
+                                <p class="mb-2">Для добавления кода в содержание статьи используйте специальные теги:</p>
+                                <ul class="mb-2">
+                                    <li><code>&lt;code&gt;ваш код&lt;/code&gt;</code> - для простого кода</li>
+                                    <li><code>&lt;code class="python"&gt;ваш код&lt;/code&gt;</code> - для Python</li>
+                                    <li><code>&lt;code class="javascript"&gt;ваш код&lt;/code&gt;</code> - для JavaScript</li>
+                                    <li><code>&lt;code class="html"&gt;ваш код&lt;/code&gt;</code> - для HTML</li>
+                                    <li><code>&lt;code class="css"&gt;ваш код&lt;/code&gt;</code> - для CSS</li>
+                                </ul>
+                                <p class="mb-0">Код будет автоматически обрамлен и получит кнопку копирования!</p>
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_tags" class="form-label">
+                                    <i class="fas fa-tags me-1 text-primary"></i>
+                                    Теги
+                                </label>
+                                <input type="text" name="tags" class="form-control" placeholder="Теги через запятую" maxlength="200" id="id_tags">
+                                <div class="form-text">Теги через запятую</div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="is_featured" class="form-check-input" id="id_is_featured">
+                                    <label class="form-check-label" for="id_is_featured">
+                                        <i class="fas fa-star me-1 text-primary"></i>
+                                        Рекомендуемая
+                                    </label>
+                                </div>
+                                <div class="form-text">Рекомендуемая статья на главной странице</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="allow_comments" class="form-check-input" id="id_allow_comments" checked="">
+                                    <label class="form-check-label" for="id_allow_comments">
+                                        <i class="fas fa-comments me-1 text-primary"></i>
+                                        Разрешить комментарии
+                                    </label>
+                                </div>
+                                <div class="form-text">Разрешить комментарии к статье</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="http://127.0.0.1:8000/knowledge/" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1 text-white"></i>
+                                Отмена
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-outline-warning me-2" onclick="saveAsDraft()">
+                                    <i class="fas fa-file-alt me-1"></i>
+                                    Сохранить в черновик
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1 text-white"></i>
+                                    Отправить на модерацию
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Стили для полной ширины CKEditor */
+.create-article-form .cke_chrome {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_contents {
+    min-height: 500px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_inner {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Убираем ограничения ширины для формы */
+.create-article-form {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card-body {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.form-control, .form-select {
+    border-radius: 0.375rem;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.form-control::placeholder {
+    color: var(--text-secondary);
+}
+
+.form-text {
+    color: var(--text-secondary) !important;
+}
+
+.form-label {
+    color: var(--text-primary) !important;
+    font-weight: 500;
+}
+
+.form-check-label {
+    color: var(--text-primary) !important;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: var(--bg-secondary);
+}
+
+.card-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.alert-info {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-color: var(--primary-color);
+    color: var(--text-primary);
+}
+
+.alert-heading {
+    color: var(--text-primary) !important;
+}
+
+#code-content {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+code {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+</style>
+
+
+    </main>
+
+    <!-- Toast контейнер для уведомлений -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">Уведомление</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Содержимое уведомления -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>База знаний</h5>
+                    <p class="text-muted">Централизованное хранилище знаний и информации</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted">
+                        © 2025 База знаний. Все права защищены.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="./Создать статью - База знаний_files/bootstrap.bundle.min.js.Без названия"></script>
+    
+    <!-- Переключение темы и инициализация компонентов -->
+    <script>
+        // Инициализация темы
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+        
+        // Инициализация dropdown меню
+        function initDropdowns() {
+            // Проверяем, что Bootstrap загружен
+            if (typeof bootstrap === 'undefined') {
+                console.warn('Bootstrap не загружен, повторная попытка через 100ms...');
+                setTimeout(initDropdowns, 100);
+                return;
+            }
+            
+            const dropdownToggleList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+            dropdownToggleList.map(function (dropdownToggleEl) {
+                const dropdown = new bootstrap.Dropdown(dropdownToggleEl, {
+                    autoClose: false,
+                    boundary: 'viewport'
+                });
+                
+                // Предотвращаем закрытие при клике внутри меню
+                dropdownToggleEl.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+                
+                // Предотвращаем закрытие при клике на dropdown-menu
+                const dropdownMenu = dropdownToggleEl.nextElementSibling;
+                if (dropdownMenu) {
+                    dropdownMenu.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+                
+                return dropdown;
+            });
+        }
+        
+        // Обновление иконки темы
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+        
+        // Переключение темы
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+        
+        // Функции для toast уведомлений
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastBody = toast.querySelector('.toast-body');
+            const toastHeader = toast.querySelector('.toast-header');
+            const icon = toastHeader.querySelector('i');
+            
+            // Устанавливаем содержимое
+            toastBody.textContent = message;
+            
+            // Устанавливаем иконку и цвет в зависимости от типа
+            icon.className = 'fas me-2';
+            switch(type) {
+                case 'success':
+                    icon.classList.add('fa-check-circle', 'text-success');
+                    break;
+                case 'error':
+                case 'danger':
+                    icon.classList.add('fa-exclamation-circle', 'text-danger');
+                    break;
+                case 'warning':
+                    icon.classList.add('fa-exclamation-triangle', 'text-warning');
+                    break;
+                default:
+                    icon.classList.add('fa-info-circle', 'text-primary');
+            }
+            
+            // Показываем toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+        
+        // Глобальная функция для показа уведомлений
+        window.showNotification = showToast;
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initDropdowns();
+            
+            // Обработчик кнопки переключения темы
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        });
+    </script>
+    
+    
+        <link href="./Создать статью - База знаний_files/ckeditor.css" media="all" rel="stylesheet">
+<script src="./Создать статью - База знаний_files/ckeditor-init.js.Без названия" data-ckeditor-basepath="/static/ckeditor/ckeditor/" id="ckeditor-init-script"></script>
+<script src="./Создать статью - База знаний_files/ckeditor.js.Без названия"></script>
+<script src="./Создать статью - База знаний_files/fixups.js.Без названия"></script>
+    
+
+
+<div class="cke_screen_reader_only cke_copyformatting_notification"><div aria-live="polite"></div></div><div at-magnifier-wrapper=""><div class="at-theme-light"><div class="at-base notranslate" translate="no"><div class="EuwGd" style="top: 0px; left: 0px;"></div></div></div></div></body><lt-toolbar contenteditable="false" data-lt-adjust-appearance="true" data-cke-temp="1" data-lt-force-appearance="light" style="display: none;"><lt-div class="lt-toolbar__wrapper" style="left: 1444px; position: absolute !important; top: 1356px !important; bottom: auto !important; z-index: auto; opacity: 1 !important; pointer-events: all !important;"><lt-div class="lt-toolbar__status-icon lt-toolbar__status-icon--has-no-errors" title=""></lt-div><lt-div class="lt-toolbar__premium-icon-dot"></lt-div></lt-div></lt-toolbar></html>

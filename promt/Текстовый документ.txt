@@ -1,0 +1,1263 @@
+
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSP настроен в middleware для лучшей совместимости с CKEditor -->
+    <meta http-equiv="Permissions-Policy" content="unload=*">
+    <title>Создать статью - База знаний</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bs-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        /* Темная тема */
+        [data-bs-theme="dark"] {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-color: #30363d;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.24);
+        }
+        
+        /* Светлая тема */
+        [data-bs-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--bs-body-font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            z-index: 1030;
+            position: relative;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-primary) !important;
+            text-decoration: none;
+        }
+        
+        .navbar-brand i {
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar-nav .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 0 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+            background-color: var(--bg-tertiary);
+            transform: translateY(-1px);
+        }
+        
+        .navbar-nav .nav-link i {
+            color: var(--primary-color) !important;
+            margin-bottom: 0.25rem;
+            font-size: 1.2rem;
+        }
+        
+        .navbar-nav .nav-link:hover i {
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar-nav .nav-link span {
+            font-size: 0.85rem;
+            line-height: 1.2;
+        }
+        
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+        
+        .card-header {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(13, 110, 253, 0.3);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn i {
+            color: inherit;
+        }
+        
+        .btn:hover i {
+            color: inherit;
+        }
+        
+        .form-control {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            background-color: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 1rem 1.25rem;
+        }
+        
+        .alert-info {
+            background-color: rgba(13, 202, 240, 0.1);
+            color: var(--info-color);
+            border-left: 4px solid var(--info-color);
+        }
+        
+        .alert-success {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            padding: 2rem 0;
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color) !important;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        
+        .category-icon:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            color: var(--primary-color) !important;
+        }
+        
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            max-width: none;
+        }
+        
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .article-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            background-color: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .article-content ul,
+        .article-content ol {
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4,
+        .article-content h5,
+        .article-content h6 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-primary) !important;
+        }
+        
+        h1 i, h2 i, h3 i, h4 i, h5 i, h6 i {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Исправление цветов для темной темы */
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        
+        .text-dark {
+            color: var(--text-primary) !important;
+        }
+        
+        .card-title a {
+            color: var(--text-primary) !important;
+        }
+        
+        .card-title a:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .breadcrumb-item a {
+            color: var(--primary-color) !important;
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-secondary) !important;
+        }
+        
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-content code {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        
+        .code-block {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background-color: var(--bg-primary);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-language {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            padding: 1rem;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        
+        .search-form .form-control {
+            min-width: 300px;
+        }
+        
+        .article-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .article-meta i {
+            color: var(--primary-color) !important;
+            margin-right: 0.25rem;
+        }
+        
+        .main-content {
+            min-height: calc(100vh - 200px);
+            padding: 2rem 0;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title i {
+            color: var(--primary-color) !important;
+        }
+        
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 2rem 1rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color) !important;
+            opacity: 0.9;
+        }
+        
+        .stats-card h5 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .stats-card p {
+            color: var(--text-secondary);
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        
+        .comment {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .comment-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .comment-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .reply-form {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .attachment-item {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .attachment-item:hover {
+            background-color: var(--bg-tertiary);
+            transform: translateX(4px);
+        }
+        
+        .attachment-icon {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: var(--primary-color) !important;
+        }
+        
+        .attachment-info h6 {
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+        
+        .attachment-meta {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .modal-header {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            color: var(--text-primary);
+        }
+        
+        .modal-footer {
+            background-color: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .btn-close {
+            filter: invert(1);
+        }
+        
+        .dropdown-menu {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1050 !important;
+            position: absolute !important;
+        }
+        
+        .dropdown-item {
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .dropdown-toggle::after {
+            margin-left: 0.5em;
+        }
+        
+        .dropdown.show .dropdown-menu {
+            display: block;
+        }
+        
+        .pagination .page-link {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .pagination .page-link:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+        
+        .bg-light {
+            background-color: var(--bg-secondary) !important;
+        }
+        
+        .bg-dark {
+            background-color: var(--bg-primary) !important;
+        }
+        
+        .border {
+            border-color: var(--border-color) !important;
+        }
+        
+        .border-top {
+            border-top-color: var(--border-color) !important;
+        }
+        
+        .border-bottom {
+            border-bottom-color: var(--border-color) !important;
+        }
+        
+        .border-start {
+            border-left-color: var(--border-color) !important;
+        }
+        
+        .border-end {
+            border-right-color: var(--border-color) !important;
+        }
+        
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .search-form .form-control {
+                min-width: 200px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .stats-card {
+                padding: 1.5rem 1rem;
+            }
+        }
+        .article-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .search-form {
+            max-width: 400px;
+        }
+        
+        /* Стили для CKEditor */
+        .cke_chrome {
+            width: 100% !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 0.375rem !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+        }
+        
+        .admin-interface .cke_chrome {
+            width: 100% !important;
+            max-width: none !important;
+        }
+        
+        .admin-interface .cke_contents {
+            min-height: 400px !important;
+        }
+        
+        /* Адаптивность для админ панели */
+        @media (min-width: 768px) {
+            .admin-interface .field-content .cke_chrome {
+                width: 100% !important;
+            }
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/knowledge/">
+                <i class="fas fa-database me-2"></i>База знаний
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/knowledge/">
+                            <i class="fas fa-home"></i>
+                            <span>Главная</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/knowledge/categories/">
+                            <i class="fas fa-th-large"></i>
+                            <span>Категории</span>
+                        </a>
+                    </li>
+                    
+                        <li class="nav-item">
+                            <a class="nav-link" href="/knowledge/favorites/">
+                                <i class="fas fa-heart"></i>
+                                <span>Избранное</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/knowledge/create-article/">
+                                <i class="fas fa-plus"></i>
+                                <span>Создать статью</span>
+                            </a>
+                        </li>
+                        
+                            <li class="nav-item">
+                                <a class="nav-link" href="/moderation/">
+                                    <i class="fas fa-gavel"></i>
+                                    <span>Модерация</span>
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+                
+                <!-- Поиск -->
+                <form class="d-flex search-form me-3" method="get" action="/knowledge/search/">
+                    <input class="form-control me-2" type="search" name="query" 
+                           placeholder="Поиск..." value="">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                
+                <!-- Переключение темы -->
+                <button class="btn btn-outline-primary me-3" id="themeToggle" title="Переключить тему">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                
+                <!-- Пользовательское меню -->
+                <ul class="navbar-nav">
+                    
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="false">
+                                <i class="fas fa-user me-1"></i>Администратор Системы
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/accounts/profile/">
+                                    <i class="fas fa-user-edit me-2"></i>Профиль
+                                </a></li>
+                                <li><a class="dropdown-item" href="/accounts/dashboard/">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Панель управления
+                                </a></li>
+                                <li><a class="dropdown-item" href="/accounts/search/">
+                                    <i class="fas fa-search me-2"></i>Поиск пользователей
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/accounts/logout/">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                                </a></li>
+                            </ul>
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="container my-4">
+        <!-- Сообщения -->
+        
+        
+        
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>
+                    Создать статью
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/knowledge/">Главная</a></li>
+                        <li class="breadcrumb-item active">Создать статью</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-edit me-2 text-primary"></i>
+                        Новая статья
+                    </h5>
+                </div>
+                <div class="card-body">
+                    
+                    
+                    <form method="post" enctype="multipart/form-data" name="create-article-form" class="create-article-form">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="aElOAhigRjJSXgPHneOrn2Du43jLm7LRmBB1wBniCSskX05EvwGKTgx7PryuosuU">
+                        <input type="hidden" name="status" id="articleStatus" value="pending">
+                        
+                        
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="id_title" class="form-label">
+                                    <i class="fas fa-heading me-1 text-primary"></i>
+                                    Заголовок
+                                </label>
+                                <input type="text" name="title" class="form-control" placeholder="Заголовок статьи" maxlength="200" required id="id_title">
+                                
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="id_category" class="form-label">
+                                    <i class="fas fa-folder me-1 text-primary"></i>
+                                    Категория
+                                </label>
+                                <select name="category" class="form-control" required id="id_category">
+  <option value="" selected>---------</option>
+
+  <option value="4">Тестовая категория</option>
+
+  <option value="3">егиссо</option>
+
+</select>
+                                
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_slug" class="form-label">
+                                <i class="fas fa-link me-1 text-primary"></i>
+                                URL
+                            </label>
+                            <input type="text" name="slug" class="form-control" placeholder="URL статьи (будет сгенерирован автоматически)" maxlength="50" id="id_slug">
+                            <div class="form-text">URL статьи (оставьте пустым для автоматической генерации)</div>
+                            
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_excerpt" class="form-label">
+                                <i class="fas fa-align-left me-1 text-primary"></i>
+                                Краткое описание
+                            </label>
+                            <textarea name="excerpt" cols="40" rows="3" class="form-control" placeholder="Краткое описание статьи" maxlength="500" id="id_excerpt">
+</textarea>
+                            <div class="form-text">Краткое описание статьи (будет отображаться в списках)</div>
+                            
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_content" class="form-label">
+                                <i class="fas fa-file-alt me-1 text-primary"></i>
+                                Содержание
+                            </label>
+                            
+                            <div class="django-ckeditor-widget" data-field-id="id_content" style="display: inline-block;">
+    <textarea name="content" cols="40" rows="10" required id="id_content" data-processed="0" data-config="{&quot;skin&quot;: &quot;moono-lisa&quot;, &quot;toolbar_Basic&quot;: [[&quot;Source&quot;, &quot;-&quot;, &quot;Bold&quot;, &quot;Italic&quot;]], &quot;toolbar_Full&quot;: [[&quot;Styles&quot;, &quot;Format&quot;, &quot;Bold&quot;, &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;, &quot;SpellChecker&quot;, &quot;Undo&quot;, &quot;Redo&quot;], [&quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;], [&quot;Image&quot;, &quot;Flash&quot;, &quot;Table&quot;, &quot;HorizontalRule&quot;], [&quot;TextColor&quot;, &quot;BGColor&quot;], [&quot;Smiley&quot;, &quot;SpecialChar&quot;], [&quot;Source&quot;]], &quot;toolbar&quot;: [[&quot;Bold&quot;, &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;, &quot;-&quot;, &quot;Link&quot;, &quot;Unlink&quot;, &quot;Image&quot;, &quot;-&quot;, &quot;NumberedList&quot;, &quot;BulletedList&quot;, &quot;-&quot;, &quot;Source&quot;]], &quot;height&quot;: 600, &quot;width&quot;: &quot;100%&quot;, &quot;filebrowserWindowWidth&quot;: 940, &quot;filebrowserWindowHeight&quot;: 725, &quot;font_names&quot;: &quot;Fira Sans; Inter, -apple-system, BlinkMacSystemFont, &#x27;Segoe UI&#x27;, Roboto, sans-serif;&quot;, &quot;fontSize_defaultLabel&quot;: &quot;14px&quot;, &quot;extraPlugins&quot;: &quot;pastefromword,image2,uploadimage,clipboard&quot;, &quot;pasteFromWordPromptCleanup&quot;: true, &quot;pasteFromWordRemoveFontStyles&quot;: false, &quot;pasteFromWordRemoveStyles&quot;: false, &quot;filebrowserUploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;uploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;imageUploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;allowedContent&quot;: true, &quot;extraAllowedContent&quot;: &quot;img[src,alt,width,height,style,class];p[style,class];div[style,class];span[style,class];table[class,style];tr[class,style];td[class,style];th[class,style];ul[class,style];ol[class,style];li[class,style];strong[class,style];em[class,style];u[class,style];h1[class,style];h2[class,style];h3[class,style];h4[class,style];h5[class,style];h6[class,style];a[href,title,style,class];br;hr&quot;, &quot;uiColor&quot;: &quot;#f8f9fa&quot;, &quot;removeDialogTabs&quot;: &quot;image:advanced;link:advanced&quot;, &quot;resize_enabled&quot;: true, &quot;resize_dir&quot;: &quot;vertical&quot;, &quot;resize_minHeight&quot;: 400, &quot;resize_maxHeight&quot;: 1000, &quot;bodyClass&quot;: &quot;ckeditor-body&quot;, &quot;contentsCss&quot;: &quot;/static/css/ckeditor.css&quot;, &quot;forcePasteAsPlainText&quot;: false, &quot;pasteFromWordNumberedHeadingToList&quot;: true, &quot;pasteFromWordRemoveEmptyParagraphs&quot;: true, &quot;clipboard_handleImages&quot;: true, &quot;image2_altRequired&quot;: true, &quot;image2_disableResizer&quot;: false, &quot;image2_prefillDimensions&quot;: false, &quot;image2_responsive&quot;: true, &quot;image2_alignClasses&quot;: [&quot;image-left&quot;, &quot;image-center&quot;, &quot;image-right&quot;, &quot;image-full&quot;], &quot;image2_toolbar&quot;: [&quot;image2:resize&quot;, &quot;image2:resizeOnly&quot;, &quot;image2:align&quot;, &quot;image2:alignLeft&quot;, &quot;image2:alignCenter&quot;, &quot;image2:alignRight&quot;, &quot;image2:alignFull&quot;, &quot;image2:alt&quot;, &quot;image2:remove&quot;], &quot;language&quot;: &quot;ru-ru&quot;, &quot;versionCheck&quot;: false}" data-external-plugin-resources="[]" data-id="id_content" data-type="ckeditortype"></textarea>
+</div>
+                            
+                        </div>
+
+                        <!-- Инструкции по коду -->
+                        <div class="mb-4">
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-code me-2 text-primary"></i>
+                                    Как добавить код в статью
+                                </h6>
+                                <p class="mb-2">Для добавления кода в содержание статьи используйте специальные теги:</p>
+                                <ul class="mb-2">
+                                    <li><code>&lt;code&gt;ваш код&lt;/code&gt;</code> - для простого кода</li>
+                                    <li><code>&lt;code class="python"&gt;ваш код&lt;/code&gt;</code> - для Python</li>
+                                    <li><code>&lt;code class="javascript"&gt;ваш код&lt;/code&gt;</code> - для JavaScript</li>
+                                    <li><code>&lt;code class="html"&gt;ваш код&lt;/code&gt;</code> - для HTML</li>
+                                    <li><code>&lt;code class="css"&gt;ваш код&lt;/code&gt;</code> - для CSS</li>
+                                </ul>
+                                <p class="mb-0">Код будет автоматически обрамлен и получит кнопку копирования!</p>
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_tags" class="form-label">
+                                    <i class="fas fa-tags me-1 text-primary"></i>
+                                    Теги
+                                </label>
+                                <input type="text" name="tags" class="form-control" placeholder="Теги через запятую" maxlength="200" id="id_tags">
+                                <div class="form-text">Теги через запятую</div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="is_featured" class="form-check-input" id="id_is_featured">
+                                    <label class="form-check-label" for="id_is_featured">
+                                        <i class="fas fa-star me-1 text-primary"></i>
+                                        Рекомендуемая
+                                    </label>
+                                </div>
+                                <div class="form-text">Рекомендуемая статья на главной странице</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="allow_comments" class="form-check-input" id="id_allow_comments" checked>
+                                    <label class="form-check-label" for="id_allow_comments">
+                                        <i class="fas fa-comments me-1 text-primary"></i>
+                                        Разрешить комментарии
+                                    </label>
+                                </div>
+                                <div class="form-text">Разрешить комментарии к статье</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/knowledge/" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1 text-white"></i>
+                                Отмена
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-outline-warning me-2" onclick="saveAsDraft()">
+                                    <i class="fas fa-file-alt me-1"></i>
+                                    Сохранить в черновик
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1 text-white"></i>
+                                    Отправить на модерацию
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Стили для полной ширины CKEditor */
+.create-article-form .cke_chrome {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_contents {
+    min-height: 500px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_inner {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Убираем ограничения ширины для формы */
+.create-article-form {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card-body {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.form-control, .form-select {
+    border-radius: 0.375rem;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.form-control::placeholder {
+    color: var(--text-secondary);
+}
+
+.form-text {
+    color: var(--text-secondary) !important;
+}
+
+.form-label {
+    color: var(--text-primary) !important;
+    font-weight: 500;
+}
+
+.form-check-label {
+    color: var(--text-primary) !important;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: var(--bg-secondary);
+}
+
+.card-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.alert-info {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-color: var(--primary-color);
+    color: var(--text-primary);
+}
+
+.alert-heading {
+    color: var(--text-primary) !important;
+}
+
+#code-content {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+code {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+</style>
+
+
+    </main>
+
+    <!-- Toast контейнер для уведомлений -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">Уведомление</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Содержимое уведомления -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>База знаний</h5>
+                    <p class="text-muted">Централизованное хранилище знаний и информации</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted">
+                        &copy; 2025 База знаний. Все права защищены.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Переключение темы и инициализация компонентов -->
+    <script>
+        // Инициализация темы
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+        
+        // Инициализация dropdown меню
+        function initDropdowns() {
+            // Проверяем, что Bootstrap загружен
+            if (typeof bootstrap === 'undefined') {
+                console.warn('Bootstrap не загружен, повторная попытка через 100ms...');
+                setTimeout(initDropdowns, 100);
+                return;
+            }
+            
+            const dropdownToggleList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+            dropdownToggleList.map(function (dropdownToggleEl) {
+                const dropdown = new bootstrap.Dropdown(dropdownToggleEl, {
+                    autoClose: false,
+                    boundary: 'viewport'
+                });
+                
+                // Предотвращаем закрытие при клике внутри меню
+                dropdownToggleEl.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+                
+                // Предотвращаем закрытие при клике на dropdown-menu
+                const dropdownMenu = dropdownToggleEl.nextElementSibling;
+                if (dropdownMenu) {
+                    dropdownMenu.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+                
+                return dropdown;
+            });
+        }
+        
+        // Обновление иконки темы
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+        
+        // Переключение темы
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+        
+        // Функции для toast уведомлений
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastBody = toast.querySelector('.toast-body');
+            const toastHeader = toast.querySelector('.toast-header');
+            const icon = toastHeader.querySelector('i');
+            
+            // Устанавливаем содержимое
+            toastBody.textContent = message;
+            
+            // Устанавливаем иконку и цвет в зависимости от типа
+            icon.className = 'fas me-2';
+            switch(type) {
+                case 'success':
+                    icon.classList.add('fa-check-circle', 'text-success');
+                    break;
+                case 'error':
+                case 'danger':
+                    icon.classList.add('fa-exclamation-circle', 'text-danger');
+                    break;
+                case 'warning':
+                    icon.classList.add('fa-exclamation-triangle', 'text-warning');
+                    break;
+                default:
+                    icon.classList.add('fa-info-circle', 'text-primary');
+            }
+            
+            // Показываем toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+        
+        // Глобальная функция для показа уведомлений
+        window.showNotification = showToast;
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initDropdowns();
+            
+            // Обработчик кнопки переключения темы
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        });
+    </script>
+    
+    
+        <link href="/static/ckeditor/ckeditor.css" media="all" rel="stylesheet">
+<script src="/static/ckeditor/ckeditor-init.js" data-ckeditor-basepath="/static/ckeditor/ckeditor/" id="ckeditor-init-script"></script>
+<script src="/static/ckeditor/ckeditor/ckeditor.js"></script>
+<script src="/static/ckeditor/fixups.js"></script>
+    
+</body>
+</html>

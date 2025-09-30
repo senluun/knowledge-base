@@ -1,0 +1,324 @@
+/* Стили для CKEditor */
+.ckeditor-body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #fff;
+    padding: 15px;
+    margin: 0;
+}
+
+/* Контейнер CKEditor */
+.cke_chrome {
+    width: 100% !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Стили для формы создания статьи */
+.create-article-form .cke_chrome {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_contents {
+    min-height: 500px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_inner {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Убираем ограничения ширины для формы */
+.create-article-form {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card-body {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Панель инструментов */
+.cke_toolbar {
+    background: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Область редактирования */
+.cke_contents {
+    min-height: 300px !important;
+    background: #fff !important;
+}
+
+/* Адаптивность для админ панели */
+.admin-interface .cke_chrome {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.admin-interface .cke_contents {
+    min-height: 400px !important;
+}
+
+/* Стили для темной темы */
+[data-bs-theme="dark"] .ckeditor-body {
+    background-color: #212529;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .cke_chrome {
+    border-color: #495057 !important;
+    background-color: #212529 !important;
+}
+
+[data-bs-theme="dark"] .cke_toolbar {
+    background: #343a40 !important;
+    border-bottom-color: #495057 !important;
+}
+
+[data-bs-theme="dark"] .cke_contents {
+    background: #212529 !important;
+    color: #fff !important;
+}
+
+/* Улучшения для мобильных устройств */
+@media (max-width: 768px) {
+    .cke_chrome {
+        width: 100% !important;
+    }
+    
+    .cke_toolbar {
+        flex-wrap: wrap !important;
+    }
+    
+    .cke_toolbar .cke_toolgroup {
+        margin: 2px !important;
+    }
+}
+
+/* Стили для изображений в редакторе */
+.ckeditor-body img {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Стили для изображений из Word */
+.ckeditor-body img[src*="data:image"] {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin: 10px 0;
+}
+
+/* Стили для вставленных изображений */
+.ckeditor-body .image2 {
+    display: block;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.ckeditor-body .image2 img {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Стили для выравнивания изображений */
+.ckeditor-body .image-left {
+    float: left;
+    margin: 10px 15px 10px 0;
+    max-width: 300px;
+}
+
+.ckeditor-body .image-right {
+    float: right;
+    margin: 10px 0 10px 15px;
+    max-width: 300px;
+}
+
+.ckeditor-body .image-center {
+    display: block;
+    margin: 10px auto;
+    text-align: center;
+}
+
+.ckeditor-body .image-full {
+    width: 100%;
+    margin: 15px 0;
+}
+
+/* Улучшенные стили для скопированного контента */
+.ckeditor-body {
+    line-height: 1.6 !important;
+    font-size: 14px !important;
+}
+
+.ckeditor-body p {
+    margin-bottom: 1rem !important;
+    line-height: 1.6 !important;
+}
+
+.ckeditor-body h1, .ckeditor-body h2, .ckeditor-body h3, 
+.ckeditor-body h4, .ckeditor-body h5, .ckeditor-body h6 {
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+}
+
+.ckeditor-body h1 { font-size: 1.75rem !important; }
+.ckeditor-body h2 { font-size: 1.5rem !important; }
+.ckeditor-body h3 { font-size: 1.25rem !important; }
+.ckeditor-body h4 { font-size: 1.1rem !important; }
+.ckeditor-body h5 { font-size: 1rem !important; }
+.ckeditor-body h6 { font-size: 0.9rem !important; }
+
+.ckeditor-body ul, .ckeditor-body ol {
+    margin-bottom: 1rem !important;
+    padding-left: 1.5rem !important;
+}
+
+.ckeditor-body li {
+    margin-bottom: 0.25rem !important;
+    line-height: 1.5 !important;
+}
+
+.ckeditor-body table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 1rem 0 !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.ckeditor-body table th,
+.ckeditor-body table td {
+    border: 1px solid #dee2e6 !important;
+    padding: 0.75rem !important;
+    text-align: left !important;
+    vertical-align: top !important;
+}
+
+.ckeditor-body table th {
+    background-color: #f8f9fa !important;
+    font-weight: 600 !important;
+}
+
+.ckeditor-body blockquote {
+    border-left: 4px solid #0d6efd !important;
+    margin: 1rem 0 !important;
+    padding: 0.75rem 1rem !important;
+    background-color: #f8f9fa !important;
+    font-style: italic !important;
+}
+
+.ckeditor-body strong {
+    font-weight: 600 !important;
+}
+
+.ckeditor-body em {
+    font-style: italic !important;
+}
+
+.ckeditor-body u {
+    text-decoration: underline !important;
+}
+
+/* Стили для таблиц */
+.ckeditor-body table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 1rem 0 !important;
+}
+
+.ckeditor-body table th,
+.ckeditor-body table td {
+    border: 1px solid #dee2e6 !important;
+    padding: 0.5rem !important;
+    text-align: left !important;
+}
+
+.ckeditor-body table th {
+    background-color: #f8f9fa !important;
+    font-weight: 600 !important;
+}
+
+/* Стили для кода */
+.ckeditor-body code {
+    background-color: #f8f9fa !important;
+    color: #e83e8c !important;
+    padding: 0.2rem 0.4rem !important;
+    border-radius: 0.25rem !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+.ckeditor-body pre {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem !important;
+    padding: 1rem !important;
+    overflow-x: auto !important;
+}
+
+/* Стили для ссылок */
+.ckeditor-body a {
+    color: #0d6efd !important;
+    text-decoration: none !important;
+}
+
+.ckeditor-body a:hover {
+    color: #0a58ca !important;
+    text-decoration: underline !important;
+}
+
+/* Стили для полной ширины CKEditor внутри формы */
+.create-article-form .cke_chrome {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_contents {
+    min-height: 500px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.create-article-form .cke_inner {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Убираем ограничения ширины для родительских элементов формы */
+.create-article-form {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.create-article-form .card-body {
+    width: 100% !important;
+    max-width: none !important;
+}
