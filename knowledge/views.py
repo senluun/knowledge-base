@@ -362,7 +362,8 @@ def create_article_view(request):
                             user=moderator,
                             title='Новая статья на рассмотрении',
                             message=f'Пользователь {article.author.get_full_name()} создал новую статью "{article.title}" и отправил её на рассмотрение.',
-                            notification_type='moderation_required'
+                            notification_type='new_article',
+                            related_object_id=article.id
                         )
                     
                     messages.success(request, f'Статья "{article.title}" создана и отправлена на рассмотрение. Модераторы будут уведомлены.')
