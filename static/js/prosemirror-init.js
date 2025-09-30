@@ -954,67 +954,101 @@ function initProseMirror(widgetId) {
     
     // Функция для показа красивой подсказки о вызванной команде
     function showFunctionTooltip(functionName) {
-        // Удаляем предыдущую подсказку, если она есть
-        const existingTooltip = editorContainer.querySelector('.command-tooltip');
-        if (existingTooltip) {
-            existingTooltip.remove();
-        }
-        
-        // Создаем красивую подсказку
-        const tooltip = document.createElement('span');
-        tooltip.className = 'command-tooltip';
-        tooltip.textContent = functionName;
-        tooltip.contentEditable = 'false';
-        
-        // Вставляем подсказку над текущим элементом
+        // Получаем текущий элемент с курсором
         const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const currentNode = range.startContainer;
-            let currentElement = currentNode;
-            
-            // Находим ближайший элемент p, div, h1-h6
-            while (currentElement && currentElement !== editorContainer) {
-                if (currentElement.nodeType === 1) {
-                    const tagName = currentElement.tagName.toLowerCase();
-                    if (tagName === 'p' || tagName === 'div' || tagName === 'li' || 
-                        (tagName[0] === 'h' && tagName.length === 2 && !isNaN(tagName[1]))) {
-                        break;
-                    }
+        if (selection.rangeCount === 0) return;
+        
+        const range = selection.getRangeAt(0);
+        const currentNode = range.startContainer;
+        let currentElement = currentNode;
+        
+        // Находим ближайший редактируемый элемент (p, h1-h6, li)
+        while (currentElement && currentElement !== editorContainer) {
+            if (currentElement.nodeType === 1) {
+                const tagName = currentElement.tagName.toLowerCase();
+                if (tagName === 'p' || tagName === 'div' || tagName === 'li' || 
+                    (tagName[0] === 'h' && tagName.length === 2 && !isNaN(tagName[1]))) {
+                    break;
                 }
-                currentElement = currentElement.parentNode;
             }
-            
-            if (currentElement && currentElement !== editorContainer) {
-                // Вставляем подсказку перед элементом
-                currentElement.parentNode.insertBefore(tooltip, currentElement);
-                
-                // Устанавливаем курсор в начало элемента
-                const newRange = document.createRange();
-                newRange.setStart(currentElement, 0);
-                newRange.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
-                
-                // Автоматически удаляем подсказку через 2 секунды
-                setTimeout(() => {
-                    if (tooltip.parentNode) {
-                        tooltip.remove();
-                    }
-                }, 2000);
-            }
+            currentElement = currentElement.parentNode;
         }
         
-        // Добавляем обработчик для удаления подсказки при начале набора
-        const removeTooltip = () => {
-            if (tooltip.parentNode) {
-                tooltip.remove();
-            }
-        };
+        if (!currentElement || currentElement === editorContainer) return;
         
-        // Удаляем подсказку при начале ввода
-        editorContainer.addEventListener('input', removeTooltip, { once: true });
-        editorContainer.addEventListener('keydown', removeTooltip, { once: true });
+        // Получаем текст подсказки в зависимости от типа элемента
+        let placeholderText = '';
+        const tagName = currentElement.tagName.toLowerCase();
+        
+        switch(tagName) {
+            case 'h1':
+                placeholderText = 'Введите заголовок 1-го уровня';
+                break;
+            case 'h2':
+                placeholderText = 'Введите заголовок 2-го уровня';
+                break;
+            case 'h3':
+                placeholderText = 'Введите заголовок 3-го уровня';
+                break;
+            case 'h4':
+                placeholderText = 'Введите заголовок 4-го уровня';
+                break;
+            case 'h5':
+                placeholderText = 'Введите заголовок 5-го уровня';
+                break;
+            case 'h6':
+                placeholderText = 'Введите заголовок 6-го уровня';
+                break;
+            case 'li':
+                placeholderText = 'Введите элемент списка';
+                break;
+            default:
+                placeholderText = 'Введите текст';
+        }
+        
+        // Проверяем, пустой ли элемент
+        const isEmpty = !currentElement.textContent.trim() || 
+                       currentElement.innerHTML === '<br>' ||
+                       currentElement.innerHTML === '';
+        
+        if (isEmpty) {
+            // Добавляем placeholder как data-атрибут
+            currentElement.setAttribute('data-placeholder-text', placeholderText);
+            currentElement.classList.add('has-placeholder');
+            
+            // Создаем видимый placeholder через CSS ::before
+            // (стили уже добавлены в CSS)
+            
+            // Устанавливаем курсор в начало элемента
+            const newRange = document.createRange();
+            
+            // Очищаем элемент и добавляем пустой текстовый узел
+            currentElement.innerHTML = '';
+            const textNode = document.createTextNode('');
+            currentElement.appendChild(textNode);
+            
+            newRange.setStart(textNode, 0);
+            newRange.collapse(true);
+            
+            selection.removeAllRanges();
+            selection.addRange(newRange);
+            
+            // Обработчик для удаления placeholder при вводе
+            const removePlaceholder = (e) => {
+                // Не удаляем placeholder на служебных клавишах
+                if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    return;
+                }
+                
+                currentElement.removeAttribute('data-placeholder-text');
+                currentElement.classList.remove('has-placeholder');
+                currentElement.removeEventListener('keydown', removePlaceholder);
+                currentElement.removeEventListener('input', removePlaceholder);
+            };
+            
+            currentElement.addEventListener('keydown', removePlaceholder);
+            currentElement.addEventListener('input', removePlaceholder);
+        }
     }
     
     function updateTextarea(textarea, editor) {

@@ -8,6 +8,7 @@
     position: relative;
     min-height: 200px;
     padding: 16px;
+    padding-right: 60px; /* Добавляем отступ справа для кнопки + */
     border: 1px solid #e1e5e9;
     border-radius: 8px;
     background: white;
@@ -15,6 +16,30 @@
     font-size: 16px;
     line-height: 1.5;
     color: #212529;
+}
+
+/* Темная тема для редактора */
+[data-bs-theme="dark"] .prosemirror-editor {
+    background: #212529;
+    border-color: #495057;
+    color: #f8f9fa;
+}
+
+/* Цвета заголовков в темной теме */
+[data-bs-theme="dark"] .prosemirror-editor h1,
+[data-bs-theme="dark"] .prosemirror-editor h2,
+[data-bs-theme="dark"] .prosemirror-editor h3,
+[data-bs-theme="dark"] .prosemirror-editor h4,
+[data-bs-theme="dark"] .prosemirror-editor h5,
+[data-bs-theme="dark"] .prosemirror-editor h6 {
+    color: #f8f9fa !important;
+}
+
+/* Цвета текста в темной теме */
+[data-bs-theme="dark"] .prosemirror-editor p,
+[data-bs-theme="dark"] .prosemirror-editor li,
+[data-bs-theme="dark"] .prosemirror-editor span {
+    color: #f8f9fa !important;
 }
 
 /* Размеры заголовков в редакторе */
@@ -238,6 +263,7 @@
     font-family: "JetBrains Mono", monospace;
     font-size: 0.875rem;
     color: #6c757d;
+    font-weight: 500;
 }
 
 .pm-code__copy {
@@ -252,6 +278,37 @@
 
 .pm-code__copy:hover {
     background: rgba(0, 0, 0, 0.05);
+}
+
+/* Темная тема для блоков кода */
+[data-bs-theme="dark"] .pm-code {
+    background: #1a1d20;
+    border: 1px solid #343a40;
+}
+
+[data-bs-theme="dark"] .pm-code__header {
+    background: #2d3238;
+    border-bottom: 1px solid #495057;
+}
+
+[data-bs-theme="dark"] .pm-code__lang {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .pm-code__copy {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .pm-code__copy:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .pm-code__body {
+    background: #1a1d20;
+}
+
+[data-bs-theme="dark"] .pm-code__body code {
+    color: #f8f9fa;
 }
 
 .pm-code__body {
@@ -585,4 +642,19 @@
 [data-bs-theme="dark"] .command-tooltip {
     background: linear-gradient(135deg, #4c6ef5 0%, #5f3dc4 100%);
     box-shadow: 0 2px 8px rgba(76, 110, 245, 0.4);
+}
+
+/* Placeholder для команд (как в поле "Заголовок статьи") */
+.prosemirror-editor .has-placeholder::before {
+    content: attr(data-placeholder-text);
+    color: #6c757d;
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    user-select: none;
+    opacity: 0.7;
+}
+
+[data-bs-theme="dark"] .prosemirror-editor .has-placeholder::before {
+    color: #adb5bd;
 }
