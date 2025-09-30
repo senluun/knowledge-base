@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user_profile.get_full_name|default:user_profile.username }} - Профиль{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title">
+                    <i class="fas fa-user me-3"></i>Профиль пользователя
+                </h1>
+                <p class="page-subtitle">Информация о пользователе и его активности</p>
+            </div>
+            <div class="col-md-4 text-end">
+                {% if user == user_profile %}
+                    <a href="{% url 'accounts:user_edit' %}" class="btn btn-outline-light">
+                        <i class="fas fa-edit me-1"></i>Редактировать
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Информация о пользователе -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        {% if user_profile.avatar %}
+                            <img src="{{ user_profile.avatar.url }}" alt="Аватар" 
+                                 class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto" 
+                                 style="width: 120px; height: 120px;">
+                                <i class="fas fa-user fa-3x text-white"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h4 class="card-title">{{ user_profile.get_full_name|default:user_profile.username }}</h4>
+                    <p class="text-muted">@{{ user_profile.username }}</p>
+                    {% if user_profile.bio %}
+                        <p class="card-text">{{ user_profile.bio }}</p>
+                    {% endif %}
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            Присоединился {{ user_profile.date_joined|date:"d.m.Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика и активность -->
+        <div class="col-md-8">
+            <!-- Статистика -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card compact">
+                        <i class="fas fa-file-alt text-primary"></i>
+                        <h6>{{ user_articles.count }}</h6>
+                        <small>Статей</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card compact">
+                        <i class="fas fa-star text-warning"></i>
+                        <h6>{{ user_favorites.count }}</h6>
+                        <small>Избранных</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card compact">
+                        <i class="fas fa-eye text-info"></i>
+                        <h6>{{ total_views }}</h6>
+                        <small>Просмотров</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Статьи пользователя -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Статьи пользователя
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user_articles %}
+                        <div class="row">
+                            {% for article in user_articles %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            {% if article.slug %}
+                                                <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                                                   class="text-decoration-none">
+                                                    {{ article.title }}
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">{{ article.title }}</span>
+                                            {% endif %}
+                                        </h6>
+                                        <p class="card-text small">{{ article.excerpt|truncatewords:15 }}</p>
+                                        <div class="article-meta">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>{{ article.created_at|date:"d.m.Y" }}
+                                                <i class="fas fa-eye ms-2 me-1"></i>{{ article.views_count }}
+                                                {% if article.status == 'pending' %}
+                                                    <span class="badge bg-warning ms-2">На рассмотрении</span>
+                                                {% elif article.status == 'published' %}
+                                                    <span class="badge bg-success ms-2">Опубликовано</span>
+                                                {% elif article.status == 'draft' %}
+                                                    <span class="badge bg-secondary ms-2">Черновик</span>
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">У пользователя пока нет статей</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

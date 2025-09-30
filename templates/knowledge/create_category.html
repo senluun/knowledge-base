@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Создать категорию{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Создать новую категорию
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.name.id_for_label }}" class="form-label h6">
+                                <i class="fas fa-tag me-2"></i>Название категории *
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label h6">
+                                <i class="fas fa-align-left me-2"></i>Описание
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.color.id_for_label }}" class="form-label h6">
+                                <i class="fas fa-palette me-2"></i>Цвет категории
+                            </label>
+                            {{ form.color }}
+                            {% if form.color.errors %}
+                                <div class="text-danger small mt-1">{{ form.color.errors }}</div>
+                            {% endif %}
+                            <div class="form-text mt-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Выберите цвет для отображения категории в интерфейсе
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'knowledge:category_list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Создать категорию
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Инструкция -->
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>О категориях
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-4">
+                        <li class="mb-2"><strong>Название категории</strong> - краткое и понятное название</li>
+                        <li class="mb-2"><strong>Описание</strong> - подробное описание тематики категории</li>
+                        <li class="mb-2"><strong>Цвет</strong> - для визуального разделения категорий</li>
+                    </ul>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Совет:</strong> Создавайте категории для группировки статей по темам. Это поможет пользователям быстрее находить нужную информацию.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

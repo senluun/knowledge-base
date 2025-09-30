@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Читать: {{ book.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pdf-container {
+        height: calc(100vh - 200px);
+        min-height: 600px;
+    }
+    
+    .pdf-toolbar {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px 0;
+        margin-bottom: 20px;
+    }
+    
+    .pdf-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .pdf-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .pdf-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .pdf-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .pdf-info, .pdf-actions {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- PDF просмотрщик -->
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-0">
+                        {% if book.pdf_file %}
+                        <div class="pdf-container">
+                            <iframe src="{{ book.pdf_file.url }}#toolbar=1&navpanes=1&scrollbar=1" 
+                                    width="100%" 
+                                    height="100%" 
+                                    frameborder="0"
+                                    style="border: none;">
+                                <p>Ваш браузер не поддерживает отображение PDF файлов. 
+                                   <a href="{{ book.pdf_file.url }}" target="_blank">Открыть в новой вкладке</a>
+                                </p>
+                            </iframe>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                            <h4>Файл книги не найден</h4>
+                            <p class="text-muted">PDF файл для этой книги недоступен</p>
+                            <a href="{% url 'books:book_list' %}" class="btn btn-primary">Вернуться к каталогу</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Дополнительные действия -->
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Дополнительные действия</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'books:book_download' book.slug %}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-download me-2"></i>Скачать PDF
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ book.pdf_file.url }}" target="_blank" 
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-external-link-alt me-2"></i>Открыть в новой вкладке
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-grid">
+                                <a href="{% url 'books:book_detail' book.slug %}" 
+                                   class="btn btn-outline-secondary">
+                                    <i class="fas fa-info-circle me-2"></i>Подробная информация
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработка ошибок загрузки PDF
+    const iframe = document.querySelector('iframe');
+    if (iframe) {
+        iframe.addEventListener('error', function() {
+            console.log('Ошибка загрузки PDF');
+            // Можно показать уведомление пользователю
+        });
+    }
+    
+    // Клавиатурные сокращения
+    document.addEventListener('keydown', function(e) {
+        // ESC - вернуться к каталогу
+        if (e.key === 'Escape') {
+            window.location.href = "{% url 'books:book_list' %}";
+        }
+    });
+});
+</script>
+{% endblock %}

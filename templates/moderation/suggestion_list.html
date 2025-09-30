@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Предложения для модерации - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    Предложения для модерации
+                </h1>
+                <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Создать статью
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="status-filter" class="form-label">Статус</label>
+                            <select id="status-filter" class="form-select">
+                                <option value="">Все статусы</option>
+                                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>На рассмотрении</option>
+                                <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Одобрено</option>
+                                <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Отклонено</option>
+                                <option value="needs_revision" {% if request.GET.status == 'needs_revision' %}selected{% endif %}>Требует доработки</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="type-filter" class="form-label">Тип</label>
+                            <select id="type-filter" class="form-select">
+                                <option value="">Все типы</option>
+                                <option value="article" {% if request.GET.type == 'article' %}selected{% endif %}>Новая статья</option>
+                                <option value="edit" {% if request.GET.type == 'edit' %}selected{% endif %}>Изменение статьи</option>
+                                <option value="category" {% if request.GET.type == 'category' %}selected{% endif %}>Предложение по категории</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="priority-filter" class="form-label">Приоритет</label>
+                            <select id="priority-filter" class="form-select">
+                                <option value="">Все приоритеты</option>
+                                <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>Высокий</option>
+                                <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Средний</option>
+                                <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Низкий</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-primary w-100" onclick="applyFilters()">
+                                <i class="fas fa-filter me-1"></i>
+                                Применить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Список предложений -->
+    <div class="row">
+        <div class="col-12">
+            {% if suggestions %}
+                <div class="row">
+                    {% for suggestion in suggestions %}
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-{% if suggestion.suggestion_type == 'article' %}file-alt{% elif suggestion.suggestion_type == 'edit' %}edit{% else %}folder{% endif %} me-2"></i>
+                                        {{ suggestion.title }}
+                                    </h5>
+                                    <span class="badge bg-{% if suggestion.status == 'pending' %}warning{% elif suggestion.status == 'approved' %}success{% elif suggestion.status == 'rejected' %}danger{% else %}info{% endif %}">
+                                        {{ suggestion.get_status_display }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            {{ suggestion.author.get_full_name|default:suggestion.author.username }}
+                                        </small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-tag me-1"></i>
+                                            {{ suggestion.get_suggestion_type_display }}
+                                        </small>
+                                    </div>
+                                    {% if suggestion.content %}
+                                        <p class="card-text">{{ suggestion.content|truncatewords:30 }}</p>
+                                    {% endif %}
+                                    {% if suggestion.tags %}
+                                        <div class="mb-2">
+                                            <span class="badge bg-secondary">{{ suggestion.tags }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ suggestion.created_at|date:"d.m.Y H:i" }}
+                                        </small>
+                                        <div>
+                                            <a href="{% url 'moderation:suggestion_detail' suggestion.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>
+                                                Просмотр
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Пагинация -->
+                {% if page_obj.has_other_pages %}
+                    <div class="row">
+                        <div class="col-12">
+                            <nav aria-label="Навигация по страницам">
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                                                <i class="fas fa-angle-double-left"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                                                <i class="fas fa-angle-left"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for num in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == num %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ num }}</span>
+                                            </li>
+                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                                                <i class="fas fa-angle-right"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                                                <i class="fas fa-angle-double-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i class="fas fa-clipboard-list fa-4x text-secondary mb-3"></i>
+                            <h3 class="text-secondary">Нет предложений</h3>
+                            <p class="text-secondary">Предложения для модерации отсутствуют.</p>
+                            <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>
+                                Создать статью
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function applyFilters() {
+    const status = document.getElementById('status-filter').value;
+    const type = document.getElementById('type-filter').value;
+    const priority = document.getElementById('priority-filter').value;
+    
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (type) params.append('type', type);
+    if (priority) params.append('priority', priority);
+    
+    const queryString = params.toString();
+    const url = queryString ? `?${queryString}` : window.location.pathname;
+    window.location.href = url;
+}
+
+// Автоматическое применение фильтров при изменении
+document.getElementById('status-filter').addEventListener('change', applyFilters);
+document.getElementById('type-filter').addEventListener('change', applyFilters);
+document.getElementById('priority-filter').addEventListener('change', applyFilters);
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

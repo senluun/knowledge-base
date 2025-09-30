@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Пользователи - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    Управление пользователями
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'knowledge:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Панель управления</a></li>
+                        <li class="breadcrumb-item active">Пользователи</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Список пользователей
+                        </h5>
+                        <span class="badge bg-primary">{{ users.count }} пользователей</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Пользователь</th>
+                                        <th>Роль</th>
+                                        <th>Email</th>
+                                        <th>Дата регистрации</th>
+                                        <th>Последний вход</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if user.avatar %}
+                                                        <img src="{{ user.avatar.url }}" alt="Аватар" class="rounded-circle me-2" width="32" height="32">
+                                                    {% else %}
+                                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                            <i class="fas fa-user text-white"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <div>
+                                                        <strong>{{ user.get_full_name }}</strong><br>
+                                                        <small class="text-muted">@{{ user.username }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if user.is_admin %}bg-danger
+                                                    {% elif user.is_editor %}bg-warning
+                                                    {% else %}bg-primary
+                                                    {% endif %}">
+                                                    {% if user.is_admin %}
+                                                        <i class="fas fa-crown me-1"></i>Администратор
+                                                    {% elif user.is_editor %}
+                                                        <i class="fas fa-edit me-1"></i>Редактор
+                                                    {% else %}
+                                                        <i class="fas fa-user me-1"></i>Пользователь
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if user.email %}
+                                                    <a href="mailto:{{ user.email }}" class="text-decoration-none">
+                                                        <i class="fas fa-envelope me-1"></i>{{ user.email }}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-muted">Не указан</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <small>{{ user.date_joined|date:"d.m.Y H:i" }}</small>
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    {% if user.last_login %}
+                                                        {{ user.last_login|date:"d.m.Y H:i" }}
+                                                    {% else %}
+                                                        <span class="text-muted">Никогда</span>
+                                                    {% endif %}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                {% if user.is_active %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check me-1"></i>Активен
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-times me-1"></i>Заблокирован
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{% url 'accounts:user_edit' user.id %}" class="btn btn-outline-warning btn-sm" title="Редактировать">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    
+                                                    <!-- Переключение статуса -->
+                                                    {% if user != request.user %}
+                                                        <form method="post" action="{% url 'accounts:user_toggle_status' user.id %}" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-outline-{% if user.is_active %}danger{% else %}success{% endif %} btn-sm" 
+                                                                    title="{% if user.is_active %}Заблокировать{% else %}Активировать{% endif %}"
+                                                                    onclick="return confirm('{% if user.is_active %}Заблокировать{% else %}Активировать{% endif %} пользователя {{ user.get_full_name }}?')">
+                                                                <i class="fas fa-{% if user.is_active %}ban{% else %}check{% endif %}"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                    
+                                                    <!-- Изменение роли -->
+                                                    {% if user != request.user %}
+                                                        <div class="dropdown d-inline">
+                                                            <button class="btn btn-outline-info btn-sm dropdown-toggle" type="button" 
+                                                                    data-bs-toggle="dropdown" title="Изменить роль">
+                                                                <i class="fas fa-user-tag"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <form method="post" action="{% url 'accounts:user_change_role' user.id %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="role" value="user">
+                                                                        <button type="submit" class="dropdown-item {% if user.role == 'user' %}active{% endif %}">
+                                                                            <i class="fas fa-user me-2"></i>Пользователь
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                                <li>
+                                                                    <form method="post" action="{% url 'accounts:user_change_role' user.id %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="role" value="editor">
+                                                                        <button type="submit" class="dropdown-item {% if user.role == 'editor' %}active{% endif %}">
+                                                                            <i class="fas fa-edit me-2"></i>Редактор
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                                <li>
+                                                                    <form method="post" action="{% url 'accounts:user_change_role' user.id %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="role" value="admin">
+                                                                        <button type="submit" class="dropdown-item {% if user.role == 'admin' %}active{% endif %}">
+                                                                            <i class="fas fa-crown me-2"></i>Администратор
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    {% endif %}
+                                                    
+                                                    <!-- Удаление -->
+                                                    {% if user != request.user %}
+                                                        <form method="post" action="{% url 'accounts:user_delete' user.id %}" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                                    title="Удалить пользователя"
+                                                                    onclick="return confirm('ВНИМАНИЕ! Вы уверены, что хотите удалить пользователя {{ user.get_full_name }}? Это действие нельзя отменить!')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                            <h3 class="text-muted">Пользователи не найдены</h3>
+                            <p class="text-muted">В системе пока нет зарегистрированных пользователей.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: var(--bs-gray-700);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-group .btn {
+    border-radius: 0.25rem;
+    margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+{% block title %}Пользователи - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    Управление пользователями
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'knowledge:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Панель управления</a></li>
+                        <li class="breadcrumb-item active">Пользователи</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Список пользователей
+                        </h5>
+                        <span class="badge bg-primary">{{ users.count }} пользователей</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Пользователь</th>
+                                        <th>Роль</th>
+                                        <th>Email</th>
+                                        <th>Дата регистрации</th>
+                                        <th>Последний вход</th>
+                                        <th>Статус</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if user.avatar %}
+                                                        <img src="{{ user.avatar.url }}" alt="Аватар" class="rounded-circle me-2" width="32" height="32">
+                                                    {% else %}
+                                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                            <i class="fas fa-user text-white"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <div>
+                                                        <strong>{{ user.get_full_name }}</strong><br>
+                                                        <small class="text-muted">@{{ user.username }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if user.is_admin %}bg-danger
+                                                    {% elif user.is_editor %}bg-warning
+                                                    {% else %}bg-primary
+                                                    {% endif %}">
+                                                    {% if user.is_admin %}
+                                                        <i class="fas fa-crown me-1"></i>Администратор
+                                                    {% elif user.is_editor %}
+                                                        <i class="fas fa-edit me-1"></i>Редактор
+                                                    {% else %}
+                                                        <i class="fas fa-user me-1"></i>Пользователь
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if user.email %}
+                                                    <a href="mailto:{{ user.email }}" class="text-decoration-none">
+                                                        <i class="fas fa-envelope me-1"></i>{{ user.email }}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-muted">Не указан</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <small>{{ user.date_joined|date:"d.m.Y H:i" }}</small>
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    {% if user.last_login %}
+                                                        {{ user.last_login|date:"d.m.Y H:i" }}
+                                                    {% else %}
+                                                        <span class="text-muted">Никогда</span>
+                                                    {% endif %}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                {% if user.is_active %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check me-1"></i>Активен
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-times me-1"></i>Заблокирован
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{% url 'accounts:user_edit' user.id %}" class="btn btn-outline-warning btn-sm" title="Редактировать">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    
+                                                    <!-- Переключение статуса -->
+                                                    {% if user != request.user %}
+                                                        <form method="post" action="{% url 'accounts:user_toggle_status' user.id %}" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-outline-{% if user.is_active %}danger{% else %}success{% endif %} btn-sm" 
+                                                                    title="{% if user.is_active %}Заблокировать{% else %}Активировать{% endif %}"
+                                                                    onclick="return confirm('{% if user.is_active %}Заблокировать{% else %}Активировать{% endif %} пользователя {{ user.get_full_name }}?')">
+                                                                <i class="fas fa-{% if user.is_active %}ban{% else %}check{% endif %}"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                    
+                                                    <!-- Изменение роли -->
+                                                    {% if user != request.user %}
+                                                        <div class="dropdown d-inline">
+                                                            <button class="btn btn-outline-info btn-sm dropdown-toggle" type="button" 
+                                                                    data-bs-toggle="dropdown" title="Изменить роль">
+                                                                <i class="fas fa-user-tag"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <form method="post" action="{% url 'accounts:user_change_role' user.id %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="role" value="user">
+                                                                        <button type="submit" class="dropdown-item {% if user.role == 'user' %}active{% endif %}">
+                                                                            <i class="fas fa-user me-2"></i>Пользователь
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                                <li>
+                                                                    <form method="post" action="{% url 'accounts:user_change_role' user.id %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="role" value="editor">
+                                                                        <button type="submit" class="dropdown-item {% if user.role == 'editor' %}active{% endif %}">
+                                                                            <i class="fas fa-edit me-2"></i>Редактор
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                                <li>
+                                                                    <form method="post" action="{% url 'accounts:user_change_role' user.id %}">
+                                                                        {% csrf_token %}
+                                                                        <input type="hidden" name="role" value="admin">
+                                                                        <button type="submit" class="dropdown-item {% if user.role == 'admin' %}active{% endif %}">
+                                                                            <i class="fas fa-crown me-2"></i>Администратор
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    {% endif %}
+                                                    
+                                                    <!-- Удаление -->
+                                                    {% if user != request.user %}
+                                                        <form method="post" action="{% url 'accounts:user_delete' user.id %}" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                                    title="Удалить пользователя"
+                                                                    onclick="return confirm('ВНИМАНИЕ! Вы уверены, что хотите удалить пользователя {{ user.get_full_name }}? Это действие нельзя отменить!')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                            <h3 class="text-muted">Пользователи не найдены</h3>
+                            <p class="text-muted">В системе пока нет зарегистрированных пользователей.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: var(--bs-gray-700);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-group .btn {
+    border-radius: 0.25rem;
+    margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

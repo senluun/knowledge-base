@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load knowledge_extras %}
+
+{% block title %}Мои предложения - База знаний{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-user-edit me-2"></i>
+                Мои предложения
+            </h2>
+            <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>
+                Новое предложение
+            </a>
+        </div>
+
+        <!-- Список предложений -->
+        {% if suggestions %}
+            <div class="row">
+                {% for suggestion in suggestions %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="badge bg-{% if suggestion.status == 'pending' %}warning{% elif suggestion.status == 'approved' %}success{% elif suggestion.status == 'rejected' %}danger{% else %}info{% endif %}">
+                                    {{ suggestion.get_status_display }}
+                                </span>
+                                <span class="badge bg-{% if suggestion.priority == 'urgent' %}danger{% elif suggestion.priority == 'high' %}warning{% elif suggestion.priority == 'medium' %}primary{% else %}secondary{% endif %}">
+                                    {{ suggestion.get_priority_display }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ suggestion.title }}</h5>
+                                <p class="card-text">
+                                    {{ suggestion.content|truncatewords:15 }}
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-tag me-1"></i>
+                                        {{ suggestion.get_suggestion_type_display }}
+                                    </small>
+                                </div>
+                                {% if suggestion.tags %}
+                                    <div class="mb-2">
+                                        {% for tag in suggestion.tags|split:"," %}
+                                            <span class="badge bg-light text-dark me-1">{{ tag|strip }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if suggestion.moderator_comment %}
+                                    <div class="alert alert-info alert-sm">
+                                        <small>
+                                            <i class="fas fa-comment me-1"></i>
+                                            <strong>Комментарий модератора:</strong><br>
+                                            {{ suggestion.moderator_comment|truncatewords:10 }}
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ suggestion.created_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                    <a href="{% url 'moderation:suggestion_detail' suggestion.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>
+                                        Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Пагинация -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">У вас пока нет предложений</h4>
+                <p class="text-muted">Создайте первое предложение для улучшения базы знаний.</p>
+                <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Создать статью
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+{% block title %}Мои предложения - База знаний{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-user-edit me-2"></i>
+                Мои предложения
+            </h2>
+            <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>
+                Новое предложение
+            </a>
+        </div>
+
+        <!-- Список предложений -->
+        {% if suggestions %}
+            <div class="row">
+                {% for suggestion in suggestions %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="badge bg-{% if suggestion.status == 'pending' %}warning{% elif suggestion.status == 'approved' %}success{% elif suggestion.status == 'rejected' %}danger{% else %}info{% endif %}">
+                                    {{ suggestion.get_status_display }}
+                                </span>
+                                <span class="badge bg-{% if suggestion.priority == 'urgent' %}danger{% elif suggestion.priority == 'high' %}warning{% elif suggestion.priority == 'medium' %}primary{% else %}secondary{% endif %}">
+                                    {{ suggestion.get_priority_display }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ suggestion.title }}</h5>
+                                <p class="card-text">
+                                    {{ suggestion.content|truncatewords:15 }}
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-tag me-1"></i>
+                                        {{ suggestion.get_suggestion_type_display }}
+                                    </small>
+                                </div>
+                                {% if suggestion.tags %}
+                                    <div class="mb-2">
+                                        {% for tag in suggestion.tags|split:"," %}
+                                            <span class="badge bg-light text-dark me-1">{{ tag|strip }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if suggestion.moderator_comment %}
+                                    <div class="alert alert-info alert-sm">
+                                        <small>
+                                            <i class="fas fa-comment me-1"></i>
+                                            <strong>Комментарий модератора:</strong><br>
+                                            {{ suggestion.moderator_comment|truncatewords:10 }}
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ suggestion.created_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                    <a href="{% url 'moderation:suggestion_detail' suggestion.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>
+                                        Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Пагинация -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">У вас пока нет предложений</h4>
+                <p class="text-muted">Создайте первое предложение для улучшения базы знаний.</p>
+                <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Создать статью
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

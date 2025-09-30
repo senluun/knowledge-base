@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="light">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}База знаний{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- App CSS -->
+    <link href="{% static 'css/prosemirror.css' %}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --link: #3b82f6;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+        }
+
+        [data-bs-theme="dark"] {
+            --bg-primary: #000000 !important;
+            --bg-secondary: #0a0a0a !important;
+            --text-primary: #ffffff !important;
+            --text-secondary: #e0e0e0 !important;
+            --text-muted: #a0a0a0 !important;
+            --card-bg: #1a1a1a !important;
+            --card-border: #333333 !important;
+            --link: #ffffff !important;
+            --primary: #ffffff !important;
+            --primary-hover: #f0f0f0 !important;
+            --success: #00ff88 !important;
+            --warning: #ffaa00 !important;
+            --info: #00aaff !important;
+        }
+        
+        [data-bs-theme="dark"] body {
+            background: #000000 !important;
+        }
+        
+        [data-bs-theme="dark"] .page-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+        
+        [data-bs-theme="dark"] .card {
+            background: #1a1a1a !important;
+            border-color: #333333 !important;
+        }
+        
+        /* СТИЛИ ДЛЯ СВЕТЛОЙ ТЕМЫ - СИНИЕ КНОПКИ */
+        .btn-outline-primary {
+            color: #ffffff !important;
+            border-color: #0d6efd !important;
+            background-color: #0d6efd !important;
+            font-weight: 700 !important;
+            border-width: 2px !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+            transition: all 0.3s ease !important;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-outline-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #0b5ed7 !important;
+            color: #ffffff !important;
+            border-color: #0b5ed7 !important;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(11, 94, 215, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .btn-outline-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-outline-primary i {
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            transform: scale(1.1);
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary,
+        [data-bs-theme="dark"] .btn.btn-outline-primary,
+        [data-bs-theme="dark"] a.btn-outline-primary {
+            color: #ffffff !important;
+            border-color: #6c757d !important;
+            background-color: #6c757d !important;
+            font-weight: 700 !important;
+            border-width: 2px !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            transition: all 0.3s ease !important;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background-color: #5a6268 !important;
+            color: #ffffff !important;
+            border-color: #5a6268 !important;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(90, 98, 104, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary:hover::before {
+            left: 100%;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary i {
+            color: #ffffff !important;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+            transition: transform 0.3s ease;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary:hover i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+            transform: scale(1.1);
+        }
+        
+        /* Стили для зеленой кнопки */
+        .btn-success {
+            transition: all 0.3s ease !important;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-success::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(25, 135, 84, 0.4);
+        }
+        
+        .btn-success:hover::before {
+            left: 100%;
+        }
+        
+        .btn-success i {
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-success:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* Стили для зеленой кнопки в темной теме */
+        [data-bs-theme="dark"] .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        [data-bs-theme="dark"] .btn-success i {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-success:hover i {
+            color: #ffffff !important;
+            transform: scale(1.1);
+        }
+        
+        [data-bs-theme="dark"] .navbar-nav .nav-link {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .navbar-nav .nav-link:hover {
+            color: #e0e0e0 !important;
+        }
+        
+        [data-bs-theme="dark"] .form-control {
+            background: #1a1a1a !important;
+            border-color: #333333 !important;
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .form-control:focus {
+            background: #1a1a1a !important;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            color: #ffffff !important;
+            border-color: #333333 !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background: #333333 !important;
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .badge {
+            color: #000000 !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-primary i {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .navbar-brand i {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .nav-link i {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .nav-link:hover i {
+            color: #e0e0e0 !important;
+        }
+        
+        [data-bs-theme="dark"] .dropdown-menu {
+            background: #1a1a1a !important;
+            border-color: #333333 !important;
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .dropdown-item {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .dropdown-item:hover {
+            background: #333333 !important;
+            color: #ffffff !important;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #f1f5f9 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .page-header .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: -0.02em;
+        }
+        
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 400;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning), var(--info));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stats-card:hover::before {
+            opacity: 1;
+        }
+        
+        .stats-card.compact {
+            padding: 0.75rem;
+            text-align: center;
+        }
+        
+        .stats-card.compact i {
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stats-card.compact h6 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0.1rem 0;
+        }
+        
+        .stats-card.compact small {
+            font-size: 0.85rem;
+        }
+        
+        .stats-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-card h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.25rem 0;
+        }
+        
+        .card {
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            background-color: var(--card-bg);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .article-meta {
+            margin-top: 0.75rem;
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-bottom: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+        }
+        
+        [data-bs-theme="dark"] .navbar {
+            background: rgba(0, 0, 0, 0.95) !important;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary) !important;
+            font-size: 1.25rem;
+        }
+        
+        .navbar-brand i {
+            color: var(--primary) !important;
+        }
+        
+        [data-bs-theme="light"] .navbar-brand i {
+            color: #3b82f6 !important;
+        }
+        
+        .navbar-nav .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+            color: white !important;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            color: white !important;
+        }
+        
+        .btn-primary i {
+            color: white !important;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, var(--success) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 12px;
+            font-weight: 600;
+            background: transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-outline-primary i {
+            color: inherit;
+        }
+        
+        .btn-outline-primary:hover i {
+            color: white !important;
+        }
+        
+        .footer {
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            padding: 1rem 0;
+            border-top: 1px solid var(--card-border);
+            margin-top: auto;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            flex: 1;
+        }
+
+        /* Тёмная тема: читаемость текста и лейблов */
+        [data-bs-theme="dark"] .text-muted,
+        [data-bs-theme="dark"] .card-text,
+        [data-bs-theme="dark"] .form-text { color: var(--text-muted) !important; }
+        [data-bs-theme="dark"] .card-title,
+        [data-bs-theme="dark"] .form-label,
+        [data-bs-theme="dark"] .form-check-label,
+        [data-bs-theme="dark"] .nav-link { color: var(--text-primary) !important; }
+        [data-bs-theme="dark"] .text-secondary { color: var(--text-secondary) !important; }
+        [data-bs-theme="dark"] .text-danger { color: #ff6b6b !important; }
+        [data-bs-theme="dark"] a { color: var(--link); }
+
+        /* Ссылки заголовков статей */
+        .article-title-link { color: var(--text-primary) !important; text-decoration: none; }
+        .article-title-link:hover { text-decoration: underline; }
+        
+        /* Интерактивные карточки */
+        .category-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Кнопки быстрых действий */
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        /* Компактные кнопки */
+        .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+        
+        /* Переключатель темы */
+        #theme-toggle {
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        #theme-toggle:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        /* Улучшенные цвета для иконок */
+        .text-primary { color: var(--primary) !important; }
+        .text-success { color: var(--success) !important; }
+        .text-warning { color: var(--warning) !important; }
+        .text-info { color: var(--info) !important; }
+        
+        /* Улучшенные бейджи */
+        .badge {
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        /* Улучшенные формы */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid var(--card-border);
+            transition: all 0.3s ease;
+            background: var(--card-bg);
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .input-group {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .input-group .form-control {
+            border-right: none;
+        }
+        
+        .input-group .btn {
+            border-left: none;
+        }
+        
+        /* Современные тени и эффекты */
+        .container {
+            max-width: 1200px;
+        }
+        
+        /* Улучшенные заголовки */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        /* Улучшенные ссылки */
+        a {
+            color: var(--link);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--primary-hover);
+        }
+        
+        /* Улучшенные dropdown меню */
+        .dropdown-menu {
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            z-index: 10000 !important;
+            position: absolute !important;
+            right: 0 !important;
+            left: auto !important;
+            min-width: 200px;
+            max-width: 300px;
+            transform: translateX(0) !important;
+            background: var(--card-bg) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .dropdown-menu.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Контейнер dropdown */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 0.5em;
+        }
+
+        /* Адаптивное позиционирование для мобильных устройств */
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                right: 0 !important;
+                left: auto !important;
+                min-width: 180px;
+                max-width: 250px;
+                position: fixed !important;
+                top: 60px !important;
+            }
+        }
+
+        /* Дополнительные стили для правильного отображения */
+        .navbar-nav .dropdown-menu {
+            margin-top: 0.5rem;
+        }
+        
+        /* Обеспечиваем правильный z-index для навбара */
+        .navbar {
+            z-index: 1000 !important;
+            position: relative !important;
+        }
+        
+        /* Dropdown контейнер должен иметь правильное позиционирование */
+        .nav-item.dropdown {
+            position: relative !important;
+        }
+        
+        /* Убеждаемся, что dropdown отображается поверх всех элементов */
+        .dropdown-menu.show {
+            z-index: 10000 !important;
+            position: absolute !important;
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Исправляем проблему с перекрытием на мобильных устройствах */
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                z-index: 10000 !important;
+                position: fixed !important;
+                top: 60px !important;
+                right: 10px !important;
+                left: auto !important;
+                width: calc(100vw - 20px) !important;
+                max-width: 300px !important;
+            }
+        }
+
+        .dropdown-menu[data-bs-popper] {
+            top: 100% !important;
+            left: auto !important;
+            right: 0 !important;
+        }
+        
+        .dropdown-item {
+            border-radius: 8px;
+            margin: 2px 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Улучшенные алерты */
+        .alert {
+            border-radius: 12px;
+            border: none;
+        }
+        
+        /* Улучшенные бейджи статусов */
+        .badge.bg-success { 
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%) !important; 
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        .badge.bg-warning { 
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%) !important; 
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+        .badge.bg-info { 
+            background: linear-gradient(135deg, var(--info) 0%, #0891b2 100%) !important; 
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+        }
+        .badge.bg-secondary { 
+            background: linear-gradient(135deg, var(--text-muted) 0%, #64748b 100%) !important; 
+        }
+        
+        /* Анимации появления */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .fade-in-scale {
+            animation: fadeInScale 0.4s ease-out;
+        }
+        
+        /* Плавные переходы для всех элементов */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Улучшенная группа поиска */
+        .search-group {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .search-input {
+            border: 2px solid var(--primary);
+            border-right: none;
+            background: var(--card-bg);
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: none;
+            background: var(--card-bg);
+        }
+        
+        .search-btn {
+            border: 2px solid var(--primary);
+            border-left: none;
+            background: var(--primary);
+            color: white !important;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .search-btn:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            color: white !important;
+        }
+        
+        .search-btn i {
+            color: white !important;
+        }
+        
+        /* Специальные стили для кнопки поиска в темной теме */
+        [data-bs-theme="dark"] .search-btn {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border-color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .search-btn:hover {
+            background: #f0f0f0 !important;
+            border-color: #f0f0f0 !important;
+            color: #000000 !important;
+        }
+        
+        [data-bs-theme="dark"] .search-btn i {
+            color: #000000 !important;
+        }
+        
+        /* Улучшенные стили для обычной кнопки поиска в темной теме */
+        [data-bs-theme="dark"] .btn-primary {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border-color: #ffffff !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-primary:hover {
+            background: #f0f0f0 !important;
+            border-color: #f0f0f0 !important;
+            color: #000000 !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-primary i {
+            color: #000000 !important;
+        }
+        
+        /* Смягченные цвета для темной темы на странице профиля */
+        [data-bs-theme="dark"] .text-primary { color: #a0a0ff !important; }
+        [data-bs-theme="dark"] .text-success { color: #80ff80 !important; }
+        [data-bs-theme="dark"] .text-warning { color: #ffcc80 !important; }
+        [data-bs-theme="dark"] .text-info { color: #80ccff !important; }
+        [data-bs-theme="dark"] .text-danger { color: #ff8080 !important; }
+        
+        /* Смягченные бейджи в темной теме */
+        [data-bs-theme="dark"] .badge.bg-primary { 
+            background: linear-gradient(135deg, #4a4aff 0%, #3a3aff 100%) !important; 
+            color: #ffffff !important;
+        }
+        [data-bs-theme="dark"] .badge.bg-success { 
+            background: linear-gradient(135deg, #4aff4a 0%, #3aff3a 100%) !important; 
+            color: #000000 !important;
+        }
+        [data-bs-theme="dark"] .badge.bg-warning { 
+            background: linear-gradient(135deg, #ffcc4a 0%, #ffbb3a 100%) !important; 
+            color: #000000 !important;
+        }
+        [data-bs-theme="dark"] .badge.bg-info { 
+            background: linear-gradient(135deg, #4accff 0%, #3abbff 100%) !important; 
+            color: #000000 !important;
+        }
+        [data-bs-theme="dark"] .badge.bg-danger { 
+            background: linear-gradient(135deg, #ff4a4a 0%, #ff3a3a 100%) !important; 
+            color: #ffffff !important;
+        }
+        
+        /* Улучшенные навигационные ссылки */
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary) !important;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+        }
+        
+        .nav-link i {
+            color: inherit;
+        }
+        
+        /* Исправление для светлой темы */
+        [data-bs-theme="light"] .nav-link {
+            color: #1e293b !important;
+        }
+        
+        [data-bs-theme="light"] .nav-link:hover {
+            color: #3b82f6 !important;
+            background: rgba(59, 130, 246, 0.1) !important;
+            border-radius: 6px;
+        }
+        
+        [data-bs-theme="light"] .nav-link i {
+            color: inherit;
+        }
+        
+        /* Улучшенные кнопки в светлой теме */
+        [data-bs-theme="light"] .btn-outline-primary {
+            border: 2px solid #3b82f6 !important;
+            color: #3b82f6 !important;
+            background: transparent !important;
+        }
+        
+        [data-bs-theme="light"] .btn-outline-primary:hover {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        }
+        
+        [data-bs-theme="light"] .btn-outline-primary i {
+            color: #3b82f6 !important;
+        }
+        
+        [data-bs-theme="light"] .btn-outline-primary:hover i {
+            color: white !important;
+        }
+        
+        /* Улучшенные стили для зеленой кнопки в светлой теме */
+        [data-bs-theme="light"] .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="light"] .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        [data-bs-theme="light"] .btn-success i {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="light"] .btn-success:hover i {
+            color: #ffffff !important;
+        }
+        
+        [data-bs-theme="light"] .btn-outline-secondary {
+            border: 2px solid #6c757d !important;
+            color: #6c757d !important;
+            background: transparent !important;
+        }
+        
+        [data-bs-theme="light"] .btn-outline-secondary:hover {
+            background: #6c757d !important;
+            color: white !important;
+            border-color: #6c757d !important;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
+        }
+        
+        [data-bs-theme="light"] .btn-outline-secondary i {
+            color: #6c757d !important;
+        }
+        
+        [data-bs-theme="light"] .btn-outline-secondary:hover i {
+            color: white !important;
+        }
+        
+        /* Подсветка для кликабельных элементов */
+        [data-bs-theme="light"] .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        [data-bs-theme="light"] .btn {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        [data-bs-theme="light"] .btn:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        /* Центрирование и сужение секций с плитками */
+        .section-tiles {
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Компактные карточки-плитки */
+        .compact-card .card-body {
+            padding: 0.75rem 1rem;
+        }
+
+        .compact-card .card-footer {
+            padding: 0.5rem 1rem;
+        }
+
+        /* Унификация размеров шрифтов в карточках */
+        .compact-card .card-title {
+            font-size: 1rem !important;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .compact-card .card-text {
+            font-size: 0.9rem !important;
+            line-height: 1.4;
+        }
+
+        .compact-card .article-meta small {
+            font-size: 0.8rem !important;
+        }
+
+        .compact-card .badge {
+            font-size: 0.75rem !important;
+        }
+
+        .compact-card .btn {
+            font-size: 0.85rem !important;
+        }
+
+        /* Специальные стили для категорий */
+        .category-card .card-title {
+            font-size: 0.95rem !important;
+            font-weight: 600;
+        }
+
+        .category-card .card-text {
+            font-size: 0.8rem !important;
+        }
+
+        .category-card .btn {
+            font-size: 0.8rem !important;
+        }
+
+        /* Стили для заголовков секций */
+        .section-tiles h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .section-tiles h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Более плотные сетки */
+        .tiles-gutters {
+            row-gap: 0.75rem;
+            --bs-gutter-x: 0.75rem;
+        }
+        
+        /* Стили для шапки статей */
+        .article-header {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-secondary) 100%);
+            border-bottom: 2px solid var(--primary);
+            border-radius: 12px 12px 0 0;
+            padding: 2rem;
+        }
+        
+        [data-bs-theme="dark"] .article-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-bottom-color: #ffffff;
+        }
+        
+        /* Стили для карточки статьи */
+        .article-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+        
+        [data-bs-theme="dark"] .article-card {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background: #1a1a1a;
+        }
+        
+        .article-card .card-body {
+            padding: 2rem;
+        }
+        
+        /* Улучшенные стили для боковой панели статей */
+        .sidebar-compact {
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-compact .card-header {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        [data-bs-theme="dark"] .sidebar-compact .card-header {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        /* Стили для иконок в заголовке боковой панели */
+        .sidebar-compact .card-header i {
+            color: inherit;
+        }
+        
+        [data-bs-theme="dark"] .sidebar-compact .card-header i {
+            color: var(--text-primary);
+        }
+        
+        [data-bs-theme="light"] .sidebar-compact .card-header i {
+            color: #ffffff;
+        }
+        
+        /* Стили для текста заголовка боковой панели */
+        .sidebar-compact .card-header h6 {
+            color: inherit;
+        }
+        
+        .sidebar-compact .card-header .sidebar-title-text {
+            color: inherit;
+        }
+        
+        .sidebar-compact .card-body {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        [data-bs-theme="dark"] .sidebar-compact .card-body {
+            background: var(--bg-primary);
+            border-color: var(--card-border);
+        }
+        
+        .sidebar-compact .list-group-item {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--card-border);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-compact .list-group-item:hover {
+            background: var(--bg-secondary);
+            padding-left: 1.25rem;
+        }
+        
+        .sidebar-compact .list-group-item:last-child {
+            border-bottom: none;
+        }
+        
+        [data-bs-theme="dark"] .sidebar-compact .list-group-item {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border-color: var(--card-border);
+        }
+        
+        [data-bs-theme="dark"] .sidebar-compact .list-group-item:hover {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        /* Стили для сворачиваемой боковой панели */
+        .sidebar-compact.collapsed {
+            width: 60px;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar-compact.collapsed .card-header {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            justify-content: center;
+        }
+        
+        .sidebar-compact.collapsed .card-header h6 {
+            display: none;
+        }
+        
+        .sidebar-compact.collapsed .sidebar-title-text {
+            display: none;
+        }
+        
+        .sidebar-compact.collapsed .card-header .d-flex {
+            justify-content: center;
+        }
+        
+        .sidebar-compact.collapsed .card-header .fa-compress-alt {
+            display: none;
+        }
+        
+        .sidebar-compact.collapsed .card-body {
+            display: none;
+        }
+        
+        .sidebar-compact.collapsed .card-header i {
+            font-size: 1.2rem;
+        }
+        
+        /* Анимация для плавного сворачивания */
+        .sidebar-compact {
+            transition: width 0.3s ease, margin 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .sidebar-compact .card-body {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .sidebar-compact.collapsed .card-body {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+        
+        /* Стили для заголовков в боковой панели */
+        .article-sidebar-title {
+            font-size: 0.9rem !important;
+            line-height: 1.4 !important;
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+        
+        [data-bs-theme="dark"] .article-sidebar-title {
+            color: #e0e0e0 !important;
+        }
+        
+        [data-bs-theme="light"] .article-sidebar-title {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Лаконичный дизайн для статей */
+        .article-content {
+            padding: 0 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-bs-theme="dark"] .article-content {
+            background: #1a1a1a;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4,
+        .article-content h5,
+        .article-content h6 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .article-content p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .article-content ul,
+        .article-content ol {
+            margin-bottom: 1.2rem;
+            padding-left: 1.5rem;
+        }
+        
+        .article-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .article-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .article-content code {
+            background: var(--bg-secondary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--text-primary);
+        }
+        
+        .article-content pre {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--card-border);
+        }
+        
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .article-content th,
+        .article-content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .article-content th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .article-content a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom 0.3s ease;
+        }
+        
+        .article-content a:hover {
+            border-bottom: 1px solid var(--primary);
+        }
+        
+        /* ДОПОЛНИТЕЛЬНЫЕ ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ КНОПОК */
+        .btn-outline-primary {
+            background-color: #0d6efd !important;
+            color: #ffffff !important;
+            border: 2px solid #0d6efd !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            font-weight: 700 !important;
+        }
+        
+        .btn-outline-primary i {
+            color: #ffffff !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #0b5ed7 !important;
+            color: #ffffff !important;
+            border: 2px solid #0b5ed7 !important;
+        }
+        
+        .btn-outline-primary:hover i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ */
+        [data-bs-theme="dark"] .btn-outline-primary {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+            border: 2px solid #6c757d !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+            font-weight: 700 !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background-color: #5a6268 !important;
+            color: #ffffff !important;
+            border: 2px solid #5a6268 !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary:hover i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        /* ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ СВЕТЛОЙ ТЕМЫ */
+        body:not([data-bs-theme="dark"]) .btn-outline-primary {
+            background-color: #0d6efd !important;
+            color: #ffffff !important;
+            border: 2px solid #0d6efd !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            font-weight: 700 !important;
+        }
+        
+        body:not([data-bs-theme="dark"]) .btn-outline-primary i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        body:not([data-bs-theme="dark"]) .btn-outline-primary:hover {
+            background-color: #0b5ed7 !important;
+            color: #ffffff !important;
+            border: 2px solid #0b5ed7 !important;
+        }
+        
+        body:not([data-bs-theme="dark"]) .btn-outline-primary:hover i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* МАКСИМАЛЬНЫЙ ПРИОРИТЕТ ДЛЯ ТЕМНОЙ ТЕМЫ - СЕРЫЕ КНОПКИ */
+        [data-bs-theme="dark"] .btn-outline-primary {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+            border: 2px solid #6c757d !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+            font-weight: 700 !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background-color: #5a6268 !important;
+            color: #ffffff !important;
+            border: 2px solid #5a6268 !important;
+        }
+        
+        [data-bs-theme="dark"] .btn-outline-primary:hover i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        /* КРИТИЧЕСКИ ВАЖНО - ПЕРЕОПРЕДЕЛЕНИЕ ВСЕХ СТИЛЕЙ ДЛЯ ТЕМНОЙ ТЕМЫ */
+        html[data-bs-theme="dark"] .btn-outline-primary,
+        html[data-bs-theme="dark"] .btn.btn-outline-primary,
+        html[data-bs-theme="dark"] a.btn-outline-primary {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+            border: 2px solid #6c757d !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+            font-weight: 700 !important;
+        }
+        
+        html[data-bs-theme="dark"] .btn-outline-primary i,
+        html[data-bs-theme="dark"] .btn.btn-outline-primary i,
+        html[data-bs-theme="dark"] a.btn-outline-primary i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        html[data-bs-theme="dark"] .btn-outline-primary:hover,
+        html[data-bs-theme="dark"] .btn.btn-outline-primary:hover,
+        html[data-bs-theme="dark"] a.btn-outline-primary:hover {
+            background-color: #5a6268 !important;
+            color: #ffffff !important;
+            border: 2px solid #5a6268 !important;
+        }
+        
+        html[data-bs-theme="dark"] .btn-outline-primary:hover i,
+        html[data-bs-theme="dark"] .btn.btn-outline-primary:hover i,
+        html[data-bs-theme="dark"] a.btn-outline-primary:hover i {
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'knowledge:home' %}">
+                <i class="fas fa-database me-2"></i>База знаний
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'knowledge:home' %}">
+                            <i class="fas fa-home me-1"></i>Главная
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'knowledge:category_list' %}">
+                            <i class="fas fa-th-large me-1"></i>Категории
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'books:book_list' %}">
+                            <i class="fas fa-book me-1"></i>Библиотека
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'knowledge:search' %}">
+                            <i class="fas fa-search me-1"></i>Поиск
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <!-- Быстрые действия -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'knowledge:create_article' %}" title="Создать статью">
+                                <i class="fas fa-plus me-1"></i>Создать
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'knowledge:my_favorites' %}" title="Избранное">
+                                <i class="fas fa-star me-1"></i>Избранное
+                            </a>
+                        </li>
+                        
+                        <!-- Dropdown пользователя -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-1"></i>{{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                    <i class="fas fa-user-circle me-2"></i>Профиль
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'knowledge:my_articles' %}">
+                                    <i class="fas fa-file-alt me-2"></i>Мои статьи
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Панель управления
+                                </a></li>
+                                {% if user.is_staff %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/admin/">
+                                    <i class="fas fa-cog me-2"></i>Админка
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'moderation:dashboard' %}">
+                                    <i class="fas fa-shield-alt me-2"></i>Модерация
+                                </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Переключатель темы -->
+                        <li class="nav-item">
+                            <button class="btn btn-outline-secondary btn-sm ms-2" id="theme-toggle" title="Переключить тему">
+                                <i class="fas fa-moon" id="theme-icon"></i>
+                            </button>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Войти
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:register' %}">
+                                <i class="fas fa-user-plus me-1"></i>Регистрация
+                            </a>
+                        </li>
+                        
+                        <!-- Переключатель темы -->
+                        <li class="nav-item">
+                            <button class="btn btn-outline-secondary btn-sm ms-2" id="theme-toggle" title="Переключить тему">
+                                <i class="fas fa-moon" id="theme-icon"></i>
+                            </button>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small><i class="fas fa-database me-1"></i>База знаний &copy; 2024</small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small>Централизованное хранилище знаний</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App JS -->
+    <script src="{% static 'js/prosemirror-init.js' %}"></script>
+    <script>
+    (function() {
+        try {
+            var saved = localStorage.getItem('theme');
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            
+            // Обновляем иконку переключателя
+            var themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) {
+                themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        } catch (e) {}
+    })();
+    
+    // Переключатель темы
+    document.addEventListener('DOMContentLoaded', function() {
+        var themeToggle = document.getElementById('theme-toggle');
+        var themeIcon = document.getElementById('theme-icon');
+        
+        if (themeToggle && themeIcon) {
+            themeToggle.addEventListener('click', function() {
+                var currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                themeIcon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                
+                try {
+                    localStorage.setItem('theme', newTheme);
+                } catch (e) {}
+            });
+        }
+
+        // Проверяем, что Bootstrap загружен
+        if (typeof bootstrap === 'undefined') {
+            console.warn('Bootstrap не загружен, повторная попытка через 100ms...');
+            setTimeout(function() {
+                if (typeof bootstrap !== 'undefined') {
+                    initializeDropdowns();
+                } else {
+                    console.error('Bootstrap не удалось загрузить');
+                }
+            }, 100);
+        } else {
+            initializeDropdowns();
+        }
+        
+        function initializeDropdowns() {
+            // Инициализация Bootstrap dropdown
+            const dropdownToggleList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+            const dropdownList = dropdownToggleList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl);
+            });
+        }
+    });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+    // Принудительное применение стилей для кнопок
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.btn-outline-primary');
+        const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        
+        buttons.forEach(button => {
+            if (isDarkTheme) {
+                // КРИТИЧЕСКИ ВАЖНО - ПРИНУДИТЕЛЬНЫЕ СЕРЫЕ стили для темной темы
+                button.style.setProperty('background-color', '#6c757d', 'important');
+                button.style.setProperty('color', '#ffffff', 'important');
+                button.style.setProperty('border', '2px solid #6c757d', 'important');
+                button.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                button.style.setProperty('font-weight', '700', 'important');
+                button.style.setProperty('box-shadow', '0 4px 12px rgba(0, 0, 0, 0.3)', 'important');
+            } else {
+                // Стили для светлой темы
+                button.style.setProperty('background-color', '#0d6efd', 'important');
+                button.style.setProperty('color', '#ffffff', 'important');
+                button.style.setProperty('border', '2px solid #0d6efd', 'important');
+                button.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                button.style.setProperty('font-weight', '700', 'important');
+            }
+            
+            // Стили для иконок
+            const icons = button.querySelectorAll('i');
+            icons.forEach(icon => {
+                icon.style.color = '#ffffff';
+                icon.style.textShadow = '0 2px 4px rgba(0, 0, 0, 0.9)';
+            });
+            
+            // Обработчик наведения
+            button.addEventListener('mouseenter', function() {
+                if (isDarkTheme) {
+                    this.style.setProperty('background-color', '#5a6268', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border', '2px solid #5a6268', 'important');
+                    this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                } else {
+                    this.style.setProperty('background-color', '#0b5ed7', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border', '2px solid #0b5ed7', 'important');
+                    this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                }
+                
+                const icons = this.querySelectorAll('i');
+                icons.forEach(icon => {
+                    if (isDarkTheme) {
+                        icon.style.color = '#ffffff';
+                        icon.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.5)';
+                    } else {
+                        icon.style.color = '#ffffff';
+                        icon.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.3)';
+                    }
+                });
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                if (isDarkTheme) {
+                    this.style.setProperty('background-color', '#6c757d', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border', '2px solid #6c757d', 'important');
+                    this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                } else {
+                    this.style.setProperty('background-color', '#0d6efd', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border', '2px solid #0d6efd', 'important');
+                    this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                }
+                
+                const icons = this.querySelectorAll('i');
+                icons.forEach(icon => {
+                    if (isDarkTheme) {
+                        icon.style.color = '#ffffff';
+                        icon.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.5)';
+                    } else {
+                        icon.style.color = '#ffffff';
+                        icon.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.3)';
+                    }
+                });
+            });
+        });
+        
+        // ФУНКЦИЯ ПРИМЕНЕНИЯ СТИЛЕЙ ДЛЯ КНОПОК
+        function applyButtonStyles() {
+            const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const buttons = document.querySelectorAll('.btn-outline-primary');
+            
+            buttons.forEach(button => {
+                // Удаляем старые обработчики событий
+                if (button._hoverHandler) {
+                    button.removeEventListener('mouseenter', button._hoverHandler);
+                }
+                if (button._leaveHandler) {
+                    button.removeEventListener('mouseleave', button._leaveHandler);
+                }
+                
+                if (isDarkTheme) {
+                    // СЕРЫЕ стили для темной темы
+                    button.style.setProperty('background-color', '#6c757d', 'important');
+                    button.style.setProperty('color', '#ffffff', 'important');
+                    button.style.setProperty('border', '2px solid #6c757d', 'important');
+                    button.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                    button.style.setProperty('font-weight', '700', 'important');
+                    button.style.setProperty('box-shadow', '0 4px 12px rgba(0, 0, 0, 0.3)', 'important');
+                } else {
+                    // СИНИЕ стили для светлой темы
+                    button.style.setProperty('background-color', '#0d6efd', 'important');
+                    button.style.setProperty('color', '#ffffff', 'important');
+                    button.style.setProperty('border', '2px solid #0d6efd', 'important');
+                    button.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                    button.style.setProperty('font-weight', '700', 'important');
+                    button.style.setProperty('box-shadow', '0 4px 12px rgba(13, 110, 253, 0.3)', 'important');
+                }
+                
+                // Стили для иконок
+                const icons = button.querySelectorAll('i');
+                icons.forEach(icon => {
+                    if (isDarkTheme) {
+                        icon.style.setProperty('color', '#ffffff', 'important');
+                        icon.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                    } else {
+                        icon.style.setProperty('color', '#ffffff', 'important');
+                        icon.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                    }
+                });
+                
+                // СОЗДАЕМ НОВЫЕ ОБРАБОТЧИКИ СОБЫТИЙ ДЛЯ ТЕКУЩЕЙ ТЕМЫ
+                button._hoverHandler = function() {
+                    const currentIsDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                    if (currentIsDark) {
+                        // Темная тема - темно-серый при наведении
+                        this.style.setProperty('background-color', '#5a6268', 'important');
+                        this.style.setProperty('color', '#ffffff', 'important');
+                        this.style.setProperty('border', '2px solid #5a6268', 'important');
+                        this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                    } else {
+                        // Светлая тема - темно-синий при наведении
+                        this.style.setProperty('background-color', '#0b5ed7', 'important');
+                        this.style.setProperty('color', '#ffffff', 'important');
+                        this.style.setProperty('border', '2px solid #0b5ed7', 'important');
+                        this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                    }
+                    
+                    const icons = this.querySelectorAll('i');
+                    icons.forEach(icon => {
+                        if (currentIsDark) {
+                            icon.style.setProperty('color', '#ffffff', 'important');
+                            icon.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                        } else {
+                            icon.style.setProperty('color', '#ffffff', 'important');
+                            icon.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                        }
+                    });
+                };
+                
+                button._leaveHandler = function() {
+                    const currentIsDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                    if (currentIsDark) {
+                        // Темная тема - серый при уходе
+                        this.style.setProperty('background-color', '#6c757d', 'important');
+                        this.style.setProperty('color', '#ffffff', 'important');
+                        this.style.setProperty('border', '2px solid #6c757d', 'important');
+                        this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                    } else {
+                        // Светлая тема - синий при уходе
+                        this.style.setProperty('background-color', '#0d6efd', 'important');
+                        this.style.setProperty('color', '#ffffff', 'important');
+                        this.style.setProperty('border', '2px solid #0d6efd', 'important');
+                        this.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                    }
+                    
+                    const icons = this.querySelectorAll('i');
+                    icons.forEach(icon => {
+                        if (currentIsDark) {
+                            icon.style.setProperty('color', '#ffffff', 'important');
+                            icon.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.5)', 'important');
+                        } else {
+                            icon.style.setProperty('color', '#ffffff', 'important');
+                            icon.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                        }
+                    });
+                };
+                
+                // ДОБАВЛЯЕМ НОВЫЕ ОБРАБОТЧИКИ
+                button.addEventListener('mouseenter', button._hoverHandler);
+                button.addEventListener('mouseleave', button._leaveHandler);
+            });
+        }
+        
+        // ПРИМЕНЯЕМ СТИЛИ ПРИ ЗАГРУЗКЕ
+        applyButtonStyles();
+        
+        // ОТСЛЕЖИВАНИЕ ПЕРЕКЛЮЧЕНИЯ ТЕМЫ
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                // Небольшая задержка для применения изменений темы
+                setTimeout(function() {
+                    applyButtonStyles();
+                }, 100);
+            });
+        }
+        
+        // ОТСЛЕЖИВАНИЕ ИЗМЕНЕНИЙ В АТРИБУТЕ data-bs-theme
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
+                    setTimeout(function() {
+                        applyButtonStyles();
+                    }, 50);
+                }
+            });
+        });
+        
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-bs-theme']
+        });
+    });
+    </script>
+</body>
+</html>

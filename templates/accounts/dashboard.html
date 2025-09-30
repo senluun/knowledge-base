@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Панель управления - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-tachometer-alt text-primary me-2"></i>
+                    Панель управления
+                </h1>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-1"></i>
+                        Настройки
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                            <i class="fas fa-user me-2"></i>Профиль
+                        </a></li>
+                        <!-- Ссылка смены пароля отключена, так как маршрут не настроен -->
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Приветствие -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h4 class="alert-heading">
+                    <i class="fas fa-hand-wave me-2"></i>
+                    Добро пожаловать, {{ user.get_full_name|default:user.username }}!
+                </h4>
+                <p class="mb-0">Ваша роль: <strong>{{ user.get_role_display }}</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ user.authored_articles.count }}</h4>
+                            <p class="card-text">Мои статьи</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ user.favorites.count }}</h4>
+                            <p class="card-text">Избранные</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-heart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ user.comments.count }}</h4>
+                            <p class="card-text">Комментарии</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ total_views }}</h4>
+                            <p class="card-text">Просмотры</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Быстрые действия
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus me-2"></i>
+                                Создать статью
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'knowledge:my_favorites' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-heart me-2"></i>
+                                Избранные
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'knowledge:home' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-home me-2"></i>
+                                Все статьи
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-user me-2"></i>
+                                Профиль
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Последние статьи -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        Последние статьи
+                    </h5>
+                    <a href="{% url 'knowledge:home' %}" class="btn btn-sm btn-outline-primary">
+                        Все статьи
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_articles %}
+                        <div class="row">
+                            {% for article in recent_articles %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        {% if article.featured_image %}
+                                            <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 150px; object-fit: cover;">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <a href="{% url 'knowledge:article_detail' article.slug %}" class="text-decoration-none">
+                                                    {{ article.title }}
+                                                </a>
+                                            </h6>
+                                            <p class="card-text text-muted small">
+                                                {{ article.excerpt|truncatewords:15 }}
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    {{ article.created_at|date:"d.m.Y" }}
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-eye me-1"></i>
+                                                    {{ article.views_count }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Статьи не найдены</p>
+                            <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>
+                                Создать первую статью
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модерация (только для модераторов) -->
+    {% if user.role in 'moderator,admin' %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-gavel me-2"></i>
+                            Модерация
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'moderation:suggestion_list' %}" class="btn btn-warning w-100">
+                                    <i class="fas fa-clipboard-list me-2"></i>
+                                    Предложения
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'moderation:dashboard' %}" class="btn btn-outline-warning w-100">
+                                    <i class="fas fa-tachometer-alt me-2"></i>
+                                    Панель модерации
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'admin:index' %}" class="btn btn-outline-dark w-100">
+                                    <i class="fas fa-cog me-2"></i>
+                                    Админ-панель
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-title a:hover {
+    color: var(--bs-primary) !important;
+}
+
+.alert-info {
+    background-color: rgba(var(--bs-info-rgb), 0.1);
+    border-color: rgba(var(--bs-info-rgb), 0.2);
+    color: var(--bs-info);
+}
+
+.btn {
+    transition: all 0.15s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.bg-primary, .bg-success, .bg-warning, .bg-info {
+    background-color: var(--bs-primary) !important;
+}
+
+.bg-success {
+    background-color: var(--bs-success) !important;
+}
+
+.bg-warning {
+    background-color: var(--bs-warning) !important;
+}
+
+.bg-info {
+    background-color: var(--bs-info) !important;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

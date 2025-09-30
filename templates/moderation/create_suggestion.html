@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Предложить улучшение{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">
+            <i class="fas fa-lightbulb me-3"></i>Предложить улучшение
+        </h1>
+        <p class="page-subtitle">Поделитесь своими идеями по улучшению базы знаний</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Тип предложения -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.suggestion_type.id_for_label }}" class="form-label">Тип предложения</label>
+                            <select class="form-select" name="suggestion_type" id="{{ form.suggestion_type.id_for_label }}">
+                                <option value="">Выберите тип предложения</option>
+                                <option value="new_article" {% if form.suggestion_type.value == 'new_article' %}selected{% endif %}>
+                                    Новая статья
+                                </option>
+                                <option value="article_improvement" {% if form.suggestion_type.value == 'article_improvement' %}selected{% endif %}>
+                                    Улучшение существующей статьи
+                                </option>
+                                <option value="new_category" {% if form.suggestion_type.value == 'new_category' %}selected{% endif %}>
+                                    Новая категория
+                                </option>
+                                <option value="feature_request" {% if form.suggestion_type.value == 'feature_request' %}selected{% endif %}>
+                                    Запрос функции
+                                </option>
+                                <option value="bug_report" {% if form.suggestion_type.value == 'bug_report' %}selected{% endif %}>
+                                    Сообщение об ошибке
+                                </option>
+                                <option value="other" {% if form.suggestion_type.value == 'other' %}selected{% endif %}>
+                                    Другое
+                                </option>
+                            </select>
+                            {% if form.suggestion_type.errors %}
+                                <div class="text-danger small">{{ form.suggestion_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Заголовок -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Заголовок</label>
+                            <input type="text" class="form-control" name="title" id="{{ form.title.id_for_label }}" 
+                                   value="{{ form.title.value|default:'' }}" 
+                                   placeholder="Краткое описание предложения">
+                            {% if form.title.errors %}
+                                <div class="text-danger small">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Описание -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Описание</label>
+                            <textarea class="form-control" name="description" id="{{ form.description.id_for_label }}" 
+                                      rows="6" placeholder="Подробно опишите ваше предложение...">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Связанная статья (если применимо) -->
+                        <div class="form-group mb-4" id="article-field" style="display: none;">
+                            <label for="{{ form.related_article.id_for_label }}" class="form-label">Связанная статья</label>
+                            <select class="form-select" name="related_article" id="{{ form.related_article.id_for_label }}">
+                                <option value="">Выберите статью</option>
+                                <!-- Здесь будут загружены статьи через AJAX -->
+                            </select>
+                            {% if form.related_article.errors %}
+                                <div class="text-danger small">{{ form.related_article.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Приоритет -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.priority.id_for_label }}" class="form-label">Приоритет</label>
+                            <select class="form-select" name="priority" id="{{ form.priority.id_for_label }}">
+                                <option value="low" {% if form.priority.value == 'low' %}selected{% endif %}>Низкий</option>
+                                <option value="medium" {% if form.priority.value == 'medium' %}selected{% endif %}>Средний</option>
+                                <option value="high" {% if form.priority.value == 'high' %}selected{% endif %}>Высокий</option>
+                            </select>
+                            {% if form.priority.errors %}
+                                <div class="text-danger small">{{ form.priority.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Дополнительные файлы -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.attachments.id_for_label }}" class="form-label">Дополнительные файлы</label>
+                            <input type="file" class="form-control" name="attachments" id="{{ form.attachments.id_for_label }}" 
+                                   multiple accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif">
+                            <div class="form-text">Максимум 5 файлов, до 10 МБ каждый</div>
+                            {% if form.attachments.errors %}
+                                <div class="text-danger small">{{ form.attachments.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Кнопки -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'moderation:my_suggestions' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i>Отправить предложение
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const suggestionTypeSelect = document.getElementById('{{ form.suggestion_type.id_for_label }}');
+    const articleField = document.getElementById('article-field');
+    
+    // Показываем поле связанной статьи для определенных типов
+    function toggleArticleField() {
+        const selectedType = suggestionTypeSelect.value;
+        if (selectedType === 'article_improvement') {
+            articleField.style.display = 'block';
+            loadArticles();
+        } else {
+            articleField.style.display = 'none';
+        }
+    }
+    
+    // Загружаем статьи через AJAX
+    function loadArticles() {
+        fetch('{% url "knowledge:api_articles" %}')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('{{ form.related_article.id_for_label }}');
+                select.innerHTML = '<option value="">Выберите статью</option>';
+                data.articles.forEach(article => {
+                    const option = document.createElement('option');
+                    option.value = article.id;
+                    option.textContent = article.title;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Ошибка загрузки статей:', error));
+    }
+    
+    suggestionTypeSelect.addEventListener('change', toggleArticleField);
+    
+    // Инициализация
+    toggleArticleField();
+});
+</script>
+{% endblock %}

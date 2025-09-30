@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load knowledge_extras %}
+
+{% block title %}Категории - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-th-large text-primary me-2"></i>
+                    Категории
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'knowledge:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item active">Категории</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    {% if categories %}
+    <div class="row">
+        {% for category in categories %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 category-card">
+                <div class="card-body text-center">
+                    {% if category.icon %}
+                        <i class="{{ category.icon }} category-icon" 
+                           style="color: {{ category.color }};"></i>
+                    {% else %}
+                        <i class="fas fa-folder category-icon text-primary"></i>
+                    {% endif %}
+                    <h5 class="card-title">
+                        {% if category.slug %}
+                            <a href="{% url 'knowledge:category_detail' category.slug %}" 
+                               class="article-title-link">
+                                {{ category.name }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">{{ category.name }}</span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">{{ category.description|truncatewords:20 }}</p>
+                    <span class="badge bg-secondary">{{ category.articles_count }} статей</span>
+                </div>
+                {% if category.slug %}
+                <div class="card-footer bg-transparent text-center">
+                    <a href="{% url 'knowledge:category_detail' category.slug %}" 
+                       class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-right me-1"></i>Перейти
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-th-large text-muted" style="font-size: 4rem;"></i>
+        <h3 class="mt-3 text-muted">Категории не найдены</h3>
+        <p class="text-muted">Пока нет доступных категорий</p>
+        <a href="{% url 'knowledge:home' %}" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i>На главную
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Интерактивность карточек категорий
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Не переходим по ссылке, если кликнули на кнопку
+            if (e.target.tagName === 'A' || e.target.closest('a')) {
+                return;
+            }
+            
+            const link = this.querySelector('a[href*="category"]');
+            if (link) {
+                window.location.href = link.href;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

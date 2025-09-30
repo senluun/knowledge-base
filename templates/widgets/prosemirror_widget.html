@@ -1,0 +1,58 @@
+{% load static %}
+<div class="prosemirror-editor-container">
+    <textarea id="{{ widget_id }}" name="{{ name }}" style="display:none;">{{ value|default_if_none:'' }}</textarea>
+    <div id="editor-{{ widget_id }}" class="prosemirror-editor" data-placeholder="Начните писать... Используйте / для команд или нажмите +"></div>
+    <button type="button" id="plus-{{ widget_id }}" class="toolbar-btn" aria-label="Команды">+</button>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try { 
+        initProseMirror('{{ widget_id }}'); 
+        
+        // Делаем плюсик прыгающим за курсором
+        const editor = document.getElementById('editor-{{ widget_id }}');
+        const plusBtn = document.getElementById('plus-{{ widget_id }}');
+        
+        if (editor && plusBtn) {
+            function updatePlusPosition() {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    const editorRect = editor.getBoundingClientRect();
+                    
+                    // Позиционируем плюсик рядом с курсором
+                    const left = Math.max(16, rect.left - editorRect.left);
+                    const top = Math.max(16, rect.top - editorRect.top);
+                    
+                    plusBtn.style.left = left + 'px';
+                    plusBtn.style.top = top + 'px';
+                    plusBtn.style.transform = 'translateY(-50%)';
+                }
+            }
+            
+            // Обновляем позицию при изменении курсора
+            editor.addEventListener('keyup', updatePlusPosition);
+            editor.addEventListener('click', updatePlusPosition);
+            editor.addEventListener('input', updatePlusPosition);
+            
+            // Показываем/скрываем плюсик при фокусе
+            editor.addEventListener('focus', function() {
+                plusBtn.classList.add('show');
+                updatePlusPosition();
+            });
+            
+            editor.addEventListener('blur', function() {
+                plusBtn.classList.remove('show');
+            });
+            
+            // Изначально скрываем плюсик
+            plusBtn.classList.remove('show');
+        }
+    } catch (e) { 
+        console.error('ProseMirror initialization error:', e); 
+    }
+});
+</script>
+
+

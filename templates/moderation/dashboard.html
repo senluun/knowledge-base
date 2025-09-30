@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Панель модерации - База знаний{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-gavel me-2"></i>Панель модерации</h2>
+    <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Создать статью
+    </a>
+</div>
+
+<!-- Статистика -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                <h5 class="card-title">{{ pending_articles }}</h5>
+                <p class="card-text">Статей на рассмотрении</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-list fa-2x text-primary mb-2"></i>
+                <h5 class="card-title">{{ total_articles }}</h5>
+                <p class="card-text">Всего статей</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                <h5 class="card-title">{{ published_articles }}</h5>
+                <p class="card-text">Опубликовано</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-bell fa-2x text-info mb-2"></i>
+                <h5 class="card-title">0</h5>
+                <p class="card-text">Уведомлений</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Быстрые действия -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-bolt me-2"></i>Быстрые действия</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'moderation:suggestion_list' %}?status=pending" class="btn btn-warning">
+                        <i class="fas fa-clock me-2"></i>Ожидающие рассмотрения
+                    </a>
+                    <a href="{% url 'moderation:suggestion_list' %}?status=approved" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Одобренные
+                    </a>
+                    <a href="{% url 'moderation:suggestion_list' %}?status=rejected" class="btn btn-danger">
+                        <i class="fas fa-times me-2"></i>Отклоненные
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-bar me-2"></i>Статистика</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Всего статей:</strong> {{ total_articles }}</p>
+                <p><strong>Ожидают рассмотрения:</strong> {{ pending_articles }}</p>
+                <p><strong>Опубликовано:</strong> {{ published_articles }}</p>
+                <p><strong>Процент публикации:</strong> 
+                    {% if total_articles > 0 %}
+                        {% widthratio published_articles total_articles 100 %}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Последние статьи на модерации -->
+{% if recent_articles %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6><i class="fas fa-list me-2"></i>Последние статьи на модерации</h6>
+            <a href="{% url 'moderation:suggestion_list' %}" class="btn btn-sm btn-outline-primary">
+                Показать все
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Заголовок</th>
+                            <th>Автор</th>
+                            <th>Категория</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in recent_articles %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                                       class="text-decoration-none">
+                                        {{ article.title|truncatechars:50 }}
+                                    </a>
+                                </td>
+                                <td>{{ article.author.get_full_name }}</td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        {{ article.category.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">{{ article.get_status_display }}</span>
+                                </td>
+                                <td>{{ article.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h5>Нет статей для рассмотрения</h5>
+            <p class="text-muted">Все статьи обработаны!</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

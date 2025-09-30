@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Добавить книгу{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/books.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Добавить новую книгу
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="book-add-form">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label h6">
+                                        <i class="fas fa-book me-2"></i>Название книги *
+                                    </label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.author.id_for_label }}" class="form-label h6">
+                                        <i class="fas fa-user me-2"></i>Автор *
+                                    </label>
+                                    {{ form.author }}
+                                    {% if form.author.errors %}
+                                        <div class="text-danger small mt-1">{{ form.author.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label h6">
+                                <i class="fas fa-align-left me-2"></i>Описание
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label h6">
+                                        <i class="fas fa-folder me-2"></i>Категория *
+                                    </label>
+                                    {{ form.category }}
+                                    {% if form.category.errors %}
+                                        <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.tags.id_for_label }}" class="form-label h6">
+                                        <i class="fas fa-tags me-2"></i>Теги
+                                    </label>
+                                    {{ form.tags }}
+                                    {% if form.tags.errors %}
+                                        <div class="text-danger small mt-1">{{ form.tags.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.pdf_file.id_for_label }}" class="form-label h6">
+                                <i class="fas fa-file-pdf me-2"></i>PDF файл *
+                            </label>
+                            {{ form.pdf_file }}
+                            {% if form.pdf_file.errors %}
+                                <div class="text-danger small mt-1">{{ form.pdf_file.errors }}</div>
+                            {% endif %}
+                            <div class="form-text mt-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Поддерживаются только PDF файлы.</strong> Максимальный размер: 50 МБ.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'books:book_list' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Добавить книгу
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Инструкция -->
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Как добавить книгу
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-4">
+                        <li class="mb-2"><strong>Заполните обязательные поля:</strong> название, автор, категория и PDF файл</li>
+                        <li class="mb-2"><strong>Добавьте описание</strong> для лучшего понимания содержания книги</li>
+                        <li class="mb-2"><strong>Выберите теги</strong> для удобной категоризации</li>
+                        <li class="mb-2"><strong>Загрузите PDF файл</strong> - он будет доступен для чтения на сайте</li>
+                        <li class="mb-2"><strong>Нажмите "Добавить книгу"</strong> для сохранения</li>
+                    </ol>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Совет:</strong> После добавления книга автоматически появится в каталоге и будет доступна для чтения.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

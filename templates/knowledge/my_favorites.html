@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load knowledge_extras %}
+
+{% block title %}Избранное - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-star text-warning me-2"></i>
+                    Избранное
+                </h1>
+                <a href="{% url 'knowledge:search' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-search me-1"></i>Найти статьи
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Список избранных статей -->
+    {% if favorites %}
+    <div class="row">
+        {% for favorite in favorites %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {% if favorite.article.slug %}
+                            <a href="{% url 'knowledge:article_detail' favorite.article.slug %}" class="article-title-link">
+                                {{ favorite.article.title }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">{{ favorite.article.title }}</span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">{{ favorite.article.excerpt|truncatewords:20 }}</p>
+                    <div class="article-meta">
+                        <small class="text-muted">
+                            <i class="fas fa-user me-1"></i>{{ favorite.article.author.get_full_name }}
+                            <i class="fas fa-calendar ms-2 me-1"></i>{{ favorite.article.created_at|date:"d.m.Y" }}
+                            <i class="fas fa-eye ms-2 me-1"></i>{{ favorite.article.views_count }}
+                            <span class="badge ms-2 
+                                {% if favorite.article.status == 'published' %}bg-success
+                                {% elif favorite.article.status == 'draft' %}bg-warning
+                                {% elif favorite.article.status == 'pending' %}bg-info
+                                {% else %}bg-secondary{% endif %}">
+                                {% if favorite.article.status == 'published' %}Опубликовано
+                                {% elif favorite.article.status == 'draft' %}Черновик
+                                {% elif favorite.article.status == 'pending' %}На рассмотрении
+                                {% else %}{{ favorite.article.status }}{% endif %}
+                            </span>
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-folder me-1"></i>{{ favorite.article.category.name }}
+                            <i class="fas fa-star ms-2 me-1 text-warning"></i>Добавлено {{ favorite.created_at|date:"d.m.Y" }}
+                        </small>
+                        {% if favorite.article.slug %}
+                        <a href="{% url 'knowledge:article_detail' favorite.article.slug %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>Читать
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Навигация по страницам">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">Первая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-star text-muted" style="font-size: 4rem;"></i>
+        <h3 class="mt-3 text-muted">У вас пока нет избранных статей</h3>
+        <p class="text-muted">Добавляйте понравившиеся статьи в избранное, чтобы быстро к ним вернуться</p>
+        <a href="{% url 'knowledge:search' %}" class="btn btn-primary">
+            <i class="fas fa-search me-2"></i>Найти статьи
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

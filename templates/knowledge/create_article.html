@@ -1,0 +1,535 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Создать статью - База знаний{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/prosemirror.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>
+                    Создать статью
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'knowledge:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item active">Создать статью</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 text-dark">
+                        <i class="fas fa-edit me-2 text-primary"></i>
+                        Новая статья
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" enctype="multipart/form-data" name="create-article-form" class="create-article-form">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+    <div class="row">
+        <div class="col-md-10">
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">
+                    {{ form.title.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.title|add_class:"form-control" }}
+                {% if form.title.errors %}
+                    <div class="text-danger">
+                        {% for error in form.title.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.content.id_for_label }}" class="form-label">
+                            {{ form.content.label }} <span class="text-danger">*</span>
+                        </label>
+                        <div class="prosemirror-editor-container" style="position: relative;">
+                            <textarea name="content" id="id_content" style="display: none;"></textarea>
+                            <div id="editor-id_content" class="prosemirror-editor" data-placeholder="Начните писать... Используйте / для команд или нажмите +" contenteditable="true" style="min-height: 500px;"></div>
+                            <!-- Плюсик будет добавлен динамически в JavaScript -->
+                        </div>
+                        {% if form.content.errors %}
+                            <div class="text-danger">
+                                {% for error in form.content.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+        </div>
+
+        <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                                        {{ form.category.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.category|add_class:"form-select" }}
+                                    {% if form.category.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.category.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.featured_image.id_for_label }}" class="form-label">
+                                        {{ form.featured_image.label }}
+                                    </label>
+                                    {{ form.featured_image|add_class:"form-control" }}
+                                    {% if form.featured_image.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.featured_image.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.tags.id_for_label }}" class="form-label">
+                                        {{ form.tags.label }}
+                                    </label>
+                                    {{ form.tags|add_class:"form-control" }}
+                                    <small class="form-text text-muted">Теги через запятую</small>
+                                    {% if form.tags.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.tags.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        {{ form.allow_comments|add_class:"form-check-input" }}
+                                        <label for="{{ form.allow_comments.id_for_label }}" class="form-check-label">
+                                            {{ form.allow_comments.label }}
+                                        </label>
+                                    </div>
+                                    {% if form.allow_comments.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.allow_comments.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        {{ form.is_featured|add_class:"form-check-input" }}
+                                        <label for="{{ form.is_featured.id_for_label }}" class="form-check-label">
+                                            {{ form.is_featured.label }}
+                                        </label>
+                                    </div>
+                                    {% if form.is_featured.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.is_featured.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Тип публикации <span class="text-danger">*</span></label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="publication_type" id="publish" value="publish">
+                                        <label class="form-check-label" for="publish">
+                                            Опубликовать сразу
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="publication_type" id="draft" value="draft">
+                                        <label class="form-check-label" for="draft">
+                                            Сохранить как черновик
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="publication_type" id="suggestion" value="suggestion" checked>
+                                        <label class="form-check-label" for="suggestion">
+                                            Отправить на модерацию
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'knowledge:home' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                <i class="fas fa-save me-1"></i>
+                                Создать статью
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.create-article-form .form-control:focus,
+.create-article-form .form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+#id_content {
+    min-height: 400px;
+    font-family: 'Courier New', monospace;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--bs-dark);
+}
+
+.text-danger {
+    color: var(--bs-danger) !important;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: var(--bs-light);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* Темная тема для заголовка карточки */
+[data-bs-theme="dark"] .card-header {
+    background-color: var(--bs-dark);
+    border-bottom-color: var(--bs-border-color);
+}
+
+[data-bs-theme="dark"] .card-header .card-title {
+    color: var(--bs-light) !important;
+}
+
+/* Стили для блок-меню плюсика */
+.block-menu__plus {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #929ca5;
+    cursor: pointer;
+    z-index: 1000;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.block-menu__plus:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.block-menu__plus:active {
+    transform: scale(0.95);
+}
+
+/* Стили для светлой темы */
+[data-bs-theme="light"] .block-menu__plus {
+    color: #495057;
+    opacity: 0.9;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="light"] .block-menu__plus:hover {
+    background: #f8f9fa;
+    opacity: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Стили для темной темы */
+[data-bs-theme="dark"] .block-menu__plus {
+    color: #adb5bd;
+    opacity: 0.7;
+}
+
+[data-bs-theme="dark"] .block-menu__plus:hover {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+}
+
+/* Стили для командного меню */
+.command-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    max-height: 300px;
+    overflow-y: auto;
+    min-width: 280px;
+}
+
+.command-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.command-menu-item:last-child {
+    border-bottom: none;
+}
+
+.command-menu-item:hover,
+.command-menu-item.selected {
+    background-color: #f8f9fa;
+}
+
+.command-menu-item-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.command-menu-item-content {
+    flex: 1;
+}
+
+.command-menu-item-title {
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 2px;
+}
+
+.command-menu-item-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Темная тема для командного меню */
+[data-bs-theme="dark"] .command-menu {
+    background: #343a40;
+    border-color: #495057;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .command-menu-item {
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .command-menu-item:hover,
+[data-bs-theme="dark"] .command-menu-item.selected {
+    background-color: #495057;
+}
+
+[data-bs-theme="dark"] .command-menu-item-icon {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .command-menu-item-title {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .command-menu-item-description {
+    color: #adb5bd;
+}
+
+/* Дополнительные стили для темной темы в форме */
+[data-bs-theme="dark"] .form-label {
+    color: #f8f9fa !important;
+    font-weight: 600 !important;
+}
+
+[data-bs-theme="dark"] .form-check-label {
+    color: #f8f9fa !important;
+}
+
+[data-bs-theme="dark"] .form-text {
+    color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .text-danger {
+    color: #ff6b6b !important;
+}
+
+[data-bs-theme="dark"] .form-control {
+    background-color: #343a40 !important;
+    border-color: #495057 !important;
+    color: #f8f9fa !important;
+}
+
+[data-bs-theme="dark"] .form-control:focus {
+    background-color: #343a40 !important;
+    border-color: #0d6efd !important;
+    color: #f8f9fa !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .form-select {
+    background-color: #343a40 !important;
+    border-color: #495057 !important;
+    color: #f8f9fa !important;
+}
+
+[data-bs-theme="dark"] .form-select:focus {
+    background-color: #343a40 !important;
+    border-color: #0d6efd !important;
+    color: #f8f9fa !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    opacity: 0.9;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.create-article-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const titleField = document.getElementById('id_title');
+    const contentField = document.getElementById('id_content');
+    const categoryField = document.getElementById('id_category');
+
+    // Валидация формы
+    function validateForm() {
+        let isValid = true;
+        
+        if (!titleField.value.trim()) {
+            isValid = false;
+        }
+        
+        if (!contentField.value.trim()) {
+            isValid = false;
+        }
+        
+        if (!categoryField.value) {
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    // Обновление состояния кнопки отправки
+    function updateSubmitButton() {
+        if (validateForm()) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-secondary');
+            submitBtn.classList.add('btn-primary');
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('btn-primary');
+            submitBtn.classList.add('btn-secondary');
+        }
+    }
+
+    // Обработчики событий
+    [titleField, contentField, categoryField].forEach(field => {
+        field.addEventListener('input', updateSubmitButton);
+        field.addEventListener('change', updateSubmitButton);
+    });
+
+    // Предотвращение отправки невалидной формы
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            alert('Пожалуйста, заполните все обязательные поля');
+        }
+    });
+
+    // Инициализация при запуске
+    updateSubmitButton();
+    
+    // Инициализация ProseMirror редактора
+    setTimeout(() => {
+        if (typeof initProseMirror === 'function') {
+            initProseMirror('id_content');
+            console.log('ProseMirror editor initialized');
+        } else {
+            console.error('initProseMirror function not found');
+        }
+    }, 100);
+});
+</script>
+
+<script src="{% static 'js/prosemirror-init.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

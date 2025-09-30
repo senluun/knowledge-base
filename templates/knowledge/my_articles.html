@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load knowledge_extras %}
+
+{% block title %}Мои статьи - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-file-alt text-primary me-2"></i>
+                    Мои статьи
+                </h1>
+                <a href="{% url 'knowledge:create_article' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Создать статью
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ stats.total }}</h5>
+                    <p class="card-text">Всего статей</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-success">{{ stats.published }}</h5>
+                    <p class="card-text">Опубликовано</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">{{ stats.draft }}</h5>
+                    <p class="card-text">Черновики</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-info">{{ stats.pending }}</h5>
+                    <p class="card-text">На рассмотрении</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a href="?status=all" class="btn btn-outline-primary {% if status_filter == 'all' %}active{% endif %}">
+                    Все
+                </a>
+                <a href="?status=published" class="btn btn-outline-success {% if status_filter == 'published' %}active{% endif %}">
+                    Опубликованные
+                </a>
+                <a href="?status=draft" class="btn btn-outline-warning {% if status_filter == 'draft' %}active{% endif %}">
+                    Черновики
+                </a>
+                <a href="?status=pending" class="btn btn-outline-info {% if status_filter == 'pending' %}active{% endif %}">
+                    На рассмотрении
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Список статей -->
+    {% if articles %}
+    <div class="row">
+        {% for article in articles %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {% if article.slug %}
+                            <a href="{% url 'knowledge:article_detail' article.slug %}" class="article-title-link">
+                                {{ article.title }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">{{ article.title }}</span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">{{ article.excerpt|truncatewords:20 }}</p>
+                    <div class="article-meta">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ article.created_at|date:"d.m.Y" }}
+                            <i class="fas fa-eye ms-2 me-1"></i>{{ article.views_count }}
+                            <span class="badge ms-2 
+                                {% if article.status == 'published' %}bg-success
+                                {% elif article.status == 'draft' %}bg-warning
+                                {% elif article.status == 'pending' %}bg-info
+                                {% else %}bg-secondary{% endif %}">
+                                {% if article.status == 'published' %}Опубликовано
+                                {% elif article.status == 'draft' %}Черновик
+                                {% elif article.status == 'pending' %}На рассмотрении
+                                {% else %}{{ article.status }}{% endif %}
+                            </span>
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">
+                            <i class="fas fa-folder me-1"></i>{{ article.category.name }}
+                        </small>
+                        {% if article.slug %}
+                        <a href="{% url 'knowledge:article_detail' article.slug %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>Просмотр
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Навигация по страницам">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}">Первая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}">Предыдущая</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}">Следующая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}">Последняя</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-file-alt text-muted" style="font-size: 4rem;"></i>
+        <h3 class="mt-3 text-muted">У вас пока нет статей</h3>
+        <p class="text-muted">Создайте свою первую статью, чтобы поделиться знаниями</p>
+        <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Создать статью
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

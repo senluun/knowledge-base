@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Библиотека книг{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/books.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Боковая панель с фильтрами -->
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0">Поиск и фильтры</h6>
+                </div>
+                <div class="card-body py-2">
+                    <form method="get" id="search-form" class="books-form">
+                        <!-- Поиск -->
+                        <div class="mb-3">
+                            <label for="id_query" class="form-label small">Поиск</label>
+                            {{ search_form.query }}
+                        </div>
+                        
+                        <!-- Категории -->
+                        <div class="mb-3">
+                            <label for="id_category" class="form-label small">Категория</label>
+                            {{ filter_form.category }}
+                        </div>
+                        
+                        <!-- Теги -->
+                        <div class="mb-3">
+                            <label class="form-label small">Теги</label>
+                            <div class="row g-2">
+                                {% for tag in tags %}
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="tags" value="{{ tag.id }}" 
+                                               id="tag_{{ tag.id }}"
+                                               {% if tag.id|stringformat:"s" in request.GET.tags %}checked{% endif %}>
+                                        <label class="form-check-label small" for="tag_{{ tag.id }}">
+                                            <span class="badge" style="background-color: {{ tag.color }};">
+                                                {{ tag.name }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Сортировка -->
+                        <div class="mb-3">
+                            <label for="id_sort_by" class="form-label small">Сортировка</label>
+                            {{ filter_form.sort_by }}
+                        </div>
+                        
+                        <div class="d-grid gap-1">
+                            <button type="submit" class="btn btn-primary btn-sm">Применить</button>
+                            <a href="{% url 'books:book_list' %}" class="btn btn-outline-secondary btn-sm">Сбросить</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Категории -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Категории</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for category in categories %}
+                        <a href="{% url 'books:category_books' category.slug %}" 
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            {{ category.name }}
+                            <span class="badge bg-primary rounded-pill">{{ category.books.count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Основной контент -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Библиотека книг</h2>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-muted">
+                        Найдено книг: {{ books.paginator.count }}
+                    </div>
+                    <a href="{% url 'books:book_add' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Добавить книгу
+                    </a>
+                </div>
+            </div>
+            
+            {% if books %}
+            <!-- Сетка книг -->
+            <div class="row">
+                {% for book in books %}
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm book-card">
+                        <div class="card-img-top bg-primary d-flex align-items-center justify-content-center" 
+                             style="height: 200px;">
+                            <i class="fas fa-book fa-3x text-white"></i>
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column p-3">
+                            <h6 class="card-title mb-1">{{ book.title }}</h6>
+                            <p class="card-text text-muted small mb-2">{{ book.author }}</p>
+                            <p class="card-text small text-muted mb-2">{{ book.description|truncatewords:15 }}</p>
+                            
+                            <!-- Теги -->
+                            {% if book.tags.all %}
+                            <div class="mb-2">
+                                {% for tag in book.tags.all %}
+                                <span class="badge me-1 small tag-badge" style="background-color: {{ tag.color }};">
+                                    {{ tag.name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted">{{ book.get_file_size }}</small>
+                                    <span class="badge bg-secondary small">{{ book.category.name }}</span>
+                                </div>
+                                
+                                <div class="d-grid gap-1">
+                                    <a href="{% url 'books:book_detail' book.slug %}" 
+                                       class="btn btn-outline-primary btn-sm">Подробнее</a>
+                                    <a href="{% url 'books:book_read' book.slug %}" 
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-book-open me-1"></i>Читать
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Пагинация -->
+            {% if books.has_other_pages %}
+            <nav aria-label="Навигация по страницам">
+                <ul class="pagination justify-content-center">
+                    {% if books.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% for tag in request.GET.tags %}&tags={{ tag }}{% endfor %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">Первая</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ books.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% for tag in request.GET.tags %}&tags={{ tag }}{% endfor %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">Предыдущая</a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ books.number }} из {{ books.paginator.num_pages }}</span>
+                    </li>
+                    
+                    {% if books.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ books.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% for tag in request.GET.tags %}&tags={{ tag }}{% endfor %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">Следующая</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ books.paginator.num_pages }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% for tag in request.GET.tags %}&tags={{ tag }}{% endfor %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">Последняя</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Книги не найдены</h4>
+                <p class="text-muted">Попробуйте изменить параметры поиска</p>
+                <a href="{% url 'books:book_list' %}" class="btn btn-primary">Показать все книги</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

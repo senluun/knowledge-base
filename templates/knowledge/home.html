@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная - База знаний{% endblock %}
+
+{% block content %}
+<!-- Героический блок -->
+<div class="page-header text-center fade-in-up">
+    <h1 class="page-title">
+        <i class="fas fa-database text-primary me-3"></i>База знаний
+    </h1>
+    <p class="page-subtitle">
+        Централизованное хранилище знаний, документов и полезной информации
+    </p>
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-8">
+            <form method="get" action="{% url 'knowledge:search' %}">
+                <div class="input-group search-group">
+                    <input type="text" class="form-control search-input" name="query" 
+                           placeholder="Найти информацию..." value="{{ request.GET.query }}">
+                    <button class="btn btn-primary search-btn" type="submit">
+                        <i class="fas fa-search me-1"></i>Поиск
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Быстрые действия -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'knowledge:create_article' %}" class="btn btn-success btn-lg" title="Создать новую статью">
+                        <i class="fas fa-plus me-2"></i>Создать
+                    </a>
+                    <a href="{% url 'knowledge:my_articles' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-file-alt me-1"></i>Мои статьи
+                    </a>
+                    <a href="{% url 'knowledge:my_favorites' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-star me-1"></i>Избранное
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:register' %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Присоединиться
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt me-1"></i>Войти
+                    </a>
+                {% endif %}
+                <a href="{% url 'knowledge:category_list' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-th-large me-1"></i>Категории
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Статистика -->
+<div class="section-tiles">
+<div class="row mb-3 tiles-gutters justify-content-center">
+    <div class="col-md-3 mb-3">
+        <div class="stats-card compact">
+            <i class="fas fa-th-large text-primary"></i>
+            <h6>{{ categories.count }}</h6>
+            <small>Категорий</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card compact">
+            <i class="fas fa-file-alt text-success"></i>
+            <h6>{{ recent_articles.count }}</h6>
+            <small>Статей</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card compact">
+            <i class="fas fa-star text-warning"></i>
+            <h6>{{ featured_articles.count }}</h6>
+            <small>Рекомендуемых</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-card compact">
+            <i class="fas fa-users text-info"></i>
+            <h6>Активных</h6>
+            <small>Пользователей</small>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Рекомендуемые статьи -->
+{% if featured_articles %}
+<div class="mb-4 section-tiles">
+    <h2 class="mb-4">
+        <i class="fas fa-star text-warning me-2"></i>Рекомендуемые статьи
+    </h2>
+    <div class="row tiles-gutters justify-content-center">
+        {% for article in featured_articles %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 compact-card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {% if article.slug %}
+                            <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                               class="text-decoration-none">
+                                {{ article.title }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">{{ article.title }}</span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">{{ article.excerpt|truncatewords:20 }}</p>
+                    <div class="article-meta">
+                        <small class="text-muted">
+                            <i class="fas fa-user me-1"></i>{{ article.author.get_full_name }}
+                            <i class="fas fa-calendar ms-2 me-1"></i>{{ article.created_at|date:"d.m.Y" }}
+                            <i class="fas fa-eye ms-2 me-1"></i>{{ article.views_count }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    {% if article.slug %}
+                        <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                           class="btn btn-primary btn-sm">
+                            Читать далее
+                        </a>
+                    {% else %}
+                        <span class="btn btn-secondary btn-sm disabled">
+                            Недоступно
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Категории -->
+<div class="mb-3">
+    <div class="section-tiles">
+        <h3 class="mb-3">
+            <i class="fas fa-th-large text-primary me-2"></i>Категории
+        </h3>
+        <div class="row tiles-gutters justify-content-start">
+        {% for category in categories %}
+        <div class="col-6 col-sm-4 col-md-3 mb-2">
+            <div class="card h-100 text-center category-card compact-card">
+                <div class="card-body p-2">
+                    {% if category.icon %}
+                        <i class="{{ category.icon }} category-icon" 
+                           style="color: {{ category.color }}; font-size: 1.5rem;"></i>
+                    {% else %}
+                        <i class="fas fa-folder category-icon text-primary" style="font-size: 1.5rem;"></i>
+                    {% endif %}
+                    <h6 class="card-title mt-1 mb-1" style="font-size: 0.9rem;">
+                        {% if category.slug %}
+                            <a href="{% url 'knowledge:category_detail' category.slug %}" 
+                               class="text-decoration-none article-title-link">
+                                {{ category.name }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">{{ category.name }}</span>
+                        {% endif %}
+                    </h6>
+                    <p class="card-text small mb-1" style="font-size: 0.75rem;">{{ category.description|truncatewords:8 }}</p>
+                    <span class="badge bg-secondary" style="font-size: 0.7rem;">{{ category.articles_count }} статей</span>
+                </div>
+                {% if category.slug %}
+                <div class="card-footer bg-transparent p-1">
+                    <a href="{% url 'knowledge:category_detail' category.slug %}" 
+                       class="btn btn-outline-primary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                        <i class="fas fa-arrow-right me-1"></i>Перейти
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Последние статьи -->
+{% if recent_articles %}
+<div class="mb-4">
+    <div class="section-tiles">
+        <h3 class="mb-3">
+            <i class="fas fa-clock text-success me-2"></i>Последние статьи
+        </h3>
+        <div class="row tiles-gutters justify-content-center">
+            {% for article in recent_articles %}
+            <div class="col-12 col-sm-6 col-md-4 mb-2">
+                <div class="card compact-card">
+                    <div class="card-body p-2">
+                        <h6 class="card-title mb-1" style="font-size: 0.85rem;">
+                            {% if article.slug %}
+                                <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                                   class="text-decoration-none">
+                                    {{ article.title }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">{{ article.title }}</span>
+                            {% endif %}
+                        </h6>
+                        <p class="card-text small mb-1" style="font-size: 0.7rem;">{{ article.excerpt|truncatewords:10 }}</p>
+                        <div class="article-meta">
+                            <small class="text-muted" style="font-size: 0.65rem;">
+                                <i class="fas fa-user me-1"></i>{{ article.author.get_full_name }}
+                                <i class="fas fa-calendar ms-2 me-1"></i>{{ article.created_at|date:"d.m.Y" }}
+                                <i class="fas fa-eye ms-2 me-1"></i>{{ article.views_count }}
+                                {% if article.status == 'pending' %}
+                                    <span class="badge bg-warning ms-2" style="font-size: 0.55rem;">На рассмотрении</span>
+                                {% elif article.status == 'published' %}
+                                    <span class="badge bg-success ms-2" style="font-size: 0.55rem;">Опубликовано</span>
+                                {% elif article.status == 'draft' %}
+                                    <span class="badge bg-secondary ms-2" style="font-size: 0.55rem;">Черновик</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'knowledge:search' %}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-search me-1"></i>Показать все статьи
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Интерактивность карточек категорий
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Не переходим по ссылке, если кликнули на кнопку
+            if (e.target.tagName === 'A' || e.target.closest('a')) {
+                return;
+            }
+            
+            const link = this.querySelector('a[href*="category"]');
+            if (link) {
+                window.location.href = link.href;
+            }
+        });
+    });
+    
+    // Анимация появления элементов
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Наблюдаем за карточками
+    const cards = document.querySelectorAll('.card, .stats-card');
+    cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+    
+    // Обработка клавиши "/" для вызова меню команд
+    document.addEventListener('keydown', function(e) {
+        if (e.key === '/' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            // Проверяем, что фокус не в поле ввода
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                showCommandMenu();
+            }
+        }
+    });
+});
+
+// Функция показа меню команд
+function showCommandMenu() {
+    // Создаем модальное окно с командами
+    const modal = document.createElement('div');
+    modal.className = 'modal fade show';
+    modal.style.display = 'block';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-magic me-2"></i>Быстрые команды
+                    </h5>
+                    <button type="button" class="btn-close" onclick="closeCommandMenu()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="command-item" onclick="createArticle('heading')">
+                                <i class="fas fa-heading text-primary me-2"></i>
+                                <span>Заголовок</span>
+                                <small class="text-muted d-block">Создать статью с заголовком</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="command-item" onclick="createArticle('paragraph')">
+                                <i class="fas fa-paragraph text-success me-2"></i>
+                                <span>Параграф</span>
+                                <small class="text-muted d-block">Начать с текста</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="command-item" onclick="createArticle('list')">
+                                <i class="fas fa-list text-warning me-2"></i>
+                                <span>Список</span>
+                                <small class="text-muted d-block">Создать список</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="command-item" onclick="createArticle('code')">
+                                <i class="fas fa-code text-info me-2"></i>
+                                <span>Код</span>
+                                <small class="text-muted d-block">Блок кода</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCommandMenu()">Отмена</button>
+                    <a href="{% url 'knowledge:create_article' %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i>Полный редактор
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Добавляем стили для команд
+    const style = document.createElement('style');
+    style.textContent = `
+        .command-item {
+            padding: 1rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .command-item:hover {
+            background: var(--bg-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .modal.show {
+            background: rgba(0,0,0,0.5);
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(modal);
+    
+    // Закрытие по клику вне модального окна
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeCommandMenu();
+        }
+    });
+}
+
+function closeCommandMenu() {
+    const modal = document.querySelector('.modal.show');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function createArticle(type) {
+    // Перенаправляем на создание статьи с предустановленным типом
+    const url = new URL('{% url "knowledge:create_article" %}', window.location.origin);
+    url.searchParams.set('type', type);
+    window.location.href = url.toString();
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

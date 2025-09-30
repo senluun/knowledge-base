@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} - {{ book.author }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Обложка книги -->
+            <div class="card mb-4">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" 
+                     alt="{{ book.title }}" style="height: 400px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                     style="height: 400px;">
+                    <i class="fas fa-book fa-4x text-muted"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text text-muted">{{ book.author }}</p>
+                    
+                    <!-- Информация о файле -->
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-file-pdf me-1"></i>
+                            {{ book.get_file_size }}
+                        </small>
+                    </div>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'books:book_read' book.slug %}" 
+                           class="btn btn-primary btn-lg">
+                            <i class="fas fa-book-open me-2"></i>Читать онлайн
+                        </a>
+                        <a href="{% url 'books:book_download' book.slug %}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-download me-2"></i>Скачать PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <!-- Информация о книге -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Информация о книге</h4>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title">{{ book.title }}</h2>
+                    <p class="card-text lead">{{ book.author }}</p>
+                    
+                    {% if book.description %}
+                    <div class="mb-4">
+                        <h5>Описание</h5>
+                        <p class="card-text">{{ book.description|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Категория и теги -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Категория</h6>
+                            <a href="{% url 'books:category_books' book.category.slug %}" 
+                               class="badge bg-primary text-decoration-none">
+                                {{ book.category.name }}
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Теги</h6>
+                            {% if book.tags.all %}
+                                {% for tag in book.tags.all %}
+                                <span class="badge me-1" style="background-color: {{ tag.color }};">
+                                    {{ tag.name }}
+                                </span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">Теги не указаны</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Дополнительная информация -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Размер файла</h6>
+                            <p class="text-muted">{{ book.get_file_size }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Дата добавления</h6>
+                            <p class="text-muted">{{ book.created_at|date:"d.m.Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Похожие книги -->
+            {% if similar_books %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Похожие книги</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for similar_book in similar_books %}
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                {% if similar_book.cover_image %}
+                                <img src="{{ similar_book.cover_image.url }}" 
+                                     class="me-3" style="width: 60px; height: 80px; object-fit: cover;">
+                                {% else %}
+                                <div class="me-3 bg-light d-flex align-items-center justify-content-center" 
+                                     style="width: 60px; height: 80px;">
+                                    <i class="fas fa-book text-muted"></i>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'books:book_detail' similar_book.slug %}" 
+                                           class="text-decoration-none">
+                                            {{ similar_book.title }}
+                                        </a>
+                                    </h6>
+                                    <p class="text-muted small mb-1">{{ similar_book.author }}</p>
+                                    <a href="{% url 'books:book_read' similar_book.slug %}" 
+                                       class="btn btn-sm btn-outline-primary">Читать</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

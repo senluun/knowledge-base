@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+{% load knowledge_extras %}
+
+{% block title %}{{ suggestion.title }} - Предложение{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ suggestion.title }}</h4>
+                <div>
+                    <span class="badge bg-{% if suggestion.status == 'pending' %}warning{% elif suggestion.status == 'approved' %}success{% elif suggestion.status == 'rejected' %}danger{% else %}info{% endif %} me-2">
+                        {{ suggestion.get_status_display }}
+                    </span>
+                    <span class="badge bg-{% if suggestion.priority == 'urgent' %}danger{% elif suggestion.priority == 'high' %}warning{% elif suggestion.priority == 'medium' %}primary{% else %}secondary{% endif %}">
+                        {{ suggestion.get_priority_display }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Автор:</strong> {{ suggestion.author.get_full_name }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Тип:</strong> {{ suggestion.get_suggestion_type_display }}
+                    </div>
+                </div>
+                
+                {% if suggestion.category %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Категория:</strong> {{ suggestion.category.name }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <strong>Содержание:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">
+                        {{ suggestion.content|linebreaks }}
+                    </div>
+                </div>
+
+                {% if suggestion.tags %}
+                    <div class="mb-3">
+                        <strong>Теги:</strong>
+                        <div class="mt-1">
+                            {% for tag in suggestion.tags|split:"," %}
+                                <span class="badge bg-light text-dark me-1">{{ tag|strip }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if suggestion.moderator_comment %}
+                    <div class="mb-3">
+                        <strong>Комментарий модератора:</strong>
+                        <div class="mt-2 p-3 bg-info bg-opacity-10 rounded">
+                            {{ suggestion.moderator_comment|linebreaks }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="row text-muted small">
+                    <div class="col-md-6">
+                        <i class="fas fa-clock me-1"></i>
+                        Создано: {{ suggestion.created_at|date:"d.m.Y H:i" }}
+                    </div>
+                    {% if suggestion.moderated_at %}
+                        <div class="col-md-6">
+                            <i class="fas fa-check-circle me-1"></i>
+                            Модерировано: {{ suggestion.moderated_at|date:"d.m.Y H:i" }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Действия</h5>
+            </div>
+            <div class="card-body">
+                {% if suggestion.status == 'pending' %}
+                    <div class="d-grid gap-2">
+                        <form method="post" action="{% url 'moderation:approve_suggestion' suggestion.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('Одобрить это предложение?')">
+                                <i class="fas fa-check me-1"></i>
+                                Одобрить
+                            </button>
+                        </form>
+                        
+                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                            <i class="fas fa-times me-1"></i>
+                            Отклонить
+                        </button>
+                        
+                        <button type="button" class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#revisionModal">
+                            <i class="fas fa-edit me-1"></i>
+                            На доработку
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Предложение уже обработано
+                    </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'moderation:suggestion_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Назад к списку
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if suggestion.moderator %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Модератор</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">{{ suggestion.moderator.get_full_name }}</p>
+                    <small class="text-muted">{{ suggestion.moderator.email }}</small>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Модальное окно для отклонения -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Отклонить предложение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'moderation:reject_suggestion' suggestion.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Укажите причину отклонения предложения:</p>
+                    <textarea name="comment" class="form-control" rows="4" placeholder="Причина отклонения..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-danger">Отклонить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для доработки -->
+<div class="modal fade" id="revisionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Отправить на доработку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'moderation:request_revision' suggestion.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Укажите, что нужно доработать в предложении:</p>
+                    <textarea name="comment" class="form-control" rows="4" placeholder="Комментарии по доработке..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-warning">Отправить на доработку</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+{% block title %}{{ suggestion.title }} - Предложение{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ suggestion.title }}</h4>
+                <div>
+                    <span class="badge bg-{% if suggestion.status == 'pending' %}warning{% elif suggestion.status == 'approved' %}success{% elif suggestion.status == 'rejected' %}danger{% else %}info{% endif %} me-2">
+                        {{ suggestion.get_status_display }}
+                    </span>
+                    <span class="badge bg-{% if suggestion.priority == 'urgent' %}danger{% elif suggestion.priority == 'high' %}warning{% elif suggestion.priority == 'medium' %}primary{% else %}secondary{% endif %}">
+                        {{ suggestion.get_priority_display }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Автор:</strong> {{ suggestion.author.get_full_name }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Тип:</strong> {{ suggestion.get_suggestion_type_display }}
+                    </div>
+                </div>
+                
+                {% if suggestion.category %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Категория:</strong> {{ suggestion.category.name }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <strong>Содержание:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">
+                        {{ suggestion.content|linebreaks }}
+                    </div>
+                </div>
+
+                {% if suggestion.tags %}
+                    <div class="mb-3">
+                        <strong>Теги:</strong>
+                        <div class="mt-1">
+                            {% for tag in suggestion.tags|split:"," %}
+                                <span class="badge bg-light text-dark me-1">{{ tag|strip }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if suggestion.moderator_comment %}
+                    <div class="mb-3">
+                        <strong>Комментарий модератора:</strong>
+                        <div class="mt-2 p-3 bg-info bg-opacity-10 rounded">
+                            {{ suggestion.moderator_comment|linebreaks }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="row text-muted small">
+                    <div class="col-md-6">
+                        <i class="fas fa-clock me-1"></i>
+                        Создано: {{ suggestion.created_at|date:"d.m.Y H:i" }}
+                    </div>
+                    {% if suggestion.moderated_at %}
+                        <div class="col-md-6">
+                            <i class="fas fa-check-circle me-1"></i>
+                            Модерировано: {{ suggestion.moderated_at|date:"d.m.Y H:i" }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Действия</h5>
+            </div>
+            <div class="card-body">
+                {% if suggestion.status == 'pending' %}
+                    <div class="d-grid gap-2">
+                        <form method="post" action="{% url 'moderation:approve_suggestion' suggestion.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('Одобрить это предложение?')">
+                                <i class="fas fa-check me-1"></i>
+                                Одобрить
+                            </button>
+                        </form>
+                        
+                        <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                            <i class="fas fa-times me-1"></i>
+                            Отклонить
+                        </button>
+                        
+                        <button type="button" class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#revisionModal">
+                            <i class="fas fa-edit me-1"></i>
+                            На доработку
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Предложение уже обработано
+                    </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'moderation:suggestion_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Назад к списку
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if suggestion.moderator %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Модератор</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">{{ suggestion.moderator.get_full_name }}</p>
+                    <small class="text-muted">{{ suggestion.moderator.email }}</small>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Модальное окно для отклонения -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Отклонить предложение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'moderation:reject_suggestion' suggestion.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Укажите причину отклонения предложения:</p>
+                    <textarea name="comment" class="form-control" rows="4" placeholder="Причина отклонения..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-danger">Отклонить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для доработки -->
+<div class="modal fade" id="revisionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Отправить на доработку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'moderation:request_revision' suggestion.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Укажите, что нужно доработать в предложении:</p>
+                    <textarea name="comment" class="form-control" rows="4" placeholder="Комментарии по доработке..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-warning">Отправить на доработку</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

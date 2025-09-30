@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">
+            <i class="fas fa-user-edit me-3"></i>Редактирование профиля
+        </h1>
+        <p class="page-subtitle">Обновите информацию о себе</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Аватар -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    {% if user.avatar %}
+                                        <img src="{{ user.avatar.url }}" alt="Текущий аватар" 
+                                             class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                             style="width: 120px; height: 120px;">
+                                            <i class="fas fa-user fa-3x text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-group">
+                                        <label for="{{ form.avatar.id_for_label }}" class="form-label">Аватар</label>
+                                        <input type="file" class="form-control" name="avatar" id="{{ form.avatar.id_for_label }}" 
+                                               accept="image/*">
+                                        {% if form.avatar.errors %}
+                                            <div class="text-danger small">{{ form.avatar.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">Имя</label>
+                                    <input type="text" class="form-control" name="first_name" id="{{ form.first_name.id_for_label }}" 
+                                           value="{{ form.first_name.value|default:user.first_name }}">
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">Фамилия</label>
+                                    <input type="text" class="form-control" name="last_name" id="{{ form.last_name.id_for_label }}" 
+                                           value="{{ form.last_name.value|default:user.last_name }}">
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" id="{{ form.email.id_for_label }}" 
+                                           value="{{ form.email.value|default:user.email }}">
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Дополнительная информация -->
+                        <div class="form-group mb-3">
+                            <label for="{{ form.bio.id_for_label }}" class="form-label">О себе</label>
+                            <textarea class="form-control" name="bio" id="{{ form.bio.id_for_label }}" rows="4" 
+                                      placeholder="Расскажите о себе...">{{ form.bio.value|default:user.bio }}</textarea>
+                            {% if form.bio.errors %}
+                                <div class="text-danger small">{{ form.bio.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Настройки уведомлений -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-bell me-2"></i>Настройки уведомлений
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="email_notifications" 
+                                           id="email_notifications" {% if user.email_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="email_notifications">
+                                        Email уведомления
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="article_notifications" 
+                                           id="article_notifications" {% if user.article_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="article_notifications">
+                                        Уведомления о новых статьях
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="comment_notifications" 
+                                           id="comment_notifications" {% if user.comment_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="comment_notifications">
+                                        Уведомления о комментариях
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Кнопки -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'accounts:user_profile' user.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Сохранить изменения
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load knowledge_extras %}
+{% load knowledge_extras %}
+
+{% block title %}{{ category.name }} - База знаний{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h2 mb-1">
+                        {% if category.icon %}
+                            <i class="{{ category.icon }} text-primary me-2"></i>
+                        {% else %}
+                            <i class="fas fa-folder text-primary me-2"></i>
+                        {% endif %}
+                        {{ category.name }}
+                    </h1>
+                    {% if category.description %}
+                        <p class="text-muted mb-0">{{ category.description }}</p>
+                    {% endif %}
+                </div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'knowledge:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'knowledge:category_list' %}">Категории</a></li>
+                        <li class="breadcrumb-item active">{{ category.name }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    {% if articles %}
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="text-muted mb-0">
+                        Найдено статей: <strong>{{ page_obj.paginator.count }}</strong>
+                    </p>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm active" id="grid-view">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="list-view">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="articles-grid">
+            {% for article in articles %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm article-card">
+                        {% if article.featured_image %}
+                            <img src="{{ article.featured_image.url }}" 
+                                 class="card-img-top" 
+                                 alt="{{ article.title }}"
+                                 style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">
+                                <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                                   class="text-decoration-none article-title-link">
+                                    {{ article.title }}
+                                </a>
+                            </h5>
+                            
+                            {% if article.excerpt %}
+                                <p class="card-text text-muted flex-grow-1">
+                                    {{ article.excerpt|truncatewords:20 }}
+                                </p>
+                            {% endif %}
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye me-1"></i>
+                                        {{ article.views_count }}
+                                        <i class="fas fa-calendar ms-2 me-1"></i>
+                                        {{ article.created_at|date:"d.m.Y" }}
+                                    </small>
+                                    <a href="{% url 'knowledge:article_detail' article.slug %}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        Читать
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if article.tags %}
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for tag in article.tags|split:"," %}
+                                        <span class="badge bg-light text-dark">{{ tag|strip }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Пагинация -->
+        {% if page_obj.has_other_pages %}
+            <div class="row">
+                <div class="col-12">
+                    <nav aria-label="Навигация по страницам">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+                    <h3 class="text-muted">Статьи не найдены</h3>
+                    <p class="text-muted">В данной категории пока нет опубликованных статей.</p>
+                    <a href="{% url 'knowledge:category_list' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Вернуться к категориям
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.article-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.article-card .card-title a:hover {
+    color: var(--bs-primary) !important;
+}
+
+.article-title-link {
+    color: #2d3748;
+    transition: color 0.2s ease;
+}
+
+.article-title-link:hover {
+    color: #007bff !important;
+}
+
+/* Темная тема для ссылок статей */
+[data-bs-theme="dark"] .article-title-link {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .article-title-link:hover {
+    color: #0d6efd !important;
+}
+
+[data-bs-theme="dark"] .card-text {
+    color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: #6c757d !important;
+}
+
+.list-view .article-card {
+    margin-bottom: 1rem;
+}
+.list-view .col-lg-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gridView = document.getElementById('grid-view');
+    const listView = document.getElementById('list-view');
+    const articlesGrid = document.getElementById('articles-grid');
+    
+    gridView.addEventListener('click', function() {
+        this.classList.add('active');
+        listView.classList.remove('active');
+        articlesGrid.classList.remove('list-view');
+    });
+    
+    listView.addEventListener('click', function() {
+        this.classList.add('active');
+        gridView.classList.remove('active');
+        articlesGrid.classList.add('list-view');
+    });
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

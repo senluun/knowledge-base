@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Уведомления{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-bell me-2"></i>Уведомления
+                    </h4>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'moderation:mark_all_read' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-check-double me-1"></i>Отметить все как прочитанные
+                        </a>
+                        <a href="{% url 'moderation:clear_all' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash me-1"></i>Очистить все
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if notifications %}
+                    <div class="list-group list-group-flush">
+                        {% for notification in notifications %}
+                        <div class="list-group-item {% if not notification.is_read %}bg-light{% endif %}">
+                            <div class="d-flex align-items-start">
+                                <div class="me-3">
+                                    {% if notification.type == 'suggestion' %}
+                                        <i class="fas fa-lightbulb text-warning"></i>
+                                    {% elif notification.type == 'comment' %}
+                                        <i class="fas fa-comment text-info"></i>
+                                    {% elif notification.type == 'approval' %}
+                                        <i class="fas fa-check text-success"></i>
+                                    {% elif notification.type == 'rejection' %}
+                                        <i class="fas fa-times text-danger"></i>
+                                    {% else %}
+                                        <i class="fas fa-bell text-primary"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ notification.title }}</h6>
+                                    <p class="mb-1 text-muted">{{ notification.message }}</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ notification.created_at|timesince }} назад
+                                    </small>
+                                </div>
+                                <div class="ms-3">
+                                    {% if not notification.is_read %}
+                                    <a href="{% url 'moderation:mark_read' notification.id %}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-check me-1"></i>Прочитано
+                                    </a>
+                                    {% endif %}
+                                    {% if notification.url %}
+                                    <a href="{{ notification.url }}" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-external-link-alt me-1"></i>Перейти
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Пагинация -->
+                    {% if notifications.has_other_pages %}
+                    <nav aria-label="Навигация по страницам" class="p-3">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if notifications.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">Первая</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ notifications.previous_page_number }}">Предыдущая</a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">{{ notifications.number }} из {{ notifications.paginator.num_pages }}</span>
+                            </li>
+                            
+                            {% if notifications.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ notifications.next_page_number }}">Следующая</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ notifications.paginator.num_pages }}">Последняя</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                        <h5>Нет уведомлений</h5>
+                        <p class="text-muted">У вас пока нет новых уведомлений</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Статистика -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Статистика
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-primary mb-1">{{ unread_count }}</h4>
+                                <small class="text-muted">Непрочитанных</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success mb-1">{{ total_count }}</h4>
+                            <small class="text-muted">Всего</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Быстрые действия -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Быстрые действия
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'moderation:dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-tachometer-alt me-2"></i>Панель модератора
+                        </a>
+                        <a href="{% url 'moderation:suggestion_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>Все предложения
+                        </a>
+                        <a href="{% url 'moderation:my_suggestions' %}" class="btn btn-outline-info">
+                            <i class="fas fa-user me-2"></i>Мои предложения
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
