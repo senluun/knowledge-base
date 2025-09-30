@@ -101,8 +101,8 @@
 /* Стили для блок-меню плюсика */
 .block-menu__plus {
     position: absolute;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -112,30 +112,52 @@
     cursor: pointer;
     z-index: 1000;
     opacity: 0.9;
-    transition: opacity 0.2s ease, background-color 0.2s ease;
-    border-radius: 4px;
+    transition: all 0.2s ease;
+    border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .block-menu__plus:hover {
     background: #f8f9fa;
     opacity: 1;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
 }
 
 .block-menu__plus:active {
     transform: scale(0.95);
 }
 
+/* Визуальная линия между курсором и кнопкой + */
+.block-menu__plus::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 2px;
+    background: linear-gradient(to left, #e1e5e9, transparent);
+    pointer-events: none;
+}
+
 /* Темная тема для кнопки + */
 [data-bs-theme="dark"] .block-menu__plus {
-    background: #343a40;
-    border-color: #495057;
-    color: #adb5bd;
+    background: #1a1d20;
+    border-color: #343a40;
+    color: #6c757d;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 [data-bs-theme="dark"] .block-menu__plus:hover {
-    background: #495057;
+    background: #2d3238;
+    border-color: #495057;
+    color: #adb5bd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+[data-bs-theme="dark"] .block-menu__plus::before {
+    background: linear-gradient(to left, #343a40, transparent);
 }
 
 /* Стили для командного меню */
