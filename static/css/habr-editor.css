@@ -1,0 +1,316 @@
+/* Современный редактор в стиле Хабра */
+.habr-editor {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок редактора */
+.habr-editor__header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e1e5e9;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Панель инструментов */
+.habr-editor__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+/* Кнопки панели инструментов */
+.habr-editor__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.habr-editor__button:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.habr-editor__button.is-active {
+    background: #007bff;
+    color: #fff;
+}
+
+/* Разделитель */
+.habr-editor__separator {
+    width: 1px;
+    height: 20px;
+    background: #dee2e6;
+    margin: 0 4px;
+}
+
+/* Область редактирования */
+.habr-editor__content {
+    min-height: 400px;
+    padding: 20px;
+    outline: none;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Заголовки */
+.habr-editor__content h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 1.5rem 0 1rem 0;
+    color: #212529;
+    line-height: 1.2;
+}
+
+.habr-editor__content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.75rem 0;
+    color: #212529;
+    line-height: 1.3;
+}
+
+.habr-editor__content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem 0;
+    color: #212529;
+    line-height: 1.4;
+}
+
+/* Параграфы */
+.habr-editor__content p {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+}
+
+/* Списки */
+.habr-editor__content ul,
+.habr-editor__content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.habr-editor__content li {
+    margin: 0.25rem 0;
+    line-height: 1.6;
+}
+
+/* Цитаты */
+.habr-editor__content blockquote {
+    margin: 1rem 0;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Код */
+.habr-editor__content code {
+    background: #f1f3f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+    font-size: 0.9em;
+    color: #e83e8c;
+}
+
+.habr-editor__content pre {
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.habr-editor__content pre code {
+    background: none;
+    padding: 0;
+    color: #333;
+    font-size: inherit;
+}
+
+/* Ссылки */
+.habr-editor__content a {
+    color: #007bff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.habr-editor__content a:hover {
+    border-bottom-color: #007bff;
+}
+
+/* Изображения */
+.habr-editor__content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Таблицы */
+.habr-editor__content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.habr-editor__content th,
+.habr-editor__content td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.habr-editor__content th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Placeholder */
+.habr-editor__content .is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: #adb5bd;
+    pointer-events: none;
+    height: 0;
+}
+
+/* Фокус */
+.habr-editor:focus-within {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Темная тема */
+[data-bs-theme="dark"] .habr-editor {
+    background: #1a1a1a;
+    border-color: #495057;
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .habr-editor__header {
+    background: #212529;
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .habr-editor__button {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .habr-editor__button:hover {
+    background: #495057;
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .habr-editor__button.is-active {
+    background: #0d6efd;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .habr-editor__separator {
+    background: #495057;
+}
+
+[data-bs-theme="dark"] .habr-editor__content h1,
+[data-bs-theme="dark"] .habr-editor__content h2,
+[data-bs-theme="dark"] .habr-editor__content h3 {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .habr-editor__content blockquote {
+    background: #212529;
+    border-left-color: #0d6efd;
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .habr-editor__content code {
+    background: #212529;
+    color: #ff6b6b;
+}
+
+[data-bs-theme="dark"] .habr-editor__content pre {
+    background: #212529;
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .habr-editor__content pre code {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .habr-editor__content th {
+    background: #212529;
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .habr-editor__content th,
+[data-bs-theme="dark"] .habr-editor__content td {
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .habr-editor__content table {
+    border-color: #495057;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .habr-editor__toolbar {
+        gap: 2px;
+    }
+    
+    .habr-editor__button {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .habr-editor__content {
+        padding: 16px;
+        font-size: 14px;
+    }
+    
+    .habr-editor__content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .habr-editor__content h2 {
+        font-size: 1.25rem;
+    }
+    
+    .habr-editor__content h3 {
+        font-size: 1.1rem;
+    }
+}
+

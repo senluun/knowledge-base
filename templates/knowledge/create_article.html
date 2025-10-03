@@ -5,7 +5,8 @@
 {% block title %}Создать статью - База знаний{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/prosemirror.css' %}">
+<link rel="stylesheet" href="{% static 'css/modern-editor.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block content %}
@@ -77,11 +78,9 @@
                         <label for="{{ form.content.id_for_label }}" class="form-label">
                             {{ form.content.label }} <span class="text-danger">*</span>
                         </label>
-                        <div class="prosemirror-editor-container" style="position: relative;">
-                            <textarea name="content" id="id_content" style="display: none;"></textarea>
-                            <div id="editor-id_content" class="prosemirror-editor" data-placeholder="Начните писать... Используйте / для команд или нажмите +" contenteditable="true" style="min-height: 500px;"></div>
-                            <!-- Плюсик будет добавлен динамически в JavaScript -->
+                        <div id="modern-editor-container" data-modern-editor data-textarea="id_content">
                         </div>
+                        <textarea name="content" id="id_content" style="display: none;"></textarea>
                         {% if form.content.errors %}
                             <div class="text-danger">
                                 {% for error in form.content.errors %}
@@ -535,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script src="{% static 'js/prosemirror-init.js' %}"></script>
+<script src="{% static 'js/modern-editor.js' %}"></script>
 {% endblock %}
 
 

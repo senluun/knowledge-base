@@ -1,0 +1,563 @@
+/* Современный блочный редактор */
+.modern-editor {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок редактора */
+.modern-editor__header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e1e5e9;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Панель инструментов */
+.modern-editor__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+/* Кнопки панели инструментов */
+.modern-editor__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.modern-editor__button:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.modern-editor__button.is-active {
+    background: #007bff;
+    color: #fff;
+}
+
+/* Разделитель */
+.modern-editor__separator {
+    width: 1px;
+    height: 20px;
+    background: #dee2e6;
+    margin: 0 4px;
+}
+
+/* Область редактирования */
+.modern-editor__content {
+    min-height: 400px;
+    padding: 20px;
+    outline: none;
+    font-size: 16px;
+    line-height: 1.6;
+    position: relative;
+}
+
+/* Заголовки */
+.modern-editor__content h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 1.5rem 0 1rem 0;
+    color: #212529;
+    line-height: 1.2;
+}
+
+.modern-editor__content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.75rem 0;
+    color: #212529;
+    line-height: 1.3;
+}
+
+.modern-editor__content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem 0;
+    color: #212529;
+    line-height: 1.4;
+}
+
+/* Параграфы */
+.modern-editor__content p {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+}
+
+/* Списки */
+.modern-editor__content ul,
+.modern-editor__content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.modern-editor__content li {
+    margin: 0.25rem 0;
+    line-height: 1.6;
+}
+
+/* Цитаты */
+.modern-editor__content blockquote {
+    margin: 1rem 0;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Код */
+.modern-editor__content code {
+    background: #f1f3f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+    font-size: 0.9em;
+    color: #e83e8c;
+}
+
+.modern-editor__content pre {
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.modern-editor__content pre code {
+    background: none;
+    padding: 0;
+    color: #333;
+    font-size: inherit;
+}
+
+/* Ссылки */
+.modern-editor__content a {
+    color: #007bff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.modern-editor__content a:hover {
+    border-bottom-color: #007bff;
+}
+
+/* Изображения */
+.modern-editor__content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Таблицы */
+.modern-editor__content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.modern-editor__content th,
+.modern-editor__content td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.modern-editor__content th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Placeholder */
+.modern-editor__content .is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: #adb5bd;
+    pointer-events: none;
+    height: 0;
+}
+
+/* Исправление бага с синими полями */
+.modern-editor__content [contenteditable="true"] {
+    outline: none !important;
+    border: none !important;
+    background: transparent !important;
+    min-height: 1.5em;
+    cursor: text;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.modern-editor__content [contenteditable="true"]:focus {
+    outline: none !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Убираем все лишние стили для input элементов */
+.modern-editor__content input,
+.modern-editor__content textarea {
+    display: none !important;
+}
+
+/* Убираем лишние поля ввода */
+.modern-editor__content input[type="text"],
+.modern-editor__content input[type="email"],
+.modern-editor__content input[type="password"],
+.modern-editor__content input[type="search"],
+.modern-editor__content input[type="url"],
+.modern-editor__content input[type="tel"],
+.modern-editor__content input[type="number"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+/* Фокус */
+.modern-editor:focus-within {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Темная тема */
+[data-bs-theme="dark"] .modern-editor {
+    background: #1a1a1a;
+    border-color: #495057;
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .modern-editor__header {
+    background: #212529;
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .modern-editor__button {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .modern-editor__button:hover {
+    background: #495057;
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .modern-editor__button.is-active {
+    background: #0d6efd;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .modern-editor__separator {
+    background: #495057;
+}
+
+[data-bs-theme="dark"] .modern-editor__content h1,
+[data-bs-theme="dark"] .modern-editor__content h2,
+[data-bs-theme="dark"] .modern-editor__content h3 {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .modern-editor__content blockquote {
+    background: #212529;
+    border-left-color: #0d6efd;
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .modern-editor__content code {
+    background: #212529;
+    color: #ff6b6b;
+}
+
+[data-bs-theme="dark"] .modern-editor__content pre {
+    background: #212529;
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .modern-editor__content pre code {
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .modern-editor__content th {
+    background: #212529;
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .modern-editor__content th,
+[data-bs-theme="dark"] .modern-editor__content td {
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .modern-editor__content table {
+    border-color: #495057;
+}
+
+/* Блочная система */
+.modern-editor__block {
+    position: relative;
+    margin: 8px 0;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    min-height: 40px;
+}
+
+.modern-editor__block:hover {
+    background: rgba(0, 123, 255, 0.05);
+    border-color: rgba(0, 123, 255, 0.2);
+}
+
+.modern-editor__block.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.modern-editor__block.drag-over {
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.1);
+}
+
+/* Drag handle */
+.modern-editor__drag-handle {
+    position: absolute;
+    left: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    opacity: 1; /* Всегда виден */
+    transition: opacity 0.2s ease;
+    color: #6c757d;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.modern-editor__block:hover .modern-editor__drag-handle {
+    opacity: 1;
+}
+
+.modern-editor__drag-handle:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.modern-editor__drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Кнопка добавления блока */
+.modern-editor__add-block {
+    position: absolute;
+    left: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 1; /* Всегда видима */
+    transition: opacity 0.2s ease;
+    color: #6c757d;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.modern-editor__block:hover .modern-editor__add-block {
+    opacity: 1;
+}
+
+.modern-editor__add-block:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+/* Панель выбора блоков */
+.modern-editor__block-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.modern-editor__block-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.modern-editor__block-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: #495057;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.modern-editor__block-menu-item:last-child {
+    border-bottom: none;
+}
+
+.modern-editor__block-menu-item:hover {
+    background: #f8f9fa;
+}
+
+.modern-editor__block-menu-item-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.modern-editor__block-menu-item-text {
+    flex: 1;
+    font-weight: 500;
+}
+
+/* Темная тема для блочной системы */
+[data-bs-theme="dark"] .modern-editor__block {
+    background: transparent;
+}
+
+[data-bs-theme="dark"] .modern-editor__block:hover {
+    background: rgba(13, 110, 253, 0.1);
+    border-color: rgba(13, 110, 253, 0.3);
+}
+
+[data-bs-theme="dark"] .modern-editor__drag-handle,
+[data-bs-theme="dark"] .modern-editor__add-block {
+    background: #343a40;
+    border-color: #495057;
+    color: #adb5bd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .modern-editor__drag-handle:hover,
+[data-bs-theme="dark"] .modern-editor__add-block:hover {
+    background: #495057;
+    color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .modern-editor__block-menu {
+    background: #343a40;
+    border-color: #495057;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .modern-editor__block-menu-item {
+    color: #f8f9fa;
+    border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .modern-editor__block-menu-item:hover {
+    background: #495057;
+}
+
+[data-bs-theme="dark"] .modern-editor__block-menu-item-icon {
+    color: #adb5bd;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .modern-editor__toolbar {
+        gap: 2px;
+    }
+    
+    .modern-editor__button {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .modern-editor__content {
+        padding: 16px;
+        font-size: 14px;
+    }
+    
+    .modern-editor__content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .modern-editor__content h2 {
+        font-size: 1.25rem;
+    }
+    
+    .modern-editor__content h3 {
+        font-size: 1.1rem;
+    }
+    
+    .modern-editor__drag-handle,
+    .modern-editor__add-block {
+        left: -32px;
+        width: 20px;
+        height: 20px;
+    }
+}

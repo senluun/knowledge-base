@@ -1,5 +1,5 @@
-// Simple Rich Text Editor Initialization
-// Упрощенный редактор без ProseMirror, но с функциональностью форматирования
+// Блочный редактор с drag & drop и контекстными меню
+// Исправленная версия без багов
 
 function initProseMirror(widgetId) {
     const textarea = document.getElementById(widgetId);
@@ -10,1089 +10,753 @@ function initProseMirror(widgetId) {
         return;
     }
     
-    // Создаем динамическую кнопку плюсик
-    const plusButton = document.createElement('button');
-    plusButton.id = `plus-${widgetId}`;
-    plusButton.className = 'block-menu__plus non-removable';
-    plusButton.title = 'Добавить элемент';
-    plusButton.style.position = 'absolute';
-    plusButton.style.width = '24px';
-    plusButton.style.height = '24px';
-    plusButton.style.display = 'flex';
-    plusButton.style.alignItems = 'center';
-    plusButton.style.justifyContent = 'center';
-    plusButton.style.background = 'white';
-    plusButton.style.border = '1px solid #e1e5e9';
-    plusButton.style.color = '#929ca5';
-    plusButton.style.cursor = 'pointer';
-    plusButton.style.zIndex = '1000';
-    plusButton.style.opacity = '0.8';
-    plusButton.style.borderRadius = '4px';
-    plusButton.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-    plusButton.style.pointerEvents = 'auto';
-    plusButton.style.transition = 'opacity 0.2s ease';
-    plusButton.style.visibility = 'hidden'; // Начально скрыт
-    
-    plusButton.innerHTML = '<svg class="svg-icon" fill="currentColor" height="16" viewBox="0 0 24 24" width="16">' +
-                           '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
-    
-    // Добавляем кнопку к контейнеру редактора
-    editorContainer.parentNode.appendChild(plusButton);
+    // Очищаем предыдущие обработчики
+    editorContainer.innerHTML = '';
     
     // Инициализация редактора
-    editorContainer.innerHTML = textarea.value || '<p><br></p>';
-    editorContainer.setAttribute('data-placeholder', 'Начните писать... Используйте / для команд или нажмите +');
+    editorContainer.innerHTML = textarea.value || '<div class="node node_paragraph is-empty" data-placeholder="Начните писать..."><p contenteditable="true" data-placeholder="Введите текст"></p></div>';
+    editorContainer.setAttribute('data-placeholder', 'Начните писать...');
     editorContainer.setAttribute('contenteditable', 'true');
     
-    // Команды через /
-    const commands = [
-        { trigger: '/h1', title: 'Заголовок 1', description: 'Большой заголовок', icon: 'H1', category: 'Заголовки' },
-        { trigger: '/h2', title: 'Заголовок 2', description: 'Средний заголовок', icon: 'H2', category: 'Заголовки' },
-        { trigger: '/h3', title: 'Заголовок 3', description: 'Маленький заголовок', icon: 'H3', category: 'Заголовки' },
-        { trigger: '/p', title: 'Параграф', description: 'Обычный текст', icon: 'P', category: 'Текст' },
-        { trigger: '/ul', title: 'Список', description: 'Маркированный список', icon: '•', category: 'Списки' },
-        { trigger: '/ol', title: 'Нумерованный список', description: 'Пронумерованный список', icon: '1.', category: 'Списки' },
-        { trigger: '/code', title: 'Код-блок', description: 'Контейнер с заголовком и копированием', icon: '&lt;/&gt;', category: 'Код' },
-        { trigger: '/quote', title: 'Цитата', description: 'Блок цитаты', icon: '"', category: 'Текст' },
-        { trigger: '/bold', title: 'Жирный текст', description: 'Выделить жирным', icon: 'B', category: 'Форматирование' },
-        { trigger: '/italic', title: 'Курсив', description: 'Выделить курсивом', icon: 'I', category: 'Форматирование' },
-        { trigger: '/underline', title: 'Подчеркнутый', description: 'Подчеркнуть текст', icon: 'U', category: 'Форматирование' },
-        { trigger: '/image', title: 'Изображение', description: 'Вставить изображение в контейнер с подписью', icon: '🖼️', category: 'Медиа' },
-        { trigger: '/gallery', title: 'Галерея', description: 'Две картинки рядом', icon: '🖼️🖼️', category: 'Медиа' },
-        { trigger: '/hr', title: 'Разделитель', description: 'Горизонтальная линия', icon: '—', category: 'Элементы' },
-        { trigger: '/link', title: 'Ссылка', description: 'Вставить ссылку', icon: '🔗', category: 'Элементы' },
-        { trigger: '/info', title: 'Врезка: Info', description: 'Синяя информационная врезка', icon: 'ℹ️', category: 'Врезки' },
-        { trigger: '/success', title: 'Врезка: Success', description: 'Зеленая положительная врезка', icon: '✅', category: 'Врезки' },
-        { trigger: '/warning', title: 'Врезка: Warning', description: 'Желтая предупреждающая врезка', icon: '⚠️', category: 'Врезки' },
-        { trigger: '/danger', title: 'Врезка: Danger', description: 'Красная критическая врезка', icon: '⛔', category: 'Врезки' },
-        { trigger: '/table', title: 'Таблица 2×2', description: 'Мини-таблица с заголовком', icon: '▦', category: 'Таблица' },
-        { trigger: '/checklist', title: 'Чек‑лист', description: 'Список задач с чекбоксами', icon: '☑️', category: 'Списки' },
+    // Инициализация блочной системы
+    initializeBlockSystem(editorContainer, textarea);
+    
+    // Обработчики событий
+    setupEventHandlers(editorContainer, textarea);
+}
+
+function initializeBlockSystem(editor, textarea) {
+    // Добавляем классы для блочной системы
+    editor.classList.add('prosemirror-editor-container');
+    
+    // Инициализируем существующие блоки
+    initializeExistingBlocks(editor);
+}
+
+function initializeExistingBlocks(editor) {
+    const blocks = editor.querySelectorAll('.node');
+    blocks.forEach(block => {
+        setupBlockControls(block);
+    });
+}
+
+function setupBlockControls(block) {
+    // Очищаем предыдущие контролы
+    const existingControls = block.querySelectorAll('.node__drag-control, .right-menu__container, .block-menu__plus');
+    existingControls.forEach(control => control.remove());
+    
+    // Проверяем, есть ли текст в блоке
+    const hasText = block.textContent.trim().length > 0;
+    
+    // Добавляем/убираем класс is-empty
+    if (hasText) {
+        block.classList.remove('is-empty');
+        // Если есть текст, добавляем drag handle и правое меню
+        const dragControl = createDragControl();
+        block.appendChild(dragControl);
+        
+        const rightMenu = createRightMenu(block);
+        block.appendChild(rightMenu);
+    } else {
+        block.classList.add('is-empty');
+        // Если нет текста, показываем только кнопку +
+        const plusButton = createPlusButton(block);
+        block.appendChild(plusButton);
+    }
+    
+    // Настраиваем drag & drop
+    setupDragAndDrop(block);
+}
+
+function createDragControl() {
+    const dragControl = document.createElement('div');
+    dragControl.className = 'node__drag-control';
+    dragControl.setAttribute('contenteditable', 'false');
+    dragControl.setAttribute('data-drag-handle', '');
+    dragControl.setAttribute('draggable', 'true');
+    
+    dragControl.innerHTML = `
+        <svg class="svg-icon" fill="currentColor" height="24" viewBox="0 0 20 20" width="24">
+            <circle cx="8.5" cy="6.5" r="1.5"></circle>
+            <circle cx="8.5" cy="12.5" r="1.5"></circle>
+            <circle cx="8.5" cy="18.5" r="1.5"></circle>
+            <circle cx="14.5" cy="6.5" r="1.5"></circle>
+            <circle cx="14.5" cy="12.5" r="1.5"></circle>
+            <circle cx="14.5" cy="18.5" r="1.5"></circle>
+        </svg>
+    `;
+    
+    return dragControl;
+}
+
+function createRightMenu(block) {
+    const rightMenuContainer = document.createElement('div');
+    rightMenuContainer.className = 'right-menu__container';
+    rightMenuContainer.setAttribute('contenteditable', 'false');
+    
+    const dotsButton = document.createElement('button');
+    dotsButton.className = 'node__dots button-icon';
+    dotsButton.type = 'button';
+    
+    dotsButton.innerHTML = `
+        <svg class="svg-icon" fill="currentColor" height="20" viewBox="0 0 20 20" width="20">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M5 10C5 11.1046 4.10457 12 3 12C1.89543 12 1 11.1046 1 10C1 8.89543 1.89543 8 3 8C4.10457 8 5 8.89543 5 10ZM12 10C12 11.1046 11.1046 12 10 12C8.89543 12 8 11.1046 8 10C8 8.89543 8.89543 8 10 8C11.1046 8 12 8.89543 12 10ZM17 12C18.1046 12 19 11.1046 19 10C19 8.89543 18.1046 8 17 8C15.8954 8 15 8.89543 15 10C15 11.1046 15.8954 12 17 12Z"></path>
+        </svg>
+    `;
+    
+    const contextMenu = createContextMenu(block);
+    rightMenuContainer.appendChild(dotsButton);
+    rightMenuContainer.appendChild(contextMenu);
+    
+    // Обработчик клика на кнопку точек
+    dotsButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleContextMenu(contextMenu);
+    });
+    
+    return rightMenuContainer;
+}
+
+function createContextMenu(block) {
+    const contextMenu = document.createElement('div');
+    contextMenu.className = 'context-menu right-menu';
+    contextMenu.setAttribute('contenteditable', 'false');
+    contextMenu.style.display = 'none';
+    
+    const blockType = getBlockType(block);
+    const menuItems = getContextMenuItems(blockType);
+    
+    menuItems.forEach(item => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'context-menu__wrapper';
+        
+        if (item.type === 'separator') {
+            const separator = document.createElement('hr');
+            separator.className = 'context-menu__separator';
+            wrapper.appendChild(separator);
+        } else {
+            const button = document.createElement('button');
+            button.className = `context-menu__item right-menu__item ${item.active ? 'right-menu__item_active' : ''}`;
+            button.type = 'button';
+            button.setAttribute('data-item-type', item.type);
+            
+            button.innerHTML = `
+                <svg class="svg-icon" fill="currentColor" height="20" viewBox="0 0 20 20" width="20">
+                    ${item.icon}
+                </svg>
+                <span>${item.text}</span>
+            `;
+            
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+        e.preventDefault();
+                handleContextMenuAction(block, item);
+                hideContextMenu(contextMenu);
+            });
+            
+            wrapper.appendChild(button);
+        }
+        
+        contextMenu.appendChild(wrapper);
+    });
+    
+    return contextMenu;
+}
+
+function getBlockType(block) {
+    if (block.classList.contains('node_heading')) return 'heading';
+    if (block.classList.contains('node_paragraph')) return 'paragraph';
+    if (block.classList.contains('node_ul')) return 'ul';
+    if (block.classList.contains('node_ol')) return 'ol';
+    if (block.classList.contains('node_code')) return 'code';
+    if (block.classList.contains('node_image')) return 'image';
+    if (block.classList.contains('node_gallery')) return 'gallery';
+    if (block.classList.contains('node_callout')) return 'callout';
+    if (block.classList.contains('node_table')) return 'table';
+    if (block.classList.contains('node_checklist')) return 'checklist';
+    if (block.classList.contains('node_separator')) return 'separator';
+    if (block.classList.contains('node_persona')) return 'persona';
+    return 'paragraph';
+}
+
+function getContextMenuItems(blockType) {
+    const baseItems = [
+        {
+            type: 'paragraph',
+            text: 'Параграф',
+            icon: '<path d="M19 5H5v2h14V5Zm0 4H5v2h14V9ZM5 13h14v2H5v-2Zm8 4H5v2h8v-2Z"></path>',
+            active: blockType === 'paragraph'
+        },
+        {
+            type: 'quote',
+            text: 'Цитата',
+            icon: '<path fill-rule="evenodd" clip-rule="evenodd" d="M14.024 4.00149C14.796 3.97849 15.561 4.22148 16.144 4.78045C16.715 5.32743 17 6.0104 17 6.83136C17 7.25434 16.926 7.70232 16.777 8.1743C16.628 8.64628 16.38 9.25525 16.033 10.0012L13.613 15H12.072L13.527 9.10326C13.5616 8.96326 12.7741 8.54925 12.4153 8.3606C12.3384 8.32019 12.2812 8.29012 12.256 8.2753C11.81 8.01331 11.389 7.58333 11.197 7.09635C10.992 6.57837 11.151 5.8944 11.417 5.43142C11.715 4.91145 12.207 4.51546 12.758 4.28247C13.162 4.11148 13.594 4.01549 14.024 4.00149ZM5.65494 4.2819C6.05894 4.11091 6.49095 4.01491 6.92095 4.00191C7.69295 3.97791 8.45796 4.2219 9.04096 4.78088C9.61197 5.32785 9.89697 6.01082 9.89697 6.83179C9.89697 7.25477 9.82297 7.70175 9.67397 8.17473C9.52497 8.64671 9.27596 9.25568 8.92996 10.0016L6.50995 14.9994H4.96794L6.42395 9.10369C6.45857 8.96355 5.66953 8.54819 5.31119 8.35956C5.23485 8.31937 5.17805 8.28948 5.15294 8.27472C4.70694 8.01273 4.28593 7.58375 4.09293 7.09678C3.88893 6.5778 4.04693 5.89483 4.31393 5.43085C4.61194 4.91087 5.10394 4.51489 5.65494 4.2819Z"></path>',
+            active: blockType === 'quote'
+        },
+        { type: 'separator' },
+        {
+            type: 'delete',
+            text: 'Удалить',
+            icon: '<path fill-rule="evenodd" clip-rule="evenodd" d="M10 6H14V7H10V6ZM8 7V6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H18H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H18V17C18 18.6569 16.6569 20 15 20H9C7.34315 20 6 18.6569 6 17V9H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H6H8ZM16 9H14H10H8V17C8 17.5523 8.44772 18 9 18H15C15.5523 18 16 17.5523 16 17V9ZM10 11.5C10 11.2239 10.2239 11 10.5 11C10.7761 11 11 11.2239 11 11.5V15.5C11 15.7761 10.7761 16 10.5 16C10.2239 16 10 15.7761 10 15.5V11.5ZM13.5 11C13.2239 11 13 11.2239 13 11.5V15.5C13 15.7761 13.7761 16 13.5 16C13.7761 16 14 15.7761 14 15.5V11.5C14 11.2239 13.7761 11 13.5 11Z"></path>'
+        }
     ];
     
-    let commandMenu = null;
-    let currentCommand = '';
-    let selectedCommandIndex = 0;
+    return baseItems;
+}
+
+function createPlusButton(block) {
+    const plusButton = document.createElement('button');
+    plusButton.className = 'block-menu__plus';
+    plusButton.type = 'button';
+    plusButton.title = 'Добавить блок';
     
-    // Флаг для отслеживания состояния командного меню и блокировки кнопок
-    let isCommandMenuOpen = false;
-    let isProcessingCommand = false;
-    let lastClickTime = 0;
+    plusButton.innerHTML = `
+        <svg class="svg-icon" fill="currentColor" height="16" viewBox="0 0 24 24" width="16">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+    `;
     
-    // Обработчик для кнопки +
-    if (plusButton) {
-        plusButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Проверка на дебаунс (предотвращение двойных кликов)
-            const now = Date.now();
-            if (now - lastClickTime < 800) {
-                return; // Игнорируем клики с интервалом менее 800мс
-            }
-            lastClickTime = now;
-            
-            // Предотвращаем многократный вызов командного меню
-            if (isCommandMenuOpen || commandMenu || isProcessingCommand) {
-                hideCommandMenu();
-                return;
-            }
-            
-            // Устанавливаем флаг блокировки
-            isCommandMenuOpen = true;
-            isProcessingCommand = true;
-            
-            // Проверяем, есть ли выделенный текст
-            const selection = window.getSelection();
-            if (selection.toString().trim()) {
-                showCommandMenuForSelection();
-            } else {
-                showCommandMenu();
-            }
-            
-            // Сбрасываем флаг после задержки
+    plusButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        // Если блок пустой, создаем новый блок
+        if (block.classList.contains('is-empty')) {
+            createNewBlockAfter(block);
+        } else {
+            // Если блок не пустой, показываем меню
+            showBlockMenu(block);
+        }
+    });
+    
+    // Добавляем обработчик для начала редактирования
+    plusButton.addEventListener('mousedown', (e) => {
+        // НЕ предотвращаем событие по умолчанию, чтобы можно было кликнуть в поле
+        e.stopPropagation();
+        
+        // Находим редактируемый элемент в блоке
+        const editableElement = block.querySelector('[contenteditable="true"]');
+        if (editableElement) {
+            // Фокусируемся на редактируемом элементе
             setTimeout(() => {
-                isCommandMenuOpen = false;
+                editableElement.focus();
                 
-                // Разблокируем обработку команд через дополнительную задержку
-                setTimeout(() => {
-                    isProcessingCommand = false;
-                }, 400);
-            }, 500);
+                // Устанавливаем курсор в начало
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.setStart(editableElement, 0);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }, 10);
+        }
+    });
+    
+    return plusButton;
+}
+
+function showBlockMenu(block) {
+    // Закрываем все открытые меню
+    document.querySelectorAll('.command-menu').forEach(menu => menu.remove());
+    
+    // Создаем меню выбора типа блока
+    const menu = document.createElement('div');
+    menu.className = 'command-menu';
+    menu.style.position = 'absolute';
+    menu.style.zIndex = '1001';
+    
+    // Позиционируем меню рядом с кнопкой +
+    const rect = block.getBoundingClientRect();
+    const editorRect = block.closest('.prosemirror-editor').getBoundingClientRect();
+    
+    menu.style.left = '50px';
+    menu.style.top = `${rect.top - editorRect.top + 20}px`;
+    
+    const blockTypes = [
+        { type: 'heading', title: 'Заголовок', description: 'Большой заголовок', icon: 'H' },
+        { type: 'paragraph', title: 'Параграф', description: 'Обычный текст', icon: 'P' },
+        { type: 'quote', title: 'Цитата', description: 'Блок цитаты', icon: '"' },
+        { type: 'ul', title: 'Список', description: 'Маркированный список', icon: '•' },
+        { type: 'ol', title: 'Нумерованный список', description: 'Пронумерованный список', icon: '1.' },
+        { type: 'code', title: 'Код', description: 'Блок кода', icon: '</>' },
+        { type: 'image', title: 'Изображение', description: 'Вставить изображение', icon: '🖼️' },
+        { type: 'separator', title: 'Разделитель', description: 'Горизонтальная линия', icon: '—' }
+    ];
+    
+    blockTypes.forEach(blockType => {
+        const item = document.createElement('button');
+        item.className = 'command-menu-item';
+        item.innerHTML = `
+            <div class="command-menu-item-icon">${blockType.icon}</div>
+            <div class="command-menu-item-content">
+                <div class="command-menu-item-title">${blockType.title}</div>
+                <div class="command-menu-item-description">${blockType.description}</div>
+            </div>
+        `;
+        
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            createNewBlock(block, blockType.type);
+            menu.remove();
         });
         
-        // Обработчик для позиционирования кнопки рядом с текущей строкой
-        editorContainer.addEventListener('mouseup', updatePlusButtonPosition);
-        editorContainer.addEventListener('keyup', updatePlusButtonPosition);
-        editorContainer.addEventListener('keydown', updatePlusButtonPosition);
-        editorContainer.addEventListener('click', updatePlusButtonPosition);
-        editorContainer.addEventListener('focus', updatePlusButtonPosition);
-        editorContainer.addEventListener('input', updatePlusButtonPosition);
-        editorContainer.addEventListener('scroll', updatePlusButtonPosition);
-        window.addEventListener('scroll', updatePlusButtonPosition);
-        window.addEventListener('resize', updatePlusButtonPosition);
+        menu.appendChild(item);
+    });
+    
+    block.closest('.prosemirror-editor').appendChild(menu);
+    
+    // Закрываем меню при клике вне его
+    setTimeout(() => {
+        const closeMenu = (e) => {
+            if (!menu.contains(e.target)) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        };
+        document.addEventListener('click', closeMenu);
+    }, 100);
+}
+
+function createNewBlock(afterBlock, blockType) {
+    const newBlock = createBlockElement(blockType);
+    
+    // Вставляем новый блок после текущего
+    afterBlock.parentNode.insertBefore(newBlock, afterBlock.nextSibling);
+    
+    // Настраиваем контролы для нового блока
+    setupBlockControls(newBlock);
+    
+    // Фокусируемся на новом блоке
+    focusBlock(newBlock);
+    
+    // Обновляем textarea
+    updateTextarea(afterBlock.closest('.prosemirror-editor'));
+}
+
+function createNewBlockAfter(block) {
+    // Создаем новый параграф после текущего блока
+    const newBlock = createBlockElement('paragraph');
+    
+    // Вставляем новый блок после текущего
+    block.parentNode.insertBefore(newBlock, block.nextSibling);
+    
+    // Настраиваем контролы для нового блока
+    setupBlockControls(newBlock);
+    
+    // Фокусируемся на новом блоке
+    focusBlock(newBlock);
+    
+    // Обновляем textarea
+    updateTextarea(block.closest('.prosemirror-editor'));
+}
+
+function createBlockElement(blockType) {
+    const block = document.createElement('div');
+    block.className = `node node_${blockType}`;
+    block.dataset.blockId = Math.random().toString(36).substr(2, 9);
+    
+    switch (blockType) {
+        case 'heading':
+            block.innerHTML = `
+                <div class="heading heading-1" data-empty-heading="Заголовок" contenteditable="true" style="outline: none; border: none; background: transparent;"></div>
+            `;
+                break;
+        case 'paragraph':
+            block.innerHTML = `
+                <p contenteditable="true" data-placeholder="Введите текст" style="outline: none; border: none; background: transparent;"></p>
+            `;
+            break;
+        case 'quote':
+            block.innerHTML = `
+                <blockquote contenteditable="true" data-placeholder="Введите цитату"></blockquote>
+            `;
+                break;
+        case 'ul':
+            block.innerHTML = `
+                <ul>
+                    <li contenteditable="true" data-placeholder="Элемент списка"></li>
+                </ul>
+            `;
+                break;
+        case 'ol':
+            block.innerHTML = `
+                <ol>
+                    <li contenteditable="true" data-placeholder="Элемент списка"></li>
+                </ol>
+            `;
+                break;
+        case 'code':
+            block.innerHTML = `
+                <div class="node_code__header">
+                    <span class="node_code__lang">text</span>
+                    <button type="button" class="node_code__copy">Копировать</button>
+                </div>
+                <pre class="node_code__body" contenteditable="true"><code>/* Ваш код */</code></pre>
+            `;
+                break;
+        case 'image':
+            block.innerHTML = `
+                <div class="node_image__holder" contenteditable="false">Загрузите изображение…</div>
+                <div class="node_image__caption" contenteditable="true">Подпись к изображению</div>
+            `;
+                break;
+        case 'separator':
+            block.innerHTML = `
+                <div class="separator"></div>
+            `;
+                break;
+        }
         
-        // Обновление позиции при прокрутке с интервалом
-        setInterval(updatePlusButtonPosition, 300);
+    return block;
+}
+
+function setupDragAndDrop(block) {
+    const dragHandle = block.querySelector('.node__drag-control');
+    
+    if (dragHandle) {
+        dragHandle.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', '');
+            e.dataTransfer.effectAllowed = 'move';
+            block.classList.add('dragging');
+            
+            // Сохраняем данные о перетаскиваемом блоке
+            e.dataTransfer.setData('text/html', block.outerHTML);
+            e.dataTransfer.setData('application/x-block-id', block.dataset.blockId || Math.random().toString(36));
+        });
         
-        // Начальное позиционирование
-        setTimeout(updatePlusButtonPosition, 100);
-        setTimeout(updatePlusButtonPosition, 500);
-        setTimeout(updatePlusButtonPosition, 1000);
+        dragHandle.addEventListener('dragend', (e) => {
+            block.classList.remove('dragging');
+            
+            // Убираем все классы drag-over
+            document.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+        });
     }
     
-    // Функция для обновления позиции кнопки +
-    function updatePlusButtonPosition() {
-        if (!plusButton) return;
+    block.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        block.classList.add('drag-over');
+    });
+    
+    block.addEventListener('dragleave', (e) => {
+        // Проверяем, что мы действительно покидаем блок
+        if (!block.contains(e.relatedTarget)) {
+            block.classList.remove('drag-over');
+        }
+    });
+    
+    block.addEventListener('drop', (e) => {
+        e.preventDefault();
+        block.classList.remove('drag-over');
         
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
+        const draggedBlockId = e.dataTransfer.getData('application/x-block-id');
+        const draggedBlock = document.querySelector(`[data-block-id="${draggedBlockId}"]`);
         
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        const editorRect = editorContainer.getBoundingClientRect();
+        if (draggedBlock && draggedBlock !== block) {
+            // Перемещаем блок
+            const rect = block.getBoundingClientRect();
+            const dropY = e.clientY;
+            const blockCenter = rect.top + rect.height / 2;
+            
+            if (dropY < blockCenter) {
+                // Вставляем перед текущим блоком
+                block.parentNode.insertBefore(draggedBlock, block);
+            } else {
+                // Вставляем после текущего блока
+                block.parentNode.insertBefore(draggedBlock, block.nextSibling);
+            }
+            
+            // Обновляем textarea
+            updateTextarea(block.closest('.prosemirror-editor'));
+        }
+    });
+    
+    // Добавляем обработчик для редактирования текста
+    const editableElements = block.querySelectorAll('[contenteditable="true"]');
+    editableElements.forEach(element => {
+        element.addEventListener('focus', () => {
+            // При фокусе на редактируемом элементе обновляем контролы
+            setTimeout(() => {
+                updateSingleBlockControls(block);
+            }, 100);
+        });
         
-        // Получаем текущую строку, где находится курсор
-        const currentNode = range.startContainer;
-        let currentParagraph = null;
+        element.addEventListener('blur', () => {
+            // При потере фокуса обновляем контролы
+            setTimeout(() => {
+                updateSingleBlockControls(block);
+            }, 100);
+        });
         
-        // Находим ближайший родительский элемент p, div, li, h1-h6
-        let node = currentNode;
-        while (node && node !== editorContainer) {
-            if (node.nodeType === 1) { // Элемент
-                const tagName = node.tagName.toLowerCase();
-                if (tagName === 'p' || tagName === 'div' || tagName === 'li' || 
-                    (tagName[0] === 'h' && tagName.length === 2 && !isNaN(tagName[1]))) {
-                    currentParagraph = node;
-                    break;
+        // Обработчик нажатия клавиш
+        element.addEventListener('keydown', (e) => {
+            // Enter в конце блока создает новый блок
+            if (e.key === 'Enter') {
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+                const textNode = range.startContainer;
+                
+                // Проверяем, находимся ли мы в конце текста
+                if (textNode.nodeType === Node.TEXT_NODE) {
+                    const textLength = textNode.textContent.length;
+                    const cursorPosition = range.startOffset;
+                    
+                    // Если курсор в конце текста, создаем новый блок
+                    if (cursorPosition === textLength) {
+                        e.preventDefault();
+                        createNewBlockAfter(block);
+                    }
+                } else {
+                    // Если это не текстовый узел, создаем новый блок
+                    e.preventDefault();
+                    createNewBlockAfter(block);
                 }
             }
-            node = node.parentNode;
-        }
-        
-        // Если не нашли параграф, используем позицию курсора
-        let cursorTop = rect.top - editorRect.top + editorContainer.scrollTop;
-        
-        // Если нашли параграф, используем его положение
-        if (currentParagraph) {
-            const paragraphRect = currentParagraph.getBoundingClientRect();
-            cursorTop = paragraphRect.top - editorRect.top + editorContainer.scrollTop;
-            cursorTop += paragraphRect.height / 2 - 12; // Центрируем по вертикали
-        }
-        
-        // Проверяем, что позиция находится в видимой части редактора
-        if (cursorTop < 0 || cursorTop > editorContainer.offsetHeight) {
-            // Если курсор вне видимой области, скрываем кнопку
-            plusButton.style.visibility = 'hidden';
-            return;
-        }
-        
-        // Устанавливаем кнопку слева от курсора, но внутри формы
-        plusButton.style.top = `${cursorTop}px`;
-        plusButton.style.left = '10px'; // Размещаем внутри формы слева
-        
-        // Добавляем визуальное разделение между курсором и кнопкой
-        plusButton.style.position = 'absolute';
-        plusButton.style.background = '#ffffff';
-        plusButton.style.boxShadow = '0 1px 3px rgba(0,0,0,0.15)';
-        
-        // Создаем визуальное разделение с помощью границы справа
-        plusButton.style.borderRight = '2px solid #e1e5e9';
-        plusButton.style.paddingRight = '5px';
-        
-        // Добавляем плавный переход
-        plusButton.style.transition = 'top 0.15s ease, left 0.15s ease';
-        
-        // Показываем кнопку
-        plusButton.style.visibility = 'visible';
-    }
+            
+            // Escape для выхода из блока
+            if (e.key === 'Escape') {
+                element.blur();
+            }
+        });
+    });
     
+    // Добавляем обработчик для клика по блоку
+    block.addEventListener('click', (e) => {
+        // Если клик не по кнопке, фокусируемся на редактируемом элементе
+        if (!e.target.closest('.block-menu__plus') && !e.target.closest('.node__drag-control') && !e.target.closest('.node__dots')) {
+            const editableElement = block.querySelector('[contenteditable="true"]');
+            if (editableElement) {
+                editableElement.focus();
+            }
+        }
+    });
+    
+    // Добавляем обработчик для двойного клика по блоку
+    block.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Находим редактируемый элемент в блоке
+        const editableElement = block.querySelector('[contenteditable="true"]');
+        if (editableElement) {
+            // Фокусируемся на редактируемом элементе
+            editableElement.focus();
+            
+            // Устанавливаем курсор в начало
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.setStart(editableElement, 0);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    });
+}
+
+function setupEventHandlers(editor, textarea) {
     // Обработчик изменений в редакторе
-    editorContainer.addEventListener('input', function() {
-        updateTextarea(textarea, editorContainer);
-        handleCommandInput();
+    editor.addEventListener('input', () => {
+        updateTextarea(editor);
+        updateBlockControls(editor);
+    });
+    
+    // Обработчик фокуса
+    editor.addEventListener('focus', function() {
+        this.classList.add('focused');
+    });
+    
+    editor.addEventListener('blur', function() {
+        this.classList.remove('focused');
     });
     
     // Обработчик вставки изображений
-    editorContainer.addEventListener('paste', function(e) {
+    editor.addEventListener('paste', function(e) {
         const items = e.clipboardData.items;
         for (let i = 0; i < items.length; i++) {
             if (items[i].type.indexOf('image') !== -1) {
                 e.preventDefault();
                 const file = items[i].getAsFile();
-                insertImageFromFile(file, editorContainer);
+                insertImageFromFile(file, editor);
             }
         }
     });
     
     // Обработчик перетаскивания изображений
-    editorContainer.addEventListener('dragover', function(e) {
+    editor.addEventListener('dragover', function(e) {
         e.preventDefault();
     });
     
-    editorContainer.addEventListener('drop', function(e) {
+    editor.addEventListener('drop', function(e) {
         e.preventDefault();
         const files = e.dataTransfer.files;
         for (let i = 0; i < files.length; i++) {
             if (files[i].type.startsWith('image/')) {
-                insertImageFromFile(files[i], editorContainer);
+                insertImageFromFile(files[i], editor);
             }
         }
     });
-    
-    // Обработчик фокуса
-    editorContainer.addEventListener('focus', function() {
-        this.classList.add('focused');
+}
+
+function updateBlockControls(editor) {
+    const blocks = editor.querySelectorAll('.node');
+    blocks.forEach(block => {
+        updateSingleBlockControls(block);
     });
+}
+
+function updateSingleBlockControls(block) {
+    const hasText = block.textContent.trim().length > 0;
+    const hasDragControl = block.querySelector('.node__drag-control');
+    const hasRightMenu = block.querySelector('.right-menu__container');
+    const hasPlusButton = block.querySelector('.block-menu__plus');
     
-    editorContainer.addEventListener('blur', function() {
-        this.classList.remove('focused');
-        hideCommandMenu();
-    });
-    
-    // Переменная для отслеживания последнего нажатия на "/"
-    let lastSlashKeyTime = 0;
-    
-    // Обработчик клавиш
-    editorContainer.addEventListener('keydown', function(e) {
-        // Обработка команд через /
-        if (e.key === '/') {
-            // Проверка на двойное нажатие /
-            const now = Date.now();
-            if (now - lastSlashKeyTime < 500 || isProcessingCommand) {
-                // Игнорируем, если прошло меньше 500мс с последнего нажатия
-                // или если все еще обрабатывается предыдущая команда
-                return;
-            }
-            lastSlashKeyTime = now;
-            
-            // Предотвращаем многократный вызов командного меню
-            if (isCommandMenuOpen || commandMenu) {
-                hideCommandMenu();
-                return;
-            }
-            
-            isProcessingCommand = true;
-            setTimeout(() => {
-                showCommandMenu();
-                
-                // Разблокируем через задержку
-                setTimeout(() => {
-                    isProcessingCommand = false;
-                }, 300);
-            }, 10);
-            return;
+    if (hasText) {
+        // Если есть текст, убираем кнопку + и добавляем drag handle и меню
+        block.classList.remove('is-empty');
+        if (hasPlusButton) {
+            hasPlusButton.remove();
         }
-        
-        if (commandMenu) {
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                selectedCommandIndex = Math.min(selectedCommandIndex + 1, commandMenu.children.length - 1);
-                updateCommandMenuSelection();
-                scrollToSelectedItem();
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                selectedCommandIndex = Math.max(selectedCommandIndex - 1, 0);
-                updateCommandMenuSelection();
-                scrollToSelectedItem();
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                executeSelectedCommand();
-            } else if (e.key === 'Escape') {
-                e.preventDefault();
-                hideCommandMenu();
-            }
+        if (!hasDragControl) {
+            const dragControl = createDragControl();
+            block.appendChild(dragControl);
         }
-    });
-    
-    // Обработчик команд через /
-    function handleCommandInput() {
-        if (isProcessingCommand) return; // Блокируем, если уже обрабатываем команду
-        
-        const selection = window.getSelection();
-        if (selection.rangeCount === 0) return;
-        
-        const range = selection.getRangeAt(0);
-        const text = editorContainer.textContent;
-        const cursorPos = range.startOffset;
-        
-        // Проверяем, есть ли команда в текущей строке
-        const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-        const lineText = text.substring(lineStart, cursorPos);
-        
-        if (lineText.startsWith('/')) {
-            // Защита от многократного вызова
-            if (isCommandMenuOpen || commandMenu) {
-                filterCommands(lineText);
-                return;
-            }
-            
-            currentCommand = lineText;
-            isProcessingCommand = true;
-            
-            // Небольшая задержка перед показом меню
-            setTimeout(() => {
-                showCommandMenu();
-                filterCommands(lineText);
-                
-                // Разблокируем через задержку
-                setTimeout(() => {
-                    isProcessingCommand = false;
-                }, 300);
-            }, 10);
-        } else if (!lineText.includes('/')) {
-            hideCommandMenu();
+        if (!hasRightMenu) {
+            const rightMenu = createRightMenu(block);
+            block.appendChild(rightMenu);
+        }
+    } else {
+        // Если нет текста, убираем drag handle и меню, добавляем кнопку +
+        block.classList.add('is-empty');
+        if (hasDragControl) {
+            hasDragControl.remove();
+        }
+        if (hasRightMenu) {
+            hasRightMenu.remove();
+        }
+        if (!hasPlusButton) {
+            const plusButton = createPlusButton(block);
+            block.appendChild(plusButton);
         }
     }
+}
+
+function handleContextMenuAction(block, action) {
+    switch (action.type) {
+        case 'delete':
+            block.remove();
+            updateTextarea(block.closest('.prosemirror-editor'));
+            break;
+        case 'paragraph':
+            convertBlock(block, 'paragraph');
+            break;
+        case 'quote':
+            convertBlock(block, 'quote');
+            break;
+        case 'heading':
+            convertBlock(block, 'heading');
+            break;
+        case 'ul':
+            convertBlock(block, 'ul');
+            break;
+        case 'ol':
+            convertBlock(block, 'ol');
+            break;
+        case 'code':
+            convertBlock(block, 'code');
+            break;
+        case 'image':
+            convertBlock(block, 'image');
+            break;
+        case 'separator':
+            convertBlock(block, 'separator');
+            break;
+    }
+}
+
+function convertBlock(block, newType) {
+    const content = block.textContent;
+    const newBlock = createBlockElement(newType);
     
-    function showCommandMenu() {
-        if (commandMenu) return;
-        
-        commandMenu = document.createElement('div');
-        commandMenu.className = 'command-menu';
-        commandMenu.style.position = 'absolute';
-        commandMenu.style.zIndex = '1000';
-        
-        // Позиционируем меню
-        const rect = editorContainer.getBoundingClientRect();
-        commandMenu.style.left = '20px';
-        commandMenu.style.top = '80px';
-        
-        editorContainer.appendChild(commandMenu);
-        
-        // Показываем все команды
-        commands.forEach((cmd, index) => {
-            const item = createCommandMenuItem(cmd, index);
-            commandMenu.appendChild(item);
-        });
-        
-        selectedCommandIndex = 0;
-        updateCommandMenuSelection();
+    // Копируем содержимое
+    const editableElement = newBlock.querySelector('[contenteditable="true"]');
+    if (editableElement) {
+        editableElement.textContent = content;
     }
     
-    function showCommandMenuForSelection() {
-        if (commandMenu) return;
+    // Заменяем блок
+    block.parentNode.replaceChild(newBlock, block);
+    setupBlockControls(newBlock);
+    focusBlock(newBlock);
+    updateTextarea(newBlock.closest('.prosemirror-editor'));
+}
+
+function focusBlock(block) {
+    const editableElement = block.querySelector('[contenteditable="true"]');
+    if (editableElement) {
+        editableElement.focus();
         
-        commandMenu = document.createElement('div');
-        commandMenu.className = 'command-menu';
-        commandMenu.style.position = 'absolute';
-        commandMenu.style.zIndex = '1000';
-        
-        // Позиционируем меню
-        const rect = editorContainer.getBoundingClientRect();
-        commandMenu.style.left = '20px';
-        commandMenu.style.top = '80px';
-        
-        editorContainer.appendChild(commandMenu);
-        
-        // Показываем команды форматирования для выделенного текста
-        const formatCommands = commands.filter(cmd => 
-            ['bold', 'italic', 'underline', 'code', 'link', 'info', 'success', 'warning', 'danger'].includes(cmd.trigger.replace('/', ''))
-        );
-        
-        formatCommands.forEach((cmd, index) => {
-            const item = createCommandMenuItem(cmd, index);
-            commandMenu.appendChild(item);
-        });
-        
-        selectedCommandIndex = 0;
-        updateCommandMenuSelection();
-    }
-    
-    function createCommandMenuItem(cmd, index) {
-        const item = document.createElement('button');
-        item.className = 'command-menu-item';
-        item.setAttribute('data-command', cmd.trigger);
-        
-        // Проверяем, находимся ли мы в темной теме
-        const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-        const descriptionColor = isDarkTheme ? '#f8f9fa' : '#333333';
-        const titleColor = isDarkTheme ? '#ffffff' : '#212529';
-        
-        item.innerHTML = `
-            <div class="command-menu-item-icon">${cmd.icon}</div>
-            <div class="command-menu-item-content">
-                <div class="command-menu-item-title" style="color: ${titleColor};">${cmd.title}</div>
-                <div class="command-menu-item-description" style="color: ${descriptionColor}; font-weight: 500;">${cmd.description}</div>
-            </div>
-        `;
-        
-        item.addEventListener('click', function() {
-            executeCommand(cmd);
-        });
-        
-        return item;
-    }
-    
-    function updateCommandMenuSelection() {
-        if (!commandMenu) return;
-        
-        const items = commandMenu.querySelectorAll('.command-menu-item');
-        items.forEach((item, index) => {
-            if (index === selectedCommandIndex) {
-                item.classList.add('selected');
-            } else {
-                item.classList.remove('selected');
-            }
-        });
-    }
-    
-    function scrollToSelectedItem() {
-        if (!commandMenu) return;
-        
-        const items = commandMenu.querySelectorAll('.command-menu-item');
-        const selectedItem = items[selectedCommandIndex];
-        
-        if (selectedItem) {
-            selectedItem.scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
-        }
-    }
-    
-    function filterCommands(query) {
-        if (!commandMenu) return;
-        
-        // Создаем Set для исключения дубликатов
-        const uniqueCommands = new Map();
-        
-        // Фильтруем команды
-        const filteredCommands = commands.filter(cmd => 
-            cmd.trigger.toLowerCase().includes(query.toLowerCase()) ||
-            cmd.title.toLowerCase().includes(query.toLowerCase())
-        );
-        
-        // Добавляем только уникальные команды (по trigger)
-        filteredCommands.forEach(cmd => {
-            if (!uniqueCommands.has(cmd.trigger)) {
-                uniqueCommands.set(cmd.trigger, cmd);
-            }
-        });
-        
-        // Очищаем меню
-        commandMenu.innerHTML = '';
-        
-        // Добавляем элементы меню
-        Array.from(uniqueCommands.values()).forEach((cmd, index) => {
-            const item = createCommandMenuItem(cmd, index);
-            commandMenu.appendChild(item);
-        });
-        
-        selectedCommandIndex = 0;
-        updateCommandMenuSelection();
-    }
-    
-    function executeSelectedCommand() {
-        if (!commandMenu) return;
-        
-        const items = commandMenu.querySelectorAll('.command-menu-item');
-        if (items[selectedCommandIndex]) {
-            const cmd = commands.find(c => c.trigger === items[selectedCommandIndex].getAttribute('data-command'));
-            if (cmd) {
-                executeCommand(cmd);
-            }
-        }
-    }
-    
-    function executeCommand(cmd) {
-        hideCommandMenu();
-        
-        // Показываем подсказку о вызванной функции
-        showFunctionTooltip(cmd.title);
-        
-        const selection = window.getSelection();
-        const selectedText = selection.toString().trim();
-        
-        switch (cmd.trigger) {
-            case '/h1':
-                insertHeading(1, selectedText);
-                break;
-            case '/h2':
-                insertHeading(2, selectedText);
-                break;
-            case '/h3':
-                insertHeading(3, selectedText);
-                break;
-            case '/p':
-                insertParagraph(selectedText);
-                break;
-            case '/ul':
-                insertBulletList(selectedText);
-                break;
-            case '/ol':
-                insertOrderedList(selectedText);
-                break;
-            case '/code':
-                insertCodeBlock();
-                break;
-            case '/quote':
-                insertQuote(selectedText);
-                break;
-            case '/bold':
-                formatText('bold', selectedText);
-                break;
-            case '/italic':
-                formatText('italic', selectedText);
-                break;
-            case '/underline':
-                formatText('underline', selectedText);
-                break;
-            case '/link':
-                insertLink(selectedText);
-                break;
-            case '/hr':
-                insertHorizontalRule();
-                break;
-            case '/image':
-                insertImageContainer();
-                break;
-            case '/gallery':
-                insertGallery();
-                break;
-            case '/info':
-                insertCallout('info');
-                break;
-            case '/success':
-                insertCallout('success');
-                break;
-            case '/warning':
-                insertCallout('warning');
-                break;
-            case '/danger':
-                insertCallout('danger');
-                break;
-            case '/table':
-                insertTable();
-                break;
-            case '/checklist':
-                insertChecklist();
-                break;
-        }
-        
-        updateTextarea(textarea, editorContainer);
-    }
-    
-    function insertHeading(level, text) {
-        const heading = document.createElement(`h${level}`);
-        
-        if (window.getSelection().toString() || text) {
-            // Используем выделенный текст или переданный параметр
-            heading.textContent = text || window.getSelection().toString();
-        } else {
-            // Создаем пустой элемент и позиционируем курсор внутри
-            heading.innerHTML = '<br>';
-        }
-        
-        if (window.getSelection().toString()) {
-            replaceSelection(heading);
-        } else {
-            insertAtCursor(heading);
-        }
-        
-        // Помещаем курсор в начало заголовка
-        setCaretToStart(heading);
-    }
-    
-    function insertParagraph(text) {
-        const p = document.createElement('p');
-        
-        if (window.getSelection().toString() || text) {
-            // Используем выделенный текст или переданный параметр
-            p.textContent = text || window.getSelection().toString();
-        } else {
-            // Создаем пустой параграф
-            p.innerHTML = '<br>';
-        }
-        
-        if (window.getSelection().toString()) {
-            replaceSelection(p);
-        } else {
-            insertAtCursor(p);
-        }
-        
-        // Помещаем курсор в начало параграфа
-        setCaretToStart(p);
-    }
-    
-    function insertBulletList(text) {
-        const ul = document.createElement('ul');
-        const li = document.createElement('li');
-        
-        if (window.getSelection().toString() || text) {
-            // Используем выделенный текст или переданный параметр
-            li.textContent = text || window.getSelection().toString();
-        } else {
-            // Создаем пустой элемент списка
-            li.innerHTML = '<br>';
-        }
-        
-        ul.appendChild(li);
-        
-        if (window.getSelection().toString()) {
-            replaceSelection(ul);
-        } else {
-            insertAtCursor(ul);
-        }
-        
-        // Помещаем курсор в начало элемента списка
-        setCaretToStart(li);
-    }
-    
-    function insertOrderedList(text) {
-        const ol = document.createElement('ol');
-        const li = document.createElement('li');
-        
-        if (window.getSelection().toString() || text) {
-            // Используем выделенный текст или переданный параметр
-            li.textContent = text || window.getSelection().toString();
-        } else {
-            // Создаем пустой элемент списка
-            li.innerHTML = '<br>';
-        }
-        
-        ol.appendChild(li);
-        
-        if (window.getSelection().toString()) {
-            replaceSelection(ol);
-        } else {
-            insertAtCursor(ol);
-        }
-        
-        // Помещаем курсор в начало элемента списка
-        setCaretToStart(li);
-    }
-    
-    // Функция для установки курсора в начало элемента
-    function setCaretToStart(element) {
+        // Устанавливаем курсор в начало
         const range = document.createRange();
         const selection = window.getSelection();
-        
-        // Если элемент пустой, создаем текстовый узел
-        if (!element.firstChild) {
-            const textNode = document.createTextNode('');
-            element.appendChild(textNode);
-        }
-        
-        // Устанавливаем диапазон в начало первого текстового узла
-        const firstTextNode = element.firstChild;
-        if (firstTextNode.nodeType === Node.TEXT_NODE) {
-            range.setStart(firstTextNode, 0);
-        } else {
-            range.setStart(element, 0);
-        }
+        range.selectNodeContents(editableElement);
         range.collapse(true);
-        
-        // Очищаем текущее выделение и устанавливаем новое
-        selection.removeAllRanges();
-        selection.addRange(range);
-        
-        // Обновляем позицию кнопки +
-        setTimeout(() => {
-            updatePlusButtonPosition();
-        }, 50);
-    }
-    
-    // Флаг для предотвращения множественного вызова insertCodeBlock
-    let isCodeBlockBeingInserted = false;
-    
-    function insertCodeBlock() {
-        // Предотвращаем множественный вызов
-        if (isCodeBlockBeingInserted) {
-            return;
-        }
-        
-        isCodeBlockBeingInserted = true;
-        
-        const language = prompt('Язык кода (например, python, js):', 'text') || 'text';
-        const wrapper = document.createElement('div');
-        wrapper.className = 'pm-block pm-code';
-        wrapper.innerHTML = `
-            <div class="pm-code__header">
-                <span class="pm-code__lang">${language}</span>
-                <button type="button" class="pm-code__copy">Копировать</button>
-            </div>
-            <pre class="pm-code__body" contenteditable="true"><code class="language-${language}">/* Ваш код */</code></pre>
-        `;
-        wrapper.querySelector('.pm-code__copy').addEventListener('click', function() {
-            const text = wrapper.querySelector('pre').innerText;
-            navigator.clipboard.writeText(text);
-            this.textContent = 'Скопировано';
-            setTimeout(()=> this.textContent='Копировать', 1500);
-        });
-        insertAtCursor(wrapper);
-        
-        // Разблокируем через задержку
-        setTimeout(() => {
-            isCodeBlockBeingInserted = false;
-        }, 1000);
-    }
-    
-    function insertQuote(text) {
-        const blockquote = document.createElement('blockquote');
-        blockquote.textContent = text || 'Цитата';
-        
-        if (window.getSelection().toString()) {
-            replaceSelection(blockquote);
-        } else {
-            insertAtCursor(blockquote);
-        }
-    }
-    
-    function formatText(format, text) {
-        if (text) {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                const span = document.createElement('span');
-                
-                switch (format) {
-                    case 'bold':
-                        span.innerHTML = `<strong>${text}</strong>`;
-                        break;
-                    case 'italic':
-                        span.innerHTML = `<em>${text}</em>`;
-                        break;
-                    case 'underline':
-                        span.innerHTML = `<u>${text}</u>`;
-                        break;
-                }
-                
-                range.deleteContents();
-                range.insertNode(span);
-                selection.removeAllRanges();
-            }
-        } else {
-            // Если нет выделенного текста, вставляем тег
-            const tag = format === 'bold' ? 'strong' : 
-                       format === 'italic' ? 'em' : 'u';
-            const element = document.createElement(tag);
-            element.textContent = `выделенный текст`;
-            insertAtCursor(element);
-        }
-    }
-    
-    function insertLink(text) {
-        const url = prompt('Введите URL:', 'https://');
-        if (url) {
-            const a = document.createElement('a');
-            a.href = url;
-            a.textContent = text || url;
-            a.target = '_blank';
-            
-            if (window.getSelection().toString()) {
-                replaceSelection(a);
-            } else {
-                insertAtCursor(a);
-            }
-        }
-    }
-    
-    function insertHorizontalRule() {
-        const hr = document.createElement('hr');
-        insertAtCursor(hr);
-    }
-    
-    function insertImage() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                insertImageFromFile(file, editorContainer);
-            }
-        };
-        input.click();
-    }
-
-    // Флаг для предотвращения множественного вызова insertImageContainer
-    let isImageContainerBeingInserted = false;
-    
-    function insertImageContainer() {
-        // Предотвращаем множественный вызов
-        if (isImageContainerBeingInserted) {
-            return;
-        }
-        
-        isImageContainerBeingInserted = true;
-        
-        const container = document.createElement('figure');
-        container.className = 'pm-block pm-image';
-        container.innerHTML = `
-            <div class="pm-image__holder" contenteditable="false">Загрузите изображение…</div>
-            <figcaption class="pm-image__caption" contenteditable="true">Подпись к изображению</figcaption>
-        `;
-        insertAtCursor(container);
-        // сразу открыть файловый диалог
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = (e)=>{
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev)=>{
-                const img = new Image();
-                img.src = ev.target.result;
-                img.alt = 'image';
-                container.querySelector('.pm-image__holder').innerHTML = '';
-                container.querySelector('.pm-image__holder').appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        };
-        input.click();
-        
-        // Разблокируем через задержку
-        setTimeout(() => {
-            isImageContainerBeingInserted = false;
-        }, 1000);
-    }
-
-    function insertGallery() {
-        const gallery = document.createElement('div');
-        gallery.className = 'pm-block pm-gallery';
-        gallery.innerHTML = `
-            <div class="pm-gallery__item" contenteditable="false"></div>
-            <div class="pm-gallery__item" contenteditable="false"></div>
-            <div class="pm-gallery__hint">Добавьте две картинки</div>
-        `;
-        insertAtCursor(gallery);
-    }
-
-    function insertCallout(kind) {
-        const callout = document.createElement('div');
-        callout.className = `pm-block pm-callout pm-callout--${kind}`;
-        callout.setAttribute('contenteditable','false');
-        callout.innerHTML = `
-            <div class="pm-callout__icon"></div>
-            <div class="pm-callout__content" contenteditable="true">Текст врезки (${kind})</div>
-        `;
-        insertAtCursor(callout);
-    }
-
-    function insertTable() {
-        const table = document.createElement('div');
-        table.className = 'pm-block pm-table';
-        table.innerHTML = `
-            <table>
-                <thead>
-                    <tr><th>Колонка 1</th><th>Колонка 2</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>Ячейка</td><td>Ячейка</td></tr>
-                </tbody>
-            </table>`;
-        insertAtCursor(table);
-    }
-
-    function insertChecklist() {
-        const list = document.createElement('ul');
-        list.className = 'pm-block pm-checklist';
-        list.innerHTML = `
-            <li><label><input type="checkbox"> Задача 1</label></li>
-            <li><label><input type="checkbox"> Задача 2</label></li>
-        `;
-        insertAtCursor(list);
-    }
-    
-    function insertImageFromFile(file, container) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.maxWidth = '100%';
-            img.style.height = 'auto';
-            img.style.display = 'block';
-            img.style.margin = '1em auto';
-            img.style.borderRadius = '8px';
-            img.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-            
-            insertAtCursor(img);
-            updateTextarea(textarea, container);
-        };
-        reader.readAsDataURL(file);
-    }
-    
-    function insertAtCursor(element) {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            range.insertNode(element);
-            range.setStartAfter(element);
-            range.setEndAfter(element);
             selection.removeAllRanges();
             selection.addRange(range);
-        } else {
-            editorContainer.appendChild(element);
-        }
     }
+}
+
+function toggleContextMenu(menu) {
+    const isVisible = menu.style.display === 'block';
     
-    function replaceSelection(element) {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            range.deleteContents();
-            range.insertNode(element);
-            range.setStartAfter(element);
-            range.setEndAfter(element);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
+    // Закрываем все другие меню
+    document.querySelectorAll('.context-menu').forEach(m => {
+        m.style.display = 'none';
+    });
+    
+    if (!isVisible) {
+        menu.style.display = 'block';
     }
-    
-    function hideCommandMenu() {
-        if (commandMenu) {
-            commandMenu.remove();
-            commandMenu = null;
-            isCommandMenuOpen = false; // Сбрасываем флаг при закрытии меню
-            
-            // Разблокируем обработку команд через дополнительную задержку
-            setTimeout(() => {
-                isProcessingCommand = false;
-            }, 200);
-        }
-    }
-    
-    // Функция для показа подсказки о вызванной функции как текста в редакторе
-    function showFunctionTooltip(functionName) {
-        // Удаляем предыдущую подсказку, если она есть
-        const existingTooltip = editorContainer.querySelector('.function-tooltip');
-        if (existingTooltip) {
-            existingTooltip.remove();
-        }
-        
-        // Создаем подсказку как текст в редакторе
-        const tooltip = document.createElement('span');
-        tooltip.className = 'function-tooltip';
-        tooltip.textContent = `// Вызвана функция: ${functionName}`;
-        tooltip.style.color = '#6c757d';
-        tooltip.style.fontStyle = 'italic';
-        tooltip.style.fontSize = '0.9em';
-        tooltip.style.opacity = '0.7';
-        tooltip.contentEditable = 'false';
-        
-        // Вставляем подсказку в начало текущего элемента
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const currentNode = range.startContainer;
-            let currentElement = currentNode;
-            
-            // Находим ближайший элемент p, div, h1-h6
-            while (currentElement && currentElement !== editorContainer) {
-                if (currentElement.nodeType === 1) {
-                    const tagName = currentElement.tagName.toLowerCase();
-                    if (tagName === 'p' || tagName === 'div' || tagName === 'li' || 
-                        (tagName[0] === 'h' && tagName.length === 2 && !isNaN(tagName[1]))) {
-                        break;
-                    }
-                }
-                currentElement = currentElement.parentNode;
-            }
-            
-            if (currentElement) {
-                // Вставляем подсказку в начало элемента
-                currentElement.insertBefore(tooltip, currentElement.firstChild);
-                
-                // Добавляем пробел после подсказки
-                const space = document.createTextNode(' ');
-                currentElement.insertBefore(space, tooltip.nextSibling);
-                
-                // Устанавливаем курсор после подсказки
-                const newRange = document.createRange();
-                newRange.setStartAfter(space);
-                newRange.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(newRange);
-            }
-        }
-        
-        // Добавляем обработчик для удаления подсказки при начале набора
-        const removeTooltip = () => {
-            if (tooltip.parentNode) {
-                tooltip.remove();
-            }
-        };
-        
-        // Удаляем подсказку при начале ввода
-        editorContainer.addEventListener('input', removeTooltip, { once: true });
-        editorContainer.addEventListener('keydown', removeTooltip, { once: true });
-    }
-    
-    function updateTextarea(textarea, editor) {
-        enhanceVisualFeedback(editor);
+}
+
+function hideContextMenu(menu) {
+    menu.style.display = 'none';
+}
+
+function updateTextarea(editor) {
+    const textarea = editor.parentNode.querySelector('textarea');
+    if (textarea) {
         textarea.value = editor.innerHTML;
+        
         const event = new Event('change', { bubbles: true });
         textarea.dispatchEvent(event);
-        const inputEvent = new Event('input', { bubbles: true });
-        textarea.dispatchEvent(inputEvent);
     }
-    
-    function enhanceVisualFeedback(editor) {
-        // Проверяем, находимся ли мы в темной теме
-        const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+}
+
+function insertImageFromFile(file, editor) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Создаем новый блок изображения
+        const imageBlock = createBlockElement('image');
+        const holder = imageBlock.querySelector('.node_image__holder');
         
-        // Применяем стили к жирному тексту
-        const boldElements = editor.querySelectorAll('strong, b');
-        boldElements.forEach(el => {
-            el.style.fontWeight = '600';
-            el.style.color = isDarkTheme ? '#f8f9fa' : 'inherit';
-        });
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
         
-        // Применяем стили к курсиву
-        const italicElements = editor.querySelectorAll('em, i');
-        italicElements.forEach(el => {
-            el.style.fontStyle = 'italic';
-            el.style.color = isDarkTheme ? '#f8f9fa' : 'inherit';
-        });
+        holder.innerHTML = '';
+        holder.appendChild(img);
         
-        // Применяем стили к подчеркнутому тексту
-        const underlineElements = editor.querySelectorAll('u');
-        underlineElements.forEach(el => {
-            el.style.textDecoration = 'underline';
-            el.style.textDecorationColor = '#007bff';
-            el.style.textDecorationThickness = '2px';
-            el.style.textUnderlineOffset = '2px';
-            el.style.color = isDarkTheme ? '#f8f9fa' : 'inherit';
-        });
-        
-        // Применяем стили к коду
-        const codeElements = editor.querySelectorAll('code');
-        codeElements.forEach(el => {
-            if (isDarkTheme) {
-                el.style.background = '#343a40';
-                el.style.color = '#ffc107';
-                el.style.border = '1px solid #495057';
-            } else {
-                el.style.background = '#f1f3f4';
-                el.style.color = '#e83e8c';
-                el.style.border = '1px solid #e1e5e9';
-            }
-            el.style.padding = '0.2rem 0.4rem';
-            el.style.borderRadius = '0.25rem';
-            el.style.fontFamily = 'JetBrains Mono, monospace';
-            el.style.fontSize = '0.9em';
-            el.style.fontWeight = '500';
-        });
-        
-        // Применяем стили к ссылкам
-        const linkElements = editor.querySelectorAll('a');
-        linkElements.forEach(el => {
-            el.style.color = '#007bff';
-            el.style.textDecoration = 'none';
-            el.style.borderBottom = '1px solid transparent';
-        });
-        
-        // Применяем общий цвет ко всем элементам в темной теме
-        if (isDarkTheme) {
-            const allElements = editor.querySelectorAll('*');
-            allElements.forEach(el => {
-                if (!el.style.color || el.style.color === 'inherit') {
-                    el.style.color = '#f8f9fa';
-                }
-            });
-        }
-    }
+        // Вставляем блок в редактор
+        editor.appendChild(imageBlock);
+        setupBlockControls(imageBlock);
+        updateTextarea(editor);
+    };
+    reader.readAsDataURL(file);
 }
 
 // Инициализация при загрузке страницы
@@ -1103,61 +767,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const widgetId = editor.id.replace('editor-', '');
         if (typeof initProseMirror === 'function') {
             initProseMirror(widgetId);
-            console.log('ProseMirror editor initialized');
+            console.log('Block editor initialized');
         } else {
             console.error('initProseMirror function not found');
         }
     });
     
-    // Предотвращение удаления кнопки +
-    document.addEventListener('keydown', function(e) {
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const container = range.commonAncestorContainer;
-            
-            // Проверяем, не выделена ли кнопка +
-            const plusButtons = document.querySelectorAll('.block-menu__plus.non-removable');
-            plusButtons.forEach(button => {
-                if (container.contains(button) || button.contains(container)) {
-                    // Если кнопка + находится внутри выделения, отменяем действие
-                    e.preventDefault();
-                    range.collapse(true); // Сбрасываем выделение
-                    return false;
-                }
+    // Закрытие контекстных меню при клике вне их
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.context-menu') && !e.target.closest('.node__dots')) {
+            document.querySelectorAll('.context-menu').forEach(menu => {
+                menu.style.display = 'none';
             });
         }
     });
-    
-    // Восстановление кнопки + если она была удалена
-    setInterval(function() {
-        const editors = document.querySelectorAll('.prosemirror-editor-container');
-        editors.forEach(editorContainer => {
-            const editorId = editorContainer.querySelector('.prosemirror-editor').id;
-            const plusId = editorId.replace('editor-', 'plus-');
-            
-            if (!document.getElementById(plusId)) {
-                // Кнопка была удалена, восстанавливаем её
-                const plusButton = document.createElement('button');
-                plusButton.id = plusId;
-                plusButton.className = 'block-menu__plus non-removable';
-                plusButton.title = 'Добавить элемент';
-                plusButton.style = `position: absolute; left: -30px; transform: translateY(-50%); 
-                                    width: 24px; height: 24px; display: flex; align-items: center; 
-                                    justify-content: center; background: white; border: 1px solid #e1e5e9; 
-                                    color: #929ca5; cursor: pointer; z-index: 1000; opacity: 0.8; 
-                                    border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-                                    pointer-events: auto !important;`;
-                
-                plusButton.innerHTML = '<svg class="svg-icon" fill="currentColor" height="16" viewBox="0 0 24 24" width="16">' +
-                                       '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
-                
-                editorContainer.appendChild(plusButton);
-                
-                // Переинициализируем обработчики
-                const widgetId = editorId.replace('editor-', '');
-                initProseMirror(widgetId);
-            }
-        });
-    }, 1000); // Проверяем каждую секунду
 });
