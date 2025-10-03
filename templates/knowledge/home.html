@@ -150,8 +150,10 @@
             <div class="card h-100 text-center category-card compact-card">
                 <div class="card-body p-2">
                     {% if category.icon %}
+                        {% with category.color|default:"#007bff" as icon_color %}
                         <i class="{{ category.icon }} category-icon" 
-                           style="color: {{ category.color }}; font-size: 1.5rem;"></i>
+                           style="color: {{ icon_color }}; font-size: 1.5rem;"></i>
+                        {% endwith %}
                     {% else %}
                         <i class="fas fa-folder category-icon text-primary" style="font-size: 1.5rem;"></i>
                     {% endif %}
@@ -236,9 +238,386 @@
 
 {% endblock %}
 
+{% block extra_css %}
+<style>
+.command-item {
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.command-item:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.modal.show {
+    background: rgba(0,0,0,0.5);
+}
+
+/* Исправление поля поиска */
+.search-group {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.search-input {
+    border: 2px solid #e9ecef;
+    border-radius: 8px 0 0 8px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+    transform: none;
+}
+
+.search-btn {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+    transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+    transform: none;
+}
+
+/* Стили для светлой темы - синие кнопки с тенями */
+[data-bs-theme="light"] .btn-outline-primary,
+[data-bs-theme="light"] a.btn-outline-primary,
+[data-bs-theme="light"] .btn.btn-outline-primary {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border: 2px solid #0d6efd !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-bs-theme="light"] .btn-outline-primary:hover,
+[data-bs-theme="light"] a.btn-outline-primary:hover,
+[data-bs-theme="light"] .btn.btn-outline-primary:hover {
+    background-color: #0b5ed7 !important;
+    color: #ffffff !important;
+    border-color: #0b5ed7 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(11, 94, 215, 0.4) !important;
+}
+
+[data-bs-theme="light"] .btn-outline-primary i,
+[data-bs-theme="light"] a.btn-outline-primary i,
+[data-bs-theme="light"] .btn.btn-outline-primary i {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-bs-theme="light"] .btn-outline-primary:hover i,
+[data-bs-theme="light"] a.btn-outline-primary:hover i,
+[data-bs-theme="light"] .btn.btn-outline-primary:hover i {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Стили для темной темы - серые кнопки с тенями */
+[data-bs-theme="dark"] .btn-outline-primary {
+    background-color: #6c757d !important;
+    color: #ffffff !important;
+    border: 2px solid #6c757d !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary:hover {
+    background-color: #5a6268 !important;
+    color: #ffffff !important;
+    border-color: #5a6268 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(90, 98, 104, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary i {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary:hover i {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Тени для зеленой кнопки "Создать" в обеих темах */
+.btn-success {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .btn-success {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .btn-success:hover {
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* МАКСИМАЛЬНЫЙ ПРИОРИТЕТ ДЛЯ СВЕТЛОЙ ТЕМЫ - ПРИНУДИТЕЛЬНЫЕ ТЕНИ */
+html[data-bs-theme="light"] .btn-outline-primary,
+html[data-bs-theme="light"] a.btn-outline-primary,
+html[data-bs-theme="light"] .btn.btn-outline-primary {
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+}
+
+html[data-bs-theme="light"] .btn-outline-primary:hover,
+html[data-bs-theme="light"] a.btn-outline-primary:hover,
+html[data-bs-theme="light"] .btn.btn-outline-primary:hover {
+    box-shadow: 0 8px 20px rgba(11, 94, 215, 0.4) !important;
+}
+
+/* КРИТИЧЕСКИ ВАЖНО - МАКСИМАЛЬНЫЙ ПРИОРИТЕТ ДЛЯ ТЕНЕЙ */
+body[data-bs-theme="light"] .btn-outline-primary,
+body[data-bs-theme="light"] a.btn-outline-primary,
+body[data-bs-theme="light"] .btn.btn-outline-primary,
+body:not([data-bs-theme="dark"]) .btn-outline-primary,
+body:not([data-bs-theme="dark"]) a.btn-outline-primary,
+body:not([data-bs-theme="dark"]) .btn.btn-outline-primary {
+    box-shadow: 0 12px 40px rgba(13, 110, 253, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+body[data-bs-theme="light"] .btn-outline-primary:hover,
+body[data-bs-theme="light"] a.btn-outline-primary:hover,
+body[data-bs-theme="light"] .btn.btn-outline-primary:hover,
+body:not([data-bs-theme="dark"]) .btn-outline-primary:hover,
+body:not([data-bs-theme="dark"]) a.btn-outline-primary:hover,
+body:not([data-bs-theme="dark"]) .btn.btn-outline-primary:hover {
+    box-shadow: 0 16px 50px rgba(11, 94, 215, 0.7), 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* КРИТИЧЕСКИЙ CSS КЛАСС ДЛЯ ПРИНУДИТЕЛЬНОГО ПРИМЕНЕНИЯ ТЕНЕЙ */
+.force-shadow-light {
+    box-shadow: 0 12px 40px rgba(13, 110, 253, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border: 2px solid #0d6efd !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 700 !important;
+}
+
+.force-shadow-light:hover {
+    box-shadow: 0 16px 50px rgba(11, 94, 215, 0.7), 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    background-color: #0b5ed7 !important;
+    border-color: #0b5ed7 !important;
+    transform: translateY(-3px) !important;
+}
+
+.force-shadow-light i {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Тени для иконки базы данных в заголовке */
+.page-title i.fa-database {
+    text-shadow: 0 8px 25px rgba(0, 123, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    filter: drop-shadow(0 8px 25px rgba(0, 123, 255, 0.6)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* Тени для кнопки Создать */
+.btn-success {
+    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-success:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 16px 50px rgba(16, 185, 129, 0.7), 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.btn-success i {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Исправление бага с наведением на кнопки
+    function fixButtonHoverBug() {
+        const buttons = document.querySelectorAll('.btn-outline-primary');
+        const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        
+        buttons.forEach(button => {
+            // Удаляем все существующие обработчики
+            button.removeEventListener('mouseenter', button._customHoverHandler);
+            button.removeEventListener('mouseleave', button._customLeaveHandler);
+            
+            // Создаем новые обработчики
+            button._customHoverHandler = function() {
+                if (isDarkTheme) {
+                    this.style.setProperty('background-color', '#5a6268', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border-color', '#5a6268', 'important');
+                    this.style.setProperty('transform', 'translateY(-2px)', 'important');
+                    this.style.setProperty('box-shadow', '0 8px 20px rgba(90, 98, 104, 0.3)', 'important');
+                } else {
+                    this.style.setProperty('background-color', '#0b5ed7', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border-color', '#0b5ed7', 'important');
+                    this.style.setProperty('transform', 'translateY(-3px)', 'important');
+                    this.style.setProperty('box-shadow', '0 16px 50px rgba(11, 94, 215, 0.7), 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)', 'important');
+                }
+                
+                const icons = this.querySelectorAll('i');
+                icons.forEach(icon => {
+                    icon.style.setProperty('color', '#ffffff', 'important');
+                    icon.style.setProperty('text-shadow', isDarkTheme ? '0 1px 2px rgba(0, 0, 0, 0.5)' : '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                });
+            };
+            
+            button._customLeaveHandler = function() {
+                if (isDarkTheme) {
+                    this.style.setProperty('background-color', '#6c757d', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border-color', '#6c757d', 'important');
+                    this.style.setProperty('transform', 'translateY(0)', 'important');
+                    this.style.setProperty('box-shadow', '0 4px 12px rgba(0, 0, 0, 0.3)', 'important');
+                } else {
+                    this.style.setProperty('background-color', '#0d6efd', 'important');
+                    this.style.setProperty('color', '#ffffff', 'important');
+                    this.style.setProperty('border-color', '#0d6efd', 'important');
+                    this.style.setProperty('transform', 'translateY(0)', 'important');
+                    this.style.setProperty('box-shadow', '0 12px 40px rgba(13, 110, 253, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)', 'important');
+                }
+                
+                const icons = this.querySelectorAll('i');
+                icons.forEach(icon => {
+                    icon.style.setProperty('color', '#ffffff', 'important');
+                    icon.style.setProperty('text-shadow', isDarkTheme ? '0 1px 2px rgba(0, 0, 0, 0.5)' : '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                });
+            };
+            
+            // Добавляем обработчики
+            button.addEventListener('mouseenter', button._customHoverHandler);
+            button.addEventListener('mouseleave', button._customLeaveHandler);
+        });
+        
+        // Добавляем обработчики для кнопки "Создать"
+        const successButtons = document.querySelectorAll('.btn-success, a.btn-success, .btn.btn-success');
+        successButtons.forEach(button => {
+            // Удаляем старые обработчики
+            button.removeEventListener('mouseenter', button._successHoverHandler);
+            button.removeEventListener('mouseleave', button._successLeaveHandler);
+            
+            // Создаем новые обработчики для кнопки "Создать"
+            button._successHoverHandler = function() {
+                this.style.setProperty('transform', 'translateY(-3px)', 'important');
+                this.style.setProperty('box-shadow', '0 16px 50px rgba(16, 185, 129, 0.7), 0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)', 'important');
+            };
+            
+            button._successLeaveHandler = function() {
+                this.style.setProperty('transform', 'translateY(0)', 'important');
+                this.style.setProperty('box-shadow', '0 12px 40px rgba(16, 185, 129, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)', 'important');
+            };
+            
+            // Добавляем обработчики
+            button.addEventListener('mouseenter', button._successHoverHandler);
+            button.addEventListener('mouseleave', button._successLeaveHandler);
+        });
+    }
+    
+    // Применяем исправления при загрузке
+    fixButtonHoverBug();
+    
+    // Принудительно применяем тени для светлой темы
+    function forceLightThemeShadows() {
+        const isLightTheme = document.documentElement.getAttribute('data-bs-theme') === 'light';
+        if (isLightTheme) {
+            const buttons = document.querySelectorAll('.btn-outline-primary, a.btn-outline-primary, .btn.btn-outline-primary');
+            buttons.forEach(button => {
+                // Добавляем CSS класс для принудительного применения
+                button.classList.add('force-shadow-light');
+                
+                // Принудительно применяем тени через inline стили
+                button.style.setProperty('box-shadow', '0 12px 40px rgba(13, 110, 253, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)', 'important');
+                button.style.setProperty('background-color', '#0d6efd', 'important');
+                button.style.setProperty('color', '#ffffff', 'important');
+                button.style.setProperty('border', '2px solid #0d6efd', 'important');
+                button.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                button.style.setProperty('font-weight', '700', 'important');
+                
+                // Применяем стили к иконкам
+                const icons = button.querySelectorAll('i');
+                icons.forEach(icon => {
+                    icon.style.setProperty('color', '#ffffff', 'important');
+                    icon.style.setProperty('text-shadow', '0 1px 2px rgba(0, 0, 0, 0.3)', 'important');
+                });
+            });
+            
+            // Применяем тени к кнопке "Создать"
+            const successButtons = document.querySelectorAll('.btn-success, a.btn-success, .btn.btn-success');
+            successButtons.forEach(button => {
+                button.style.setProperty('box-shadow', '0 12px 40px rgba(16, 185, 129, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)', 'important');
+                
+                // Применяем стили к иконкам кнопки "Создать"
+                const icons = button.querySelectorAll('i');
+                icons.forEach(icon => {
+                    icon.style.setProperty('text-shadow', '0 2px 4px rgba(0, 0, 0, 0.3)', 'important');
+                });
+            });
+            
+            // Применяем тени к иконке базы данных в заголовке
+            const databaseIcons = document.querySelectorAll('.page-title i.fa-database');
+            databaseIcons.forEach(icon => {
+                icon.style.setProperty('text-shadow', '0 8px 25px rgba(0, 123, 255, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.2)', 'important');
+                icon.style.setProperty('filter', 'drop-shadow(0 8px 25px rgba(0, 123, 255, 0.6)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))', 'important');
+            });
+        } else {
+            // Убираем класс для темной темы
+            const buttons = document.querySelectorAll('.btn-outline-primary, a.btn-outline-primary, .btn.btn-outline-primary');
+            buttons.forEach(button => {
+                button.classList.remove('force-shadow-light');
+            });
+        }
+    }
+    
+    // Применяем тени сразу
+    forceLightThemeShadows();
+    
+    // Применяем тени через небольшую задержку для уверенности
+    setTimeout(forceLightThemeShadows, 100);
+    setTimeout(forceLightThemeShadows, 500);
+    setTimeout(forceLightThemeShadows, 1000);
+    setTimeout(forceLightThemeShadows, 2000);
+    
+    // Применяем стили каждые 3 секунды для гарантии
+    setInterval(forceLightThemeShadows, 3000);
+    
+    // Отслеживаем изменения темы
+    const themeObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
+                setTimeout(fixButtonHoverBug, 100);
+                setTimeout(forceLightThemeShadows, 150);
+            }
+        });
+    });
+    
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-bs-theme']
+    });
+    
     // Интерактивность карточек категорий
     const categoryCards = document.querySelectorAll('.category-card');
     categoryCards.forEach(card => {
@@ -348,26 +727,6 @@ function showCommandMenu() {
         </div>
     `;
     
-    // Добавляем стили для команд
-    const style = document.createElement('style');
-    style.textContent = `
-        .command-item {
-            padding: 1rem;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .command-item:hover {
-            background: var(--bg-secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .modal.show {
-            background: rgba(0,0,0,0.5);
-        }
-    `;
-    document.head.appendChild(style);
     document.body.appendChild(modal);
     
     // Закрытие по клику вне модального окна

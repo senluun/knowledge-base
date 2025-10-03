@@ -142,11 +142,29 @@ def article_detail_view(request, slug):
             article=article
         ).exists()
     
-    # Похожие статьи
+    # Статьи из той же категории для сайдбара
     similar_articles = Article.objects.filter(
         category=article.category,
         status='published'
-    ).exclude(id=article.id).order_by('-views_count')[:4]
+    ).exclude(id=article.id).order_by('-views_count', '-created_at')[:10]
+    
+    # Получаем все категории с их статьями для VS Code шторки
+    all_categories = Category.objects.filter(is_active=True).annotate(
+        articles_count=Count('articles', filter=Q(articles__status='published'))
+    ).order_by('order', 'name')
+    
+    # Получаем статьи для каждой категории
+    categories_with_articles = []
+    for category in all_categories:
+        articles_in_category = Article.objects.filter(
+            category=category,
+            status='published'
+        ).order_by('-created_at')[:10]  # Ограничиваем до 10 статей на категорию
+        
+        categories_with_articles.append({
+            'category': category,
+            'articles': articles_in_category
+        })
     
     context = {
         'article': article,
@@ -154,6 +172,7 @@ def article_detail_view(request, slug):
         'comment_form': comment_form,
         'is_favorite': is_favorite,
         'similar_articles': similar_articles,
+        'categories_with_articles': categories_with_articles,
     }
     return render(request, 'knowledge/article_detail.html', context)
 

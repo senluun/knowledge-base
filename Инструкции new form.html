@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструкции по обработке заявок - Классификация 53.13</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --accent: #f1f5f9;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --code-bg: #0f172a;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        /* Сайдбар */
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px var(--shadow);
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 0 0.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-header p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .toc {
+            padding: 0 0.5rem;
+        }
+
+        .toc h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin: 0.4rem 0;
+        }
+
+        .toc a {
+            display: block;
+            padding: 0.6rem 0.8rem;
+            text-decoration: none;
+            color: var(--dark);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .toc a:hover {
+            background: var(--accent);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .toc a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 0;
+            width: 3px;
+            background: var(--primary);
+            border-radius: 0 2px 2px 0;
+            transition: height 0.2s ease;
+        }
+
+        .toc a:hover::before {
+            height: 60%;
+        }
+
+        .toc .level-2 {
+            padding-left: 1.8rem;
+            font-weight: 500;
+        }
+
+        .toc .level-3 {
+            padding-left: 2.8rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .toc .level-4 {
+            padding-left: 3.8rem;
+            font-size: 0.85rem;
+        }
+
+        /* Основной контент */
+        .main-content {
+            flex: 1;
+            padding: 2rem 3rem;
+            background: white;
+        }
+
+        .content-header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .content-header h1 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Контент */
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin: 2.5rem 0 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h2::before {
+            content: '#';
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3::before {
+            content: '##';
+            color: var(--primary);
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin: 1.5rem 0 0.8rem;
+        }
+
+        p {
+            margin: 1rem 0;
+            line-height: 1.7;
+        }
+
+        ol, ul {
+            margin: 1rem 0;
+            padding-left: 1.8rem;
+        }
+
+        li {
+            margin: 0.6rem 0;
+            line-height: 1.6;
+        }
+
+        /* Блоки кода */
+        .code-block {
+            position: relative;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--code-bg);
+            color: white;
+            padding: 0.7rem 1rem;
+            font-size: 0.85rem;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .language-tag {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+        }
+
+        .codehilite {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .codehilite pre {
+            margin: 0;
+            font-family: 'Fira Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--dark);
+        }
+
+        /* Уведомления и подсказки */
+        .note {
+            background: #e0f2fe;
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .example {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 1rem 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Футер */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--secondary);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            h3 {
+                font-size: 1.2rem;
+            }
+            
+            .meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .codehilite {
+                padding: 1rem;
+            }
+            
+            .codehilite pre {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Дополнительные стили для улучшения читаемости */
+        .step {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 8px var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            margin-right: 0.8rem;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .command {
+            font-family: 'Fira Code', monospace;
+            background: var(--accent);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border), transparent);
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Сайдбар с оглавлением -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Классификация 53.13</h1>
+                <p>Инструкции по обработке заявок</p>
+            </div>
+            <nav class="toc">
+                <h3><i class="fas fa-list"></i> Содержание</h3>
+                <div id="table-of-contents"></div>
+            </nav>
+        </aside>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Инструкции по обработке заявок классификатора 53.13</h1>
+                <div class="meta">
+                    <span><i class="far fa-calendar"></i> Создано: 10.09.2025 14:52</span>
+                    <span><i class="fas fa-user"></i> Автор: admin</span>
+                    <span><i class="fas fa-tag"></i> Категория: Инструкции</span>
+                </div>
+            </header>
+
+            <div id="content">
+                <section class="content-section">
+                    <h2 id="5313">Классификация 53.13</h2>
+                    <p>При поступлении заявки определяем на чьей стороне проблема:</p>
+                    
+                    <div class="step">
+                        <p><span class="step-number">1</span> В случае наличия проблем и ошибок на ВИО переназначаем на 3-ю линию классификатор 53.6 с приложением информации в виде скриншотов (ЕХД, Камунда), логов (vioup, personapplication, insurreport,) и документов (в деперс виде).</p>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">2</span> Если проблема явно с работоспособностью всей системы или компонента, то можно перевести на УПЭ классификатор 53.2.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">3</span> Если проблема не на стороне ВИО, то переназначаем на соответствующий классификатор подсистемы, например:</p>
+                        <ul>
+                            <li>УВКиП - 69.6.12</li>
+                            <li>НВПиСВ - 102.6</li>
+                            <li>МСК - 25</li>
+                            <li>ФГИС ФРИ - 81</li>
+                            <li>Или по виду техпроцесса, например проактивное назначении пенсии - 128 (РЦИ Ижевск), постановления ФССП - 63.6.5 (РЦИ Воронеж).</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">4</span> Если по заявке требуется какая-нибудь уже известная переотправка, то можно воспользоваться сайтом Resender или скриптам сервере 10.101.101.180</p>
+                    </div>
+                </section>
+
+                <div class="divider"></div>
+
+                <section class="content-section">
+                    <h2 id="_1">Выписки МСЭ</h2>
+                    
+                    <h3 id="_2">Переотправка в НВП инициативной рассылки</h3>
+                    
+                    <div class="step">
+                        <p><span class="step-number">1</span> Поиск в Netezza по СНИЛС:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">SQL</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>select
+    uvkip_regnum
+    ,snils
+    ,requestid
+    ,row_created "дата рег-ции увкип"
+    ,status
+from
+(   
+    select
+        uvkip.uvkip_regnum
+        ,uvkip.snils
+        ,translate(uvkip.id, '-', '') as requestid
+        ,uvkip.status
+        ,uvkip.row_created
+        ,row_number() over(partition by uvkip.id order by abs(uvkip.status) desc) as rn
+
+    from
+        rtp_src018.rtp_src018_usr.process_history as uvkip
+    where
+        uvkip.code in (
+        '431.01'
+        )
+    and
+        snils in (
+'07003357617'
+        )
+    and
+        row_created between '2025-08-01 00:00:00' and current_timestamp
+    )as temp_table      
+where
+    temp_table.rn = 1
+;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">2</span> Из полученного запроса берем REQUEST_ID который будет являться идентификатором процесса в УВКиП. Далее надо найти ID в ЕХД выписки МСЭ либо в УВКиПе либо через запрос к БД ВИО:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">SQL</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>select
+    id
+    ,requestid
+    ,row_created
+from
+    rtp_src018.rtp_src018_usr.process_history
+where
+    requestid = 'REQUEST_ID'
+    and code = '431.01'
+    and status = 0
+;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">3</span> После получения ID выписки МСЭ из УВКиП, переходим на сервер 10.101.101.180 и выполняем скрипт переотправки:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">Bash</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>cd /opt/scripts/uvkip/
+./resend_msi.sh ID_ВЫПИСКИ_МСЭ</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">4</span> Проверяем результат выполнения скрипта. Если все хорошо, то в логе будет сообщение об успешной отправке.</p>
+                    </div>
+                </section>
+
+                <div class="divider"></div>
+
+                <section class="content-section">
+                    <h2 id="_3">Переотправка в НВП инициативной рассылки</h2>
+                    
+                    <div class="step">
+                        <p><span class="step-number">1</span> Поиск в Netezza по СНИЛС:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">SQL</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>select
+    uvkip_regnum
+    ,snils
+    ,requestid
+    ,row_created "дата рег-ции увкип"
+    ,status
+from
+(   
+    select
+        uvkip.uvkip_regnum
+        ,uvkip.snils
+        ,translate(uvkip.id, '-', '') as requestid
+        ,uvkip.status
+        ,uvkip.row_created
+        ,row_number() over(partition by uvkip.id order by abs(uvkip.status) desc) as rn
+
+    from
+        rtp_src018.rtp_src018_usr.process_history as uvkip
+    where
+        uvkip.code in (
+        '431.01'
+        )
+    and
+        snils in (
+'07003357617'
+        )
+    and
+        row_created between '2025-08-01 00:00:00' and current_timestamp
+    )as temp_table      
+where
+    temp_table.rn = 1
+;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">2</span> Из полученного запроса берем REQUEST_ID который будет являться идентификатором процесса в УВКиП. Далее надо найти ID в ЕХД выписки МСЭ либо в УВКиПе либо через запрос к БД ВИО:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">SQL</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>select
+    id
+    ,requestid
+    ,row_created
+from
+    rtp_src018.rtp_src018_usr.process_history
+where
+    requestid = 'REQUEST_ID'
+    and code = '431.01'
+    and status = 0
+;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">3</span> После получения ID выписки МСЭ из УВКиП, переходим на сервер 10.101.101.180 и выполняем скрипт переотправки:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">Bash</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>cd /opt/scripts/uvkip/
+./resend_msi.sh ID_ВЫПИСКИ_МСЭ</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">4</span> Проверяем результат выполнения скрипта. Если все хорошо, то в логе будет сообщение об успешной отправке.</p>
+                    </div>
+                </section>
+
+                <div class="divider"></div>
+
+                <section class="content-section">
+                    <h2 id="_4">Переотправка в НВП инициативной рассылки</h2>
+                    
+                    <div class="step">
+                        <p><span class="step-number">1</span> Поиск в Netezza по СНИЛС:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">SQL</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>select
+    uvkip_regnum
+    ,snils
+    ,requestid
+    ,row_created "дата рег-ции увкип"
+    ,status
+from
+(   
+    select
+        uvkip.uvkip_regnum
+        ,uvkip.snils
+        ,translate(uvkip.id, '-', '') as requestid
+        ,uvkip.status
+        ,uvkip.row_created
+        ,row_number() over(partition by uvkip.id order by abs(uvkip.status) desc) as rn
+
+    from
+        rtp_src018.rtp_src018_usr.process_history as uvkip
+    where
+        uvkip.code in (
+        '431.01'
+        )
+    and
+        snils in (
+'07003357617'
+        )
+    and
+        row_created between '2025-08-01 00:00:00' and current_timestamp
+    )as temp_table      
+where
+    temp_table.rn = 1
+;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">2</span> Из полученного запроса берем REQUEST_ID который будет являться идентификатором процесса в УВКиП. Далее надо найти ID в ЕХД выписки МСЭ либо в УВКиПе либо через запрос к БД ВИО:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">SQL</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>select
+    id
+    ,requestid
+    ,row_created
+from
+    rtp_src018.rtp_src018_usr.process_history
+where
+    requestid = 'REQUEST_ID'
+    and code = '431.01'
+    and status = 0
+;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">3</span> После получения ID выписки МСЭ из УВКиП, переходим на сервер 10.101.101.180 и выполняем скрипт переотправки:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="language-tag">Bash</span>
+                                <button class="copy-btn"><i class="far fa-copy"></i> Копировать</button>
+                            </div>
+                            <div class="codehilite">
+                                <pre><code>cd /opt/scripts/uvkip/
+./resend_msi.sh ID_ВЫПИСКИ_МСЭ</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <p><span class="step-number">4</span> Проверяем результат выполнения скрипта. Если все хорошо, то в логе будет сообщение об успешной отправке.</p>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="footer">
+                <div>© 2025 Инструкции по обработке заявок</div>
+                <div>Версия 1.0</div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Функция для создания оглавления
+        function generateTableOfContents() {
+            const content = document.getElementById('content');
+            const headings = content.querySelectorAll('h2, h3, h4');
+            const tocContainer = document.getElementById('table-of-contents');
+            const tocList = document.createElement('ul');
+            
+            let currentH2 = null;
+            let currentH3 = null;
+            
+            headings.forEach(heading => {
+                const id = heading.id || heading.textContent.toLowerCase().replace(/[^a-z0-9а-яё]+/g, '-').replace(/(^-|-$)/g, '');
+                heading.id = id;
+                
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = `#${id}`;
+                link.textContent = heading.textContent;
+                
+                if (heading.tagName === 'H2') {
+                    listItem.className = 'level-1';
+                    currentH2 = listItem;
+                    currentH3 = null;
+                    tocList.appendChild(listItem);
+                } else if (heading.tagName === 'H3') {
+                    listItem.className = 'level-2';
+                    if (currentH3) {
+                        // Если уже есть H3, добавляем к текущему H2
+                        currentH2.appendChild(document.createElement('ul')).appendChild(listItem);
+                    } else {
+                        // Первый H3 для этого H2
+                        const subList = document.createElement('ul');
+                        currentH2.appendChild(subList);
+                        subList.appendChild(listItem);
+                    }
+                    currentH3 = listItem;
+                } else if (heading.tagName === 'H4') {
+                    listItem.className = 'level-3';
+                    if (currentH3) {
+                        if (currentH3.querySelector('ul')) {
+                            currentH3.querySelector('ul').appendChild(listItem);
+                        } else {
+                            const subList = document.createElement('ul');
+                            currentH3.appendChild(subList);
+                            subList.appendChild(listItem);
+                        }
+                    } else if (currentH2) {
+                        // H4 без предшествующего H3
+                        if (currentH2.querySelector('ul')) {
+                            currentH2.querySelector('ul').appendChild(listItem);
+                        } else {
+                            const subList = document.createElement('ul');
+                            currentH2.appendChild(subList);
+                            subList.appendChild(listItem);
+                        }
+                    }
+                }
+                
+                listItem.appendChild(link);
+            });
+            
+            tocContainer.appendChild(tocList);
+            
+            // Добавляем функциональность копирования кодовых блоков
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const codeBlock = this.parentElement.nextElementSibling;
+                    const textToCopy = codeBlock.querySelector('code').textContent;
+                    
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> Скопировано';
+                        this.classList.add('copied');
+                        
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Ошибка при копировании: ', err);
+                    });
+                });
+            });
+        }
+        
+        // Генерируем оглавление после загрузки страницы
+        document.addEventListener('DOMContentLoaded', generateTableOfContents);
+    </script>
+</body>
+</html>
